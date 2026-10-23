@@ -16,14 +16,56 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(PROJECT_ROOT, 'medications_data.json')
 
 def load_environment_variables():
-    env_path = os.path.join(PROJECT_ROOT, '.env')
-    if os.path.exists(env_path):
-        load_dotenv(env_path)
+    env_paths = [
+        os.path.join(PROJECT_ROOT, '.env'),
+        '.env',
+    ]
+    loaded = False
+    for env_path in env_paths:
+        if env_path and os.path.exists(env_path):
+            try:
+                loaded = load_dotenv(env_path, override=False, encoding='utf-8') or loaded
+            except Exception as exc:
+                print(f"⚠️ Could not read {env_path}: {exc}")
+    return loaded
+
+
+def normalize_api_key(raw_value):
+    if raw_value is None:
+        return None
+    value = str(raw_value).strip().strip('"').strip("'")
+    placeholder_values = {
+        'your_groq_api_key_here',
+        'your_real_key_here',
+        'replace_me',
+        'changeme',
+        ''
+    }
+    return None if value.lower() in placeholder_values else value
+
 
 load_environment_variables()
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
+# Enable CORS headers for all incoming requests
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    return response
+
+# Initialize Groq Client
+GROQ_API_KEY = normalize_api_key(os.environ.get("GROQ_API_KEY"))
+client = None
+if GROQ_API_KEY:
+    try:
+        client = Groq(api_key=GROQ_API_KEY)
+    except Exception as e:
+        print(f"⚠️ Groq client initialization warning: {e}")
+else:
+    print("⚠️ GROQ_API_KEY not set; the app will use heuristic fallback responses.")
+    print("💡 Create a .env file with GROQ_API_KEY=your_real_key_here and restart the app.")
+
 
 VISION_MODEL = "llama-3.2-11b-vision-instruct"
 TEXT_MODEL = "llama-3.3-70b-versatile"
