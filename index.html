@@ -19,25 +19,45 @@
             --alert-yellow: #f59e0b;
             --alert-green: #10b981;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-primary); display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background: var(--bg-sidebar); border-right: 1px solid var(--border-dark); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+        .sidebar { width: 280px; flex-shrink: 0; background: var(--bg-sidebar); border-right: 1px solid var(--border-dark); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
         .nav-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; gap: 10px; margin-bottom: 6px; transition: 0.2s; }
         .nav-item.active, .nav-item:hover { background: var(--bg-card); color: var(--text-primary); font-weight: 600; }
-        .main-content { flex-grow: 1; padding: 40px; overflow-y: auto; max-width: 1200px; }
+        .main-content { flex-grow: 1; min-width: 0; padding: 40px; overflow-y: auto; max-width: 1200px; }
         .page-view { display: none; }
         .page-view.active { display: block; }
         .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
         .btn { background: var(--accent-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .btn:hover { background: var(--accent-cyan); color: #0a0d16; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border-dark); }
+        .btn-danger { background: rgba(239,68,68,0.15); color: var(--alert-red); border: 1px solid var(--alert-red); }
+        .btn-danger:hover { background: var(--alert-red); color: #fff; }
         .input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-dark); border-radius: 8px; color: #fff; margin-bottom: 14px; }
+        .input-field option { background: #111827; color: #fff; }
+        label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.9rem; }
         .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
         .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--alert-red); border: 1px solid var(--alert-red); }
         .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--alert-green); border: 1px solid var(--alert-green); }
         .badge-yellow { background: rgba(245, 158, 11, 0.2); color: var(--alert-yellow); border: 1px solid var(--alert-yellow); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: var(--bg-card); padding: 15px 24px; border-radius: 12px; border: 1px solid var(--border-dark); }
-        .med-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-dark); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; background: var(--bg-card); padding: 15px 24px; border-radius: 12px; border: 1px solid var(--border-dark); }
+        .med-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-dark); }
+        .muted { color: var(--text-secondary); }
+        .alert-card { border-color: var(--alert-red); }
+        .result-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-cyan); white-space: pre-wrap; line-height: 1.6; text-align: left; }
+        .disclaimer { font-size: 0.8rem; color: var(--text-secondary); margin-top: 12px; }
+        #toast { position: fixed; bottom: 24px; right: 24px; max-width: 320px; padding: 14px 18px; border-radius: 10px; background: #111827; border: 1px solid var(--border-dark); box-shadow: 0 8px 24px rgba(0,0,0,0.4); opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; z-index: 50; }
+        #toast.show { opacity: 1; transform: translateY(0); }
+        #toast.error { border-color: var(--alert-red); }
+        #toast.ok { border-color: var(--alert-green); }
+        @media (max-width: 800px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-dark); padding: 16px; gap: 10px; }
+            .sidebar ul { display: flex; flex-wrap: wrap; gap: 6px; }
+            .nav-item { margin-bottom: 0; padding: 8px 12px; font-size: 0.9rem; }
+            .main-content { padding: 20px; }
+        }
     </style>
 </head>
 <body data-lang="en">
@@ -45,25 +65,23 @@
         <h2>💊 MedSnap</h2>
         <p style="font-size: 0.85rem; color: var(--text-secondary);">Smart Medication Manager</p>
         <ul style="list-style: none; margin-top: 10px;">
-            <li class="nav-item active" onclick="switchPage('schedule-page', this)"><i class="fa-solid fa-calendar-day"></i> <span data-i18n="nav_schedule">Today's Schedule</span></li>
-            <li class="nav-item" onclick="switchPage('add-page', this)"><i class="fa-solid fa-plus-circle"></i> <span data-i18n="nav_add">Add Medication</span></li>
-            <li class="nav-item" onclick="switchPage('scanner-page', this)"><i class="fa-solid fa-camera"></i> <span data-i18n="nav_scanner">Camera Bottle OCR</span></li>
-            <li class="nav-item" onclick="switchPage('inventory-page', this)"><i class="fa-solid fa-pills"></i> <span data-i18n="nav_inventory">Inventory & Refills</span></li>
-            <li class="nav-item" onclick="switchPage('visualizer-page', this)"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="nav_visualizer">Pill Visualizer</span></li>
-            <li class="nav-item" onclick="switchPage('safety-page', this)"><i class="fa-solid fa-shield-heart"></i> <span data-i18n="nav_safety">Interaction Checker</span></li>
+            <li class="nav-item active" data-page="schedule-page" onclick="switchPage('schedule-page')"><i class="fa-solid fa-calendar-day"></i> <span data-i18n="nav_schedule">Today's Schedule</span></li>
+            <li class="nav-item" data-page="add-page" onclick="switchPage('add-page')"><i class="fa-solid fa-plus-circle"></i> <span data-i18n="nav_add">Add Medication</span></li>
+            <li class="nav-item" data-page="scanner-page" onclick="switchPage('scanner-page')"><i class="fa-solid fa-camera"></i> <span data-i18n="nav_scanner">Camera Bottle OCR</span></li>
+            <li class="nav-item" data-page="inventory-page" onclick="switchPage('inventory-page')"><i class="fa-solid fa-pills"></i> <span data-i18n="nav_inventory">Inventory & Refills</span></li>
+            <li class="nav-item" data-page="visualizer-page" onclick="switchPage('visualizer-page')"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="nav_visualizer">Pill Visualizer</span></li>
+            <li class="nav-item" data-page="safety-page" onclick="switchPage('safety-page')"><i class="fa-solid fa-shield-heart"></i> <span data-i18n="nav_safety">Interaction Checker</span></li>
         </ul>
     </aside>
 
     <main class="main-content">
-        <!-- Top Control Bar: Streak, Language, Voice Assistant -->
         <div class="top-bar">
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <span class="badge badge-yellow" id="streak-badge"><i class="fa-solid fa-fire"></i> <span id="streak-count">5</span> Day Streak 🔥</span>
-                <span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> System Secure</span>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <span class="badge badge-yellow" id="progress-badge"><i class="fa-solid fa-circle-check"></i> <span id="progress-text">0 of 0 taken today</span></span>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="btn btn-secondary" onclick="speakSchedule()"><i class="fa-solid fa-volume-high"></i> Read Aloud</button>
-                <select class="input-field" style="width: auto; margin: 0; padding: 6px 12px;" onchange="changeLanguage(this.value)">
+                <select class="input-field" style="width: auto; margin: 0; padding: 6px 12px;" onchange="changeLanguage(this.value)" aria-label="Language">
                     <option value="en">English</option>
                     <option value="es">Español</option>
                 </select>
@@ -73,11 +91,11 @@
         <!-- Schedule Page -->
         <div id="schedule-page" class="page-view active">
             <h1>Today's Prescription Schedule</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Track your daily doses, check food guidelines, and maintain your streak.</p>
-            
-            <div id="missed-alert-banner" style="display: none;" class="card" style="border-color: var(--alert-red);">
-                <h3 style="color: var(--alert-red);"><i class="fa-solid fa-triangle-exclamation"></i> Missed Dose Alert</h3>
-                <p style="color: var(--text-secondary); margin-top: 5px;">You have uncompleted scheduled medications past their due window.</p>
+            <p class="muted" style="margin-bottom: 20px;">Track your daily doses, check food guidelines, and keep an eye on what's still pending.</p>
+
+            <div id="missed-alert-banner" style="display: none;" class="card alert-card">
+                <h3 style="color: var(--alert-red);"><i class="fa-solid fa-triangle-exclamation"></i> Pending Doses</h3>
+                <p class="muted" style="margin-top: 5px;">You still have medications to mark as taken today.</p>
             </div>
 
             <div class="card">
@@ -97,26 +115,26 @@
         <!-- Add Medication Page -->
         <div id="add-page" class="page-view">
             <h1>Add New Medication</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Manually enter pill details, daily dosages, and food instructions.</p>
+            <p class="muted" style="margin-bottom: 20px;">Manually enter pill details, daily dosages, and food instructions.</p>
             <div class="card" style="max-width: 600px;">
                 <form id="add-med-form" onsubmit="submitMedication(event)">
-                    <label>Medication Name</label>
-                    <input type="text" id="med-name" class="input-field" placeholder="e.g., Lisinopril" required>
-                    <label>Dosage</label>
-                    <input type="text" id="med-dosage" class="input-field" placeholder="e.g., 10mg" required>
-                    <label>Time Slot</label>
+                    <label for="med-name">Medication Name</label>
+                    <input type="text" id="med-name" class="input-field" placeholder="e.g., Lisinopril" maxlength="120" required>
+                    <label for="med-dosage">Dosage</label>
+                    <input type="text" id="med-dosage" class="input-field" placeholder="e.g., 10mg" maxlength="60" required>
+                    <label for="med-slot">Time Slot</label>
                     <select id="med-slot" class="input-field">
                         <option value="Morning">Morning</option>
                         <option value="Afternoon">Afternoon</option>
                         <option value="Evening">Evening</option>
                     </select>
-                    <label>Starting Pill Count (Inventory)</label>
-                    <input type="number" id="med-stock" class="input-field" value="30" required>
-                    <label>Daily Doses Count</label>
-                    <input type="number" id="med-daily" class="input-field" value="1" required>
-                    <label>Food & Timing Guide</label>
-                    <input type="text" id="med-food" class="input-field" placeholder="e.g., Take with food in the morning">
-                    <button type="submit" class="btn">Save Medication</button>
+                    <label for="med-stock">Starting Pill Count (Inventory)</label>
+                    <input type="number" id="med-stock" class="input-field" value="30" min="0" max="10000" required>
+                    <label for="med-daily">Daily Doses Count</label>
+                    <input type="number" id="med-daily" class="input-field" value="1" min="1" max="20" required>
+                    <label for="med-food">Food & Timing Guide</label>
+                    <input type="text" id="med-food" class="input-field" placeholder="e.g., Take with food in the morning" maxlength="200">
+                    <button type="submit" class="btn" id="save-med-btn">Save Medication</button>
                 </form>
             </div>
         </div>
@@ -124,18 +142,19 @@
         <!-- Camera Scanner Page -->
         <div id="scanner-page" class="page-view">
             <h1>Pill Bottle Label OCR Scanner</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Upload a prescription label photo to let AI extract medication data.</p>
+            <p class="muted" style="margin-bottom: 20px;">Upload a prescription label photo to let AI extract medication data.</p>
             <div class="card" style="max-width: 600px; text-align: center; border: 2px dashed var(--accent-cyan);">
                 <input type="file" id="bottle-upload" accept="image/*" style="display: none;" onchange="handleBottleUpload(event)">
                 <button class="btn" onclick="document.getElementById('bottle-upload').click()"><i class="fa-solid fa-upload"></i> Upload Bottle Photo</button>
-                <p id="scanner-results" style="margin-top: 15px; color: var(--text-secondary);">Waiting for image upload...</p>
+                <div id="scanner-results" class="muted" style="margin-top: 15px;">Waiting for image upload...</div>
             </div>
+            <p class="disclaimer" style="max-width: 600px;">AI can misread labels. Always double-check the result against your bottle before saving.</p>
         </div>
 
         <!-- Inventory Page -->
         <div id="inventory-page" class="page-view">
             <h1>Pill Inventory & Low Stock Alerts</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Track remaining pill counts and receive automated refill warnings.</p>
+            <p class="muted" style="margin-bottom: 20px;">Track remaining pill counts and receive refill warnings.</p>
             <div class="card">
                 <div id="inventory-list">Loading inventory...</div>
             </div>
@@ -144,214 +163,319 @@
         <!-- Pill Visualizer Page -->
         <div id="visualizer-page" class="page-view">
             <h1>Pill Identification Visualizer</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Verify physical pill characteristics (shape, color, imprint).</p>
+            <p class="muted" style="margin-bottom: 20px;">Compare physical pill characteristics (shape, color, imprint) against a small sample database.</p>
             <div class="card" style="max-width: 600px;">
-                <label>Pill Shape</label>
+                <label for="pill-shape">Pill Shape</label>
                 <select id="pill-shape" class="input-field">
+                    <option value="">Any</option>
                     <option value="round">Round</option>
                     <option value="oval">Oval</option>
                 </select>
-                <label>Pill Color</label>
+                <label for="pill-color">Pill Color</label>
                 <select id="pill-color" class="input-field">
+                    <option value="">Any</option>
                     <option value="white">White</option>
                     <option value="brown">Brown</option>
                 </select>
-                <label>Imprint Code (e.g., BAYER, MET 500)</label>
-                <input type="text" id="pill-imprint" class="input-field" placeholder="Enter imprint">
+                <label for="pill-imprint">Imprint Code (e.g., BAYER, MET 500)</label>
+                <input type="text" id="pill-imprint" class="input-field" placeholder="Enter imprint" maxlength="30">
                 <button class="btn" onclick="identifyPill()">Search Pill Database</button>
                 <div id="visualizer-result" style="margin-top: 15px; font-weight: 600; color: var(--accent-cyan);"></div>
+                <p class="disclaimer">This is a small demo database. Never rely on it to identify an unknown pill. Ask a pharmacist.</p>
             </div>
         </div>
 
         <!-- Safety & Interaction Checker Page -->
         <div id="safety-page" class="page-view">
             <h1>Drug Interaction & Safety Checker</h1>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">AI-powered clinical check for active prescriptions.</p>
+            <p class="muted" style="margin-bottom: 20px;">AI-powered check for your active medications.</p>
             <div class="card">
-                <button class="btn" onclick="runSafetyCheck()"><i class="fa-solid fa-shield-heart"></i> Run AI Safety & Interaction Scan</button>
-                <div id="safety-results" style="margin-top: 15px; color: var(--text-secondary); line-height: 1.6;">Click the button above to analyze active medications.</div>
+                <button class="btn" id="safety-btn" onclick="runSafetyCheck()"><i class="fa-solid fa-shield-heart"></i> Run AI Safety & Interaction Scan</button>
+                <div id="safety-results" class="muted" style="margin-top: 15px; line-height: 1.6;">Click the button above to analyze your medications.</div>
+                <p class="disclaimer">AI output is informational only and not medical advice. Confirm with your pharmacist or doctor.</p>
             </div>
         </div>
     </main>
 
+    <div id="toast" role="status" aria-live="polite"></div>
+
     <script>
         let allMedications = [];
-        let translations = {
+        let lastScan = null;
+        const translations = {
             en: { nav_schedule: "Today's Schedule", nav_add: "Add Medication", nav_scanner: "Camera Bottle OCR", nav_inventory: "Inventory & Refills", nav_visualizer: "Pill Visualizer", nav_safety: "Interaction Checker" },
             es: { nav_schedule: "Horario de Hoy", nav_add: "Añadir Medicamento", nav_scanner: "Escáner OCR", nav_inventory: "Inventario", nav_visualizer: "Visualizador de Pastillas", nav_safety: "Verificador de Interacciones" }
         };
 
-        function switchPage(pageId, el) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            el.classList.add('active');
+        // ---------- helpers ----------
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         }
 
-        async function fetchMedications() {
+        let toastTimer;
+        function showToast(message, type) {
+            const el = document.getElementById('toast');
+            el.textContent = message;
+            el.className = 'show ' + (type || '');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { el.className = ''; }, 3500);
+        }
+
+        // Each browser gets its own private ID so visitors don't share medication lists.
+        function getClientId() {
             try {
-                const res = await fetch('/api/medications');
-                const data = await res.json();
-                if (data.success) {
-                    allMedications = data.medications;
-                    renderSchedule();
-                    renderInventory();
+                let id = localStorage.getItem('medsnap_client_id');
+                if (!id) {
+                    const raw = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + Math.random().toString(36).slice(2));
+                    id = String(raw).replace(/[^A-Za-z0-9_-]/g, '');
+                    localStorage.setItem('medsnap_client_id', id);
                 }
+                return id;
             } catch (e) {
-                console.error("Failed to load medications", e);
+                window.__fallbackId = window.__fallbackId || ('anon' + Math.random().toString(36).slice(2, 12));
+                return window.__fallbackId;
             }
         }
 
-        function renderSchedule() {
-            const slots = { Morning: document.getElementById('morning-list'), Afternoon: document.getElementById('afternoon-list'), Evening: document.getElementById('evening-list') };
-            Object.values(slots).forEach(el => el.innerHTML = '<p style="color: var(--text-secondary);">No medications scheduled.</p>');
+        async function api(path, options) {
+            options = options || {};
+            const headers = Object.assign({ 'X-Client-Id': getClientId() }, options.headers || {});
+            const res = await fetch(path, Object.assign({}, options, { headers }));
+            let data = null;
+            try { data = await res.json(); } catch (e) { /* not JSON */ }
+            if (!res.ok || !data || data.success === false) {
+                throw new Error((data && data.error) || ('Request failed (' + res.status + ')'));
+            }
+            return data;
+        }
 
-            let hasMissed = false;
+        function jsonOptions(method, body) {
+            return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+        }
+
+        // ---------- navigation ----------
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // ---------- medications ----------
+        async function fetchMedications() {
+            try {
+                const data = await api('/api/medications');
+                allMedications = data.medications;
+                renderAll();
+            } catch (e) {
+                console.error('Failed to load medications', e);
+                const msg = '<p style="color: var(--alert-red);">Could not reach the server. <a href="#" onclick="fetchMedications(); return false;" style="color: var(--accent-cyan);">Try again</a></p>';
+                ['morning-list', 'afternoon-list', 'evening-list', 'inventory-list'].forEach(id => { document.getElementById(id).innerHTML = msg; });
+            }
+        }
+
+        function renderAll() {
+            renderSchedule();
+            renderInventory();
+            renderProgress();
+        }
+
+        function renderProgress() {
+            const taken = allMedications.filter(m => m.taken).length;
+            const total = allMedications.length;
+            document.getElementById('progress-text').textContent = taken + ' of ' + total + ' taken today';
+            const badge = document.getElementById('progress-badge');
+            badge.className = 'badge ' + (total > 0 && taken === total ? 'badge-green' : 'badge-yellow');
+        }
+
+        function renderSchedule() {
+            const slots = { Morning: 'morning-list', Afternoon: 'afternoon-list', Evening: 'evening-list' };
+            let hasPending = false;
 
             Object.keys(slots).forEach(slotName => {
+                const container = document.getElementById(slots[slotName]);
                 const medsInSlot = allMedications.filter(m => m.slot === slotName);
-                if (medsInSlot.length > 0) {
-                    slots[slotName].innerHTML = '';
-                    medsInSlot.forEach(m => {
-                        if (!m.taken) hasMissed = true;
-                        slots[slotName].innerHTML += `
-                            <div class="med-item">
-                                <div>
-                                    <b>${m.name}</b> (${m.dosage})<br>
-                                    <span style="font-size: 0.85rem; color: var(--accent-cyan);">🍽️ ${m.food_guide}</span>
-                                </div>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <span class="badge ${m.taken ? 'badge-green' : 'badge-yellow'}">${m.taken ? 'Taken' : 'Pending'}</span>
-                                    <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="toggleTaken(${m.id})">${m.taken ? 'Undo' : 'Mark Taken'}</button>
-                                </div>
-                            </div>
-                        `;
-                    });
+                if (medsInSlot.length === 0) {
+                    container.innerHTML = '<p class="muted">No medications scheduled.</p>';
+                    return;
                 }
+                container.innerHTML = medsInSlot.map(m => {
+                    if (!m.taken) hasPending = true;
+                    return `
+                        <div class="med-item">
+                            <div>
+                                <b>${escapeHtml(m.name)}</b> (${escapeHtml(m.dosage)})<br>
+                                <span style="font-size: 0.85rem; color: var(--accent-cyan);">🍽️ ${escapeHtml(m.food_guide)}</span>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <span class="badge ${m.taken ? 'badge-green' : 'badge-yellow'}">${m.taken ? 'Taken' : 'Pending'}</span>
+                                <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="toggleTaken(${Number(m.id)})">${m.taken ? 'Undo' : 'Mark Taken'}</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="deleteMedication(${Number(m.id)})" aria-label="Delete ${escapeHtml(m.name)}"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                }).join('');
             });
 
-            document.getElementById('missed-alert-banner').style.display = hasMissed ? 'block' : 'none';
+            document.getElementById('missed-alert-banner').style.display = hasPending ? 'block' : 'none';
         }
 
         function renderInventory() {
             const invDiv = document.getElementById('inventory-list');
-            invDiv.innerHTML = '';
-            allMedications.forEach(m => {
-                let stockBadge = m.stock <= 5 ? '<span class="badge badge-red">⚠️ Low Stock</span>' : '<span class="badge badge-green">Stock OK</span>';
-                invDiv.innerHTML += `
+            if (allMedications.length === 0) {
+                invDiv.innerHTML = '<p class="muted">No medications yet. Add one to start tracking inventory.</p>';
+                return;
+            }
+            invDiv.innerHTML = allMedications.map(m => {
+                const daysLeft = (m.stock / Math.max(1, m.daily_dose)).toFixed(1);
+                const badge = m.stock <= 5 ? '<span class="badge badge-red">⚠️ Low Stock</span>' : '<span class="badge badge-green">Stock OK</span>';
+                return `
                     <div class="med-item">
-                        <div>
-                            <b>${m.name}</b> — ${m.stock} pills remaining (~${(m.stock / m.daily_dose).toFixed(1)} days left)
-                        </div>
-                        <div>${stockBadge}</div>
-                    </div>
-                `;
-            });
+                        <div><b>${escapeHtml(m.name)}</b> — ${Number(m.stock)} pills remaining (~${daysLeft} days left)</div>
+                        <div>${badge}</div>
+                    </div>`;
+            }).join('');
         }
 
         async function toggleTaken(id) {
-            const res = await fetch(`/api/medications/${id}/take`, { method: 'POST' });
-            const data = await res.json();
-            if (data.success) {
-                fetchMedications();
+            try {
+                await api('/api/medications/' + id + '/take', { method: 'POST' });
+                await fetchMedications();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+
+        async function deleteMedication(id) {
+            const med = allMedications.find(m => m.id === id);
+            if (!confirm('Remove ' + (med ? med.name : 'this medication') + ' from your list?')) return;
+            try {
+                await api('/api/medications/' + id, { method: 'DELETE' });
+                showToast('Medication removed.', 'ok');
+                await fetchMedications();
+            } catch (e) {
+                showToast(e.message, 'error');
             }
         }
 
         async function submitMedication(event) {
             event.preventDefault();
+            const btn = document.getElementById('save-med-btn');
+            btn.disabled = true;
             const payload = {
-                name: document.getElementById('med-name').value,
-                dosage: document.getElementById('med-dosage').value,
+                name: document.getElementById('med-name').value.trim(),
+                dosage: document.getElementById('med-dosage').value.trim(),
                 slot: document.getElementById('med-slot').value,
-                stock: parseInt(document.getElementById('med-stock').value),
-                daily_dose: parseInt(document.getElementById('med-daily').value),
-                food_guide: document.getElementById('med-food').value || 'Take as directed.'
+                stock: parseInt(document.getElementById('med-stock').value, 10),
+                daily_dose: parseInt(document.getElementById('med-daily').value, 10),
+                food_guide: document.getElementById('med-food').value.trim() || 'Take as directed.'
             };
-
-            const res = await fetch('/api/medications', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert('Medication saved successfully!');
+            try {
+                await api('/api/medications', jsonOptions('POST', payload));
+                showToast('Medication saved!', 'ok');
                 document.getElementById('add-med-form').reset();
-                fetchMedications();
-                switchPage('schedule-page', document.querySelector('.nav-item'));
+                await fetchMedications();
+                switchPage('schedule-page');
+            } catch (e) {
+                showToast(e.message, 'error');
+            } finally {
+                btn.disabled = false;
             }
         }
 
+        // ---------- label scanner ----------
         async function handleBottleUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
             const resBox = document.getElementById('scanner-results');
-            resBox.innerHTML = "⏳ Scanning bottle label with AI OCR...";
+            resBox.textContent = '⏳ Scanning bottle label with AI OCR...';
+            lastScan = null;
 
             const formData = new FormData();
             formData.append('file', file);
 
             try {
-                const response = await fetch('/api/analyze', { method: 'POST', body: formData });
-                const data = await response.json();
-                if (data.success) {
-                    resBox.innerHTML = `<b>Scan Successful!</b><br><pre style="text-align: left; margin-top: 10px; color: var(--accent-cyan);">${data.ocr_result}</pre>`;
+                const data = await api('/api/analyze', { method: 'POST', body: formData });
+                lastScan = data.parsed;
+                if (data.parsed && (data.parsed.name || data.parsed.dosage)) {
+                    resBox.innerHTML = `
+                        <b style="color: var(--alert-green);">Scan complete. Please verify:</b>
+                        <div class="result-box" style="margin-top: 10px;">Name: ${escapeHtml(data.parsed.name || '(not found)')}
+Dosage: ${escapeHtml(data.parsed.dosage || '(not found)')}
+Time slot: ${escapeHtml(data.parsed.slot)}
+Directions: ${escapeHtml(data.parsed.directions || '(not found)')}</div>
+                        <button class="btn" style="margin-top: 12px;" onclick="fillFromScan()"><i class="fa-solid fa-wand-magic-sparkles"></i> Use this in Add Medication</button>`;
                 } else {
-                    resBox.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
+                    resBox.innerHTML = `<b>Scan finished</b><div class="result-box" style="margin-top: 10px;">${escapeHtml(data.ocr_result || 'No text found.')}</div>`;
                 }
             } catch (err) {
-                resBox.innerHTML = `<span style="color: #ef4444;">Failed to connect to backend server.</span>`;
+                resBox.innerHTML = `<span style="color: var(--alert-red);">Error: ${escapeHtml(err.message)}</span>`;
+            } finally {
+                event.target.value = ''; // allow re-uploading the same file
             }
         }
 
+        function fillFromScan() {
+            if (!lastScan) return;
+            document.getElementById('med-name').value = lastScan.name || '';
+            document.getElementById('med-dosage').value = lastScan.dosage || '';
+            document.getElementById('med-slot').value = lastScan.slot || 'Morning';
+            if (lastScan.directions) document.getElementById('med-food').value = lastScan.directions;
+            switchPage('add-page');
+            showToast('Form filled in. Check it, then save.', 'ok');
+        }
+
+        // ---------- pill visualizer ----------
         async function identifyPill() {
-            const shape = document.getElementById('pill-shape').value;
-            const color = document.getElementById('pill-color').value;
-            const imprint = document.getElementById('pill-imprint').value;
-
-            const res = await fetch('/api/identify-pill', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ shape, color, imprint })
-            });
-            const data = await res.json();
             const resDiv = document.getElementById('visualizer-result');
-            if (data.matches.length > 0) {
-                resDiv.innerHTML = `✅ Match Found: ${data.matches.join(', ')}`;
-            } else {
-                resDiv.innerHTML = `❌ No exact match found in database.`;
+            try {
+                const data = await api('/api/identify-pill', jsonOptions('POST', {
+                    shape: document.getElementById('pill-shape').value,
+                    color: document.getElementById('pill-color').value,
+                    imprint: document.getElementById('pill-imprint').value
+                }));
+                resDiv.textContent = data.matches.length > 0
+                    ? '✅ Possible match: ' + data.matches.join(', ')
+                    : '❌ No match found in the sample database.';
+            } catch (e) {
+                resDiv.textContent = 'Search failed: ' + e.message;
             }
         }
 
+        // ---------- safety checker ----------
         async function runSafetyCheck() {
             const resDiv = document.getElementById('safety-results');
-            resDiv.innerHTML = "🛡️ Running AI clinical interaction safety check...";
-            const medNames = allMedications.map(m => m.name);
-
-            const res = await fetch('/api/interactions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ medications: medNames })
-            });
-            const data = await res.json();
-            if (data.success) {
-                resDiv.innerHTML = `<div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-cyan);">${data.analysis}</div>`;
-            } else {
-                resDiv.innerHTML = "Failed to run safety check.";
+            const btn = document.getElementById('safety-btn');
+            if (allMedications.length === 0) {
+                resDiv.textContent = 'Add at least one medication first.';
+                return;
+            }
+            btn.disabled = true;
+            resDiv.textContent = '🛡️ Running AI interaction safety check...';
+            try {
+                const data = await api('/api/interactions', jsonOptions('POST', { medications: allMedications.map(m => m.name) }));
+                resDiv.innerHTML = `<div class="result-box">${escapeHtml(data.analysis)}</div>`;
+            } catch (e) {
+                resDiv.textContent = 'Failed to run safety check: ' + e.message;
+            } finally {
+                btn.disabled = false;
             }
         }
 
+        // ---------- read aloud / language ----------
         function speakSchedule() {
             if (!('speechSynthesis' in window)) {
-                alert('Text-to-speech is not supported by your browser.');
+                showToast('Text-to-speech is not supported by your browser.', 'error');
                 return;
             }
-            let text = "Here is your MedSnap schedule reminder. ";
+            if (allMedications.length === 0) {
+                showToast('No medications to read.', 'error');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            let text = 'Here is your MedSnap schedule reminder. ';
             allMedications.forEach(m => {
                 text += `Medication ${m.name}, dosage ${m.dosage}, scheduled for ${m.slot}. Food instruction: ${m.food_guide}. `;
             });
-            const utterance = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
         }
 
         function changeLanguage(lang) {
@@ -360,7 +484,7 @@
             if (!t) return;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (t[key]) el.innerText = t[key];
+                if (t[key]) el.textContent = t[key];
             });
         }
 
