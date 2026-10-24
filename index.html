@@ -1,495 +1,1197 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedSnap: Pill & Medication Schedule Manager</title>
+    <title>MedSnap: Smart Medication Manager</title>
+    <script>try { document.documentElement.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); } catch (e) {}</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Palette: #8BA49A sage, #CBDED3 mint, #3B6255 forest, #D2C49E sand */
         :root {
-            --bg-main: #0a0d16;
-            --bg-sidebar: rgba(15, 22, 38, 0.95);
-            --bg-card: rgba(22, 32, 54, 0.75);
-            --text-primary: #ffffff;
-            --text-secondary: #9daec8;
-            --accent-blue: #0088ff;
-            --accent-cyan: #38bdf8;
-            --border-dark: rgba(255, 255, 255, 0.1);
-            --alert-red: #ef4444;
-            --alert-yellow: #f59e0b;
-            --alert-green: #10b981;
+            --sage: #8BA49A; --mint: #CBDED3; --forest: #3B6255; --sand: #D2C49E;
+            --ink: #1F3A30; --ink-soft: #3B6255;
+            --bg-main: #CBDED3;
+            --bg-glow: radial-gradient(at 8% 8%, rgba(139,164,154,.45) 0, transparent 50%), radial-gradient(at 92% 92%, rgba(210,196,158,.45) 0, transparent 50%);
+            --surface: rgba(255,255,255,.62); --surface-solid: #F3F8F5; --border: rgba(59,98,85,.22);
+            --sidebar-bg: #3B6255; --sidebar-text: #CBDED3; --sidebar-active: rgba(203,222,211,.18);
+            --btn-bg: #3B6255; --btn-text: #ffffff; --btn-hover: #2D4D42;
+            --btn2-bg: #D2C49E; --btn2-text: #1F3A30;
+            --ok-bg: #8BA49A; --ok-text: #10241c;
+            --warn-bg: #D2C49E; --warn-text: #3A3216;
+            --danger: #9F3A28; --danger-bg: rgba(159,58,40,.12);
+            --input-bg: rgba(255,255,255,.8); --shadow: 0 6px 24px rgba(31,58,48,.10);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-primary); display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; flex-shrink: 0; background: var(--bg-sidebar); border-right: 1px solid var(--border-dark); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-        .nav-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; gap: 10px; margin-bottom: 6px; transition: 0.2s; }
-        .nav-item.active, .nav-item:hover { background: var(--bg-card); color: var(--text-primary); font-weight: 600; }
-        .main-content { flex-grow: 1; min-width: 0; padding: 40px; overflow-y: auto; max-width: 1200px; }
+        [data-theme="dark"] {
+            --ink: #CBDED3; --ink-soft: #8BA49A;
+            --bg-main: #101C17;
+            --bg-glow: radial-gradient(at 8% 8%, rgba(59,98,85,.5) 0, transparent 50%), radial-gradient(at 92% 92%, rgba(210,196,158,.12) 0, transparent 50%);
+            --surface: rgba(59,98,85,.26); --surface-solid: #18291f; --border: rgba(203,222,211,.16);
+            --sidebar-bg: #0B1411; --sidebar-text: #CBDED3; --sidebar-active: rgba(139,164,154,.22);
+            --btn-bg: #8BA49A; --btn-text: #10241c; --btn-hover: #A6BBB2;
+            --btn2-bg: #D2C49E; --btn2-text: #1F3A30;
+            --ok-bg: #3B6255; --ok-text: #CBDED3;
+            --warn-bg: rgba(210,196,158,.2); --warn-text: #D2C49E;
+            --danger: #F0A08E; --danger-bg: rgba(240,160,142,.14);
+            --input-bg: rgba(0,0,0,.25); --shadow: 0 6px 24px rgba(0,0,0,.35);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+        body { background: var(--bg-glow), var(--bg-main); color: var(--ink); display: flex; min-height: 100vh; transition: background-color .3s, color .3s; }
+        a { color: inherit; }
+        h1 { font-size: 1.8rem; margin-bottom: 6px; }
+        h3 { margin-bottom: 4px; }
+        .sidebar { width: 270px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--sidebar-text); padding: 24px 18px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+        .brand { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; text-decoration: none; color: var(--sidebar-text); }
+        .brand-sub { font-size: .82rem; opacity: .8; margin-top: -8px; }
+        .nav-list { list-style: none; }
+        .nav-item { padding: 11px 14px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 4px; transition: .2s; border-left: 3px solid transparent; }
+        .nav-item i { width: 18px; text-align: center; }
+        .nav-item:hover, .nav-item.active { background: var(--sidebar-active); font-weight: 600; }
+        .nav-item.active { border-left-color: var(--sand); }
+        .nav-item:focus-visible { outline: 2px solid var(--sand); }
+        .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
+        .side-btn { background: transparent; color: var(--sidebar-text); border: 1px solid rgba(203,222,211,.4); padding: 9px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: .9rem; }
+        .side-btn:hover { background: var(--sidebar-active); }
+        .main-content { flex-grow: 1; min-width: 0; padding: 32px 40px 48px; max-width: 1150px; }
         .page-view { display: none; }
         .page-view.active { display: block; }
-        .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
-        .btn { background: var(--accent-blue); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .btn:hover { background: var(--accent-cyan); color: #0a0d16; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid var(--border-dark); }
-        .btn-danger { background: rgba(239,68,68,0.15); color: var(--alert-red); border: 1px solid var(--alert-red); }
-        .btn-danger:hover { background: var(--alert-red); color: #fff; }
-        .input-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-dark); border-radius: 8px; color: #fff; margin-bottom: 14px; }
-        .input-field option { background: #111827; color: #fff; }
-        label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 0.9rem; }
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--alert-red); border: 1px solid var(--alert-red); }
-        .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--alert-green); border: 1px solid var(--alert-green); }
-        .badge-yellow { background: rgba(245, 158, 11, 0.2); color: var(--alert-yellow); border: 1px solid var(--alert-yellow); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; background: var(--bg-card); padding: 15px 24px; border-radius: 12px; border: 1px solid var(--border-dark); }
-        .med-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 14px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-dark); }
-        .muted { color: var(--text-secondary); }
-        .alert-card { border-color: var(--alert-red); }
-        .result-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-cyan); white-space: pre-wrap; line-height: 1.6; text-align: left; }
-        .disclaimer { font-size: 0.8rem; color: var(--text-secondary); margin-top: 12px; }
-        #toast { position: fixed; bottom: 24px; right: 24px; max-width: 320px; padding: 14px 18px; border-radius: 10px; background: #111827; border: 1px solid var(--border-dark); box-shadow: 0 8px 24px rgba(0,0,0,0.4); opacity: 0; transform: translateY(10px); transition: 0.25s; pointer-events: none; z-index: 50; }
+        .sub { color: var(--ink-soft); margin-bottom: 20px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; background: var(--surface); padding: 12px 18px; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+        .top-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px; margin-bottom: 18px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+        .btn { background: var(--btn-bg); color: var(--btn-text); border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: .2s; font-size: .95rem; }
+        .btn:hover { background: var(--btn-hover); }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
+        .btn:focus-visible, .input:focus-visible, .chip input:focus-visible + span { outline: 2px solid var(--forest); outline-offset: 2px; }
+        [data-theme="dark"] .btn:focus-visible, [data-theme="dark"] .input:focus-visible { outline-color: var(--sand); }
+        .btn-sand { background: var(--btn2-bg); color: var(--btn2-text); }
+        .btn-sand:hover { background: #C4B58A; }
+        .btn-small { padding: 6px 12px; font-size: .85rem; }
+        .btn-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: #fff; }
+        .input { width: 100%; padding: 11px 12px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 10px; color: var(--ink); margin-bottom: 14px; font-size: .95rem; }
+        .input option { background: var(--surface-solid); color: var(--ink); }
+        select.input.inline { width: auto; margin: 0; padding: 7px 10px; }
+        label, .label { display: block; margin-bottom: 6px; color: var(--ink-soft); font-size: .9rem; font-weight: 600; }
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 20px; font-size: .8rem; font-weight: 700; }
+        .badge-ok { background: var(--ok-bg); color: var(--ok-text); }
+        .badge-warn { background: var(--warn-bg); color: var(--warn-text); border: 1px solid var(--sand); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+        .streak { background: var(--sand); color: #3A3216; font-size: .95rem; padding: 6px 14px; }
+        .tag { display: inline-flex; align-items: center; gap: 5px; background: var(--surface-solid); border: 1px solid var(--border); color: var(--ink); padding: 3px 10px; border-radius: 16px; font-size: .78rem; font-weight: 600; margin: 4px 6px 0 0; }
+        .med-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 14px; background: var(--surface-solid); border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .med-main { display: flex; gap: 14px; align-items: center; min-width: 0; flex: 1 1 280px; }
+        .med-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .med-name { font-size: 1.05rem; }
+        .med-note { font-size: .85rem; color: var(--ink-soft); margin-top: 4px; }
+        .muted { color: var(--ink-soft); }
+        .banner { border-left: 5px solid var(--sand); }
+        .banner.danger { border-left-color: var(--danger); }
+        .result-box { background: var(--surface-solid); padding: 14px; border-radius: 10px; border-left: 4px solid var(--forest); white-space: pre-wrap; line-height: 1.6; text-align: left; }
+        .disclaimer { font-size: .8rem; color: var(--ink-soft); margin-top: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .chip input { position: absolute; opacity: 0; pointer-events: none; }
+        .chip span { display: inline-block; padding: 7px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--input-bg); cursor: pointer; font-size: .85rem; font-weight: 600; user-select: none; }
+        .chip input:checked + span { background: var(--forest); color: #fff; border-color: var(--forest); }
+        [data-theme="dark"] .chip input:checked + span { background: var(--sage); color: #10241c; border-color: var(--sage); }
+        .check-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px; font-weight: 500; color: var(--ink); }
+        .check-row input { margin-top: 4px; accent-color: var(--forest); }
+        .pill-preview { width: 84px; height: 84px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 14px; }
+        .pill-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+        .pill-tile { text-align: center; background: var(--surface-solid); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+        .bar { height: 8px; background: var(--border); border-radius: 6px; overflow: hidden; margin-top: 8px; }
+        .bar > div { height: 100%; background: var(--forest); border-radius: 6px; }
+        [data-theme="dark"] .bar > div { background: var(--sage); }
+        .bar.low > div { background: var(--sand); }
+        .chat-box { background: var(--surface-solid); border: 1px solid var(--border); border-radius: 12px; padding: 16px; height: 340px; overflow-y: auto; margin-bottom: 12px; }
+        .chat-msg { margin-bottom: 12px; line-height: 1.55; white-space: pre-wrap; }
+        .chat-row { display: flex; gap: 8px; }
+        .chat-row .input { margin-bottom: 0; }
+        .mic-on { background: var(--danger) !important; color: #fff !important; }
+        #toast { position: fixed; bottom: 22px; right: 22px; max-width: 330px; padding: 13px 17px; border-radius: 12px; background: var(--surface-solid); color: var(--ink); border: 1px solid var(--border); box-shadow: var(--shadow); opacity: 0; transform: translateY(10px); transition: .25s; pointer-events: none; z-index: 50; }
         #toast.show { opacity: 1; transform: translateY(0); }
-        #toast.error { border-color: var(--alert-red); }
-        #toast.ok { border-color: var(--alert-green); }
-        @media (max-width: 800px) {
+        #toast.error { border-color: var(--danger); }
+        #toast.ok { border-color: var(--forest); }
+        @media (max-width: 860px) {
             body { flex-direction: column; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-dark); padding: 16px; gap: 10px; }
-            .sidebar ul { display: flex; flex-wrap: wrap; gap: 6px; }
-            .nav-item { margin-bottom: 0; padding: 8px 12px; font-size: 0.9rem; }
-            .main-content { padding: 20px; }
+            .sidebar { width: 100%; height: auto; position: static; padding: 14px; gap: 10px; }
+            .nav-list { display: flex; flex-wrap: wrap; gap: 6px; }
+            .nav-item { margin-bottom: 0; padding: 8px 12px; font-size: .88rem; border-left: none; }
+            .sidebar-foot { flex-direction: row; flex-wrap: wrap; margin-top: 0; }
+            .main-content { padding: 20px 16px 40px; }
+            .grid-2 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
-<body data-lang="en">
+<body>
     <aside class="sidebar">
-        <h2>💊 MedSnap</h2>
-        <p style="font-size: 0.85rem; color: var(--text-secondary);">Smart Medication Manager</p>
-        <ul style="list-style: none; margin-top: 10px;">
-            <li class="nav-item active" data-page="schedule-page" onclick="switchPage('schedule-page')"><i class="fa-solid fa-calendar-day"></i> <span data-i18n="nav_schedule">Today's Schedule</span></li>
-            <li class="nav-item" data-page="add-page" onclick="switchPage('add-page')"><i class="fa-solid fa-plus-circle"></i> <span data-i18n="nav_add">Add Medication</span></li>
-            <li class="nav-item" data-page="scanner-page" onclick="switchPage('scanner-page')"><i class="fa-solid fa-camera"></i> <span data-i18n="nav_scanner">Camera Bottle OCR</span></li>
-            <li class="nav-item" data-page="inventory-page" onclick="switchPage('inventory-page')"><i class="fa-solid fa-pills"></i> <span data-i18n="nav_inventory">Inventory & Refills</span></li>
-            <li class="nav-item" data-page="visualizer-page" onclick="switchPage('visualizer-page')"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="nav_visualizer">Pill Visualizer</span></li>
-            <li class="nav-item" data-page="safety-page" onclick="switchPage('safety-page')"><i class="fa-solid fa-shield-heart"></i> <span data-i18n="nav_safety">Interaction Checker</span></li>
+        <a class="brand" href="/"><i class="fa-solid fa-capsules"></i> MedSnap</a>
+        <p class="brand-sub" data-i18n="sidebar_tag">Smart Medication Manager</p>
+        <ul class="nav-list" role="tablist">
+            <li class="nav-item active" tabindex="0" data-page="schedule-page"><i class="fa-solid fa-calendar-day"></i> <span data-i18n="nav_schedule">Today's Schedule</span></li>
+            <li class="nav-item" tabindex="0" data-page="add-page"><i class="fa-solid fa-circle-plus"></i> <span data-i18n="nav_add">Add Medication</span></li>
+            <li class="nav-item" tabindex="0" data-page="scanner-page"><i class="fa-solid fa-camera"></i> <span data-i18n="nav_scanner">Scan Bottle Label</span></li>
+            <li class="nav-item" tabindex="0" data-page="inventory-page"><i class="fa-solid fa-pills"></i> <span data-i18n="nav_inventory">Inventory & Refills</span></li>
+            <li class="nav-item" tabindex="0" data-page="visualizer-page"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="nav_visualizer">Pill Visualizer</span></li>
+            <li class="nav-item" tabindex="0" data-page="caregiver-page"><i class="fa-solid fa-bell"></i> <span data-i18n="nav_caregiver">Caregiver Alerts</span></li>
+            <li class="nav-item" tabindex="0" data-page="safety-page"><i class="fa-solid fa-shield-heart"></i> <span data-i18n="nav_safety">Interaction Checker</span></li>
+            <li class="nav-item" tabindex="0" data-page="assistant-page"><i class="fa-solid fa-comments"></i> <span data-i18n="nav_assistant">Ask MedSnap AI</span></li>
         </ul>
+        <div class="sidebar-foot">
+            <button type="button" class="side-btn" id="theme-btn" onclick="toggleTheme()"><i class="fa-solid fa-moon" id="theme-icon"></i> <span id="theme-text"></span></button>
+        </div>
     </aside>
 
     <main class="main-content">
         <div class="top-bar">
-            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                <span class="badge badge-yellow" id="progress-badge"><i class="fa-solid fa-circle-check"></i> <span id="progress-text">0 of 0 taken today</span></span>
+            <div class="top-group">
+                <span class="badge streak" id="streak-badge">🔥</span>
+                <span class="badge badge-warn" id="progress-badge"><i class="fa-solid fa-circle-check"></i> <span id="progress-text"></span></span>
             </div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button class="btn btn-secondary" onclick="speakSchedule()"><i class="fa-solid fa-volume-high"></i> Read Aloud</button>
-                <select class="input-field" style="width: auto; margin: 0; padding: 6px 12px;" onchange="changeLanguage(this.value)" aria-label="Language">
+            <div class="top-group">
+                <button class="btn btn-sand btn-small" onclick="speakAll()"><i class="fa-solid fa-volume-high"></i> <span data-i18n="read_all">Read schedule aloud</span></button>
+                <button class="btn btn-small btn-danger" onclick="stopSpeaking()" data-i18n-aria="stop_audio" aria-label="Stop"><i class="fa-solid fa-stop"></i></button>
+                <select class="input inline" id="lang-select" onchange="setLanguage(this.value)" aria-label="Language">
                     <option value="en">English</option>
                     <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="zh">中文</option>
                 </select>
             </div>
         </div>
 
-        <!-- Schedule Page -->
-        <div id="schedule-page" class="page-view active">
-            <h1>Today's Prescription Schedule</h1>
-            <p class="muted" style="margin-bottom: 20px;">Track your daily doses, check food guidelines, and keep an eye on what's still pending.</p>
+        <!-- Schedule -->
+        <section id="schedule-page" class="page-view active">
+            <h1 data-i18n="sched_title">Today's Prescription Schedule</h1>
+            <p class="sub" data-i18n="sched_sub"></p>
+            <div id="pending-banner" class="card banner" style="display:none;">
+                <h3><i class="fa-solid fa-hourglass-half"></i> <span data-i18n="pending_title"></span></h3>
+                <p class="muted" data-i18n="pending_text"></p>
+            </div>
+            <div id="low-banner" class="card banner danger" style="display:none;">
+                <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> <span data-i18n="low_title"></span></h3>
+                <p class="muted" id="low-text"></p>
+            </div>
+            <div class="card"><h3>☀️ <span data-i18n="morning"></span></h3><div id="list-Morning" style="margin-top:12px;"></div></div>
+            <div class="card"><h3>🌤️ <span data-i18n="afternoon"></span></h3><div id="list-Afternoon" style="margin-top:12px;"></div></div>
+            <div class="card"><h3>🌙 <span data-i18n="evening"></span></h3><div id="list-Evening" style="margin-top:12px;"></div></div>
+        </section>
 
-            <div id="missed-alert-banner" style="display: none;" class="card alert-card">
-                <h3 style="color: var(--alert-red);"><i class="fa-solid fa-triangle-exclamation"></i> Pending Doses</h3>
-                <p class="muted" style="margin-top: 5px;">You still have medications to mark as taken today.</p>
-            </div>
-
-            <div class="card">
-                <h3>☀️ Morning Schedule</h3>
-                <div id="morning-list" style="margin-top: 12px;">Loading...</div>
-            </div>
-            <div class="card">
-                <h3>🌤️ Afternoon Schedule</h3>
-                <div id="afternoon-list" style="margin-top: 12px;">Loading...</div>
-            </div>
-            <div class="card">
-                <h3>🌙 Evening Schedule</h3>
-                <div id="evening-list" style="margin-top: 12px;">Loading...</div>
-            </div>
-        </div>
-
-        <!-- Add Medication Page -->
-        <div id="add-page" class="page-view">
-            <h1>Add New Medication</h1>
-            <p class="muted" style="margin-bottom: 20px;">Manually enter pill details, daily dosages, and food instructions.</p>
-            <div class="card" style="max-width: 600px;">
+        <!-- Add medication -->
+        <section id="add-page" class="page-view">
+            <h1 data-i18n="add_title"></h1>
+            <p class="sub" data-i18n="add_sub"></p>
+            <div class="card" style="max-width: 680px;">
                 <form id="add-med-form" onsubmit="submitMedication(event)">
-                    <label for="med-name">Medication Name</label>
-                    <input type="text" id="med-name" class="input-field" placeholder="e.g., Lisinopril" maxlength="120" required>
-                    <label for="med-dosage">Dosage</label>
-                    <input type="text" id="med-dosage" class="input-field" placeholder="e.g., 10mg" maxlength="60" required>
-                    <label for="med-slot">Time Slot</label>
-                    <select id="med-slot" class="input-field">
-                        <option value="Morning">Morning</option>
-                        <option value="Afternoon">Afternoon</option>
-                        <option value="Evening">Evening</option>
-                    </select>
-                    <label for="med-stock">Starting Pill Count (Inventory)</label>
-                    <input type="number" id="med-stock" class="input-field" value="30" min="0" max="10000" required>
-                    <label for="med-daily">Daily Doses Count</label>
-                    <input type="number" id="med-daily" class="input-field" value="1" min="1" max="20" required>
-                    <label for="med-food">Food & Timing Guide</label>
-                    <input type="text" id="med-food" class="input-field" placeholder="e.g., Take with food in the morning" maxlength="200">
-                    <button type="submit" class="btn" id="save-med-btn">Save Medication</button>
+                    <label for="med-name" data-i18n="f_name"></label>
+                    <input type="text" id="med-name" class="input" maxlength="120" required data-i18n-ph="ph_name">
+                    <div class="grid-2">
+                        <div><label for="med-dosage" data-i18n="f_dosage"></label><input type="text" id="med-dosage" class="input" maxlength="60" required data-i18n-ph="ph_dosage"></div>
+                        <div><label for="med-slot" data-i18n="f_slot"></label>
+                            <select id="med-slot" class="input" onchange="onSlotChange()">
+                                <option value="Morning" data-i18n="morning"></option>
+                                <option value="Afternoon" data-i18n="afternoon"></option>
+                                <option value="Evening" data-i18n="evening"></option>
+                            </select></div>
+                    </div>
+                    <div class="grid-2">
+                        <div><label for="med-time" data-i18n="f_time"></label><input type="time" id="med-time" class="input" value="08:00" required></div>
+                        <div><label for="med-daily" data-i18n="f_daily"></label><input type="number" id="med-daily" class="input" value="1" min="1" max="20" required></div>
+                    </div>
+                    <label for="med-stock" data-i18n="f_stock"></label>
+                    <input type="number" id="med-stock" class="input" value="30" min="0" max="10000" required>
+                    <div class="label" data-i18n="f_badges"></div>
+                    <div class="chips" id="badge-chips"></div>
+                    <label for="med-food" data-i18n="f_food"></label>
+                    <input type="text" id="med-food" class="input" maxlength="200" data-i18n-ph="ph_food">
+                    <div class="label" data-i18n="f_pill"></div>
+                    <div style="display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;">
+                        <div class="pill-preview" id="add-preview"></div>
+                        <div style="flex:1 1 320px;">
+                            <div class="grid-2">
+                                <div><label for="med-shape" data-i18n="f_shape"></label><select id="med-shape" class="input" onchange="updateAddPreview()"></select></div>
+                                <div><label for="med-color" data-i18n="f_color"></label><select id="med-color" class="input" onchange="updateAddPreview()"></select></div>
+                            </div>
+                            <label for="med-imprint" data-i18n="f_imprint"></label>
+                            <input type="text" id="med-imprint" class="input" maxlength="12" oninput="updateAddPreview()" data-i18n-ph="ph_imprint">
+                        </div>
+                    </div>
+                    <label class="check-row"><input type="checkbox" id="med-critical"> <span data-i18n="f_critical"></span></label>
+                    <button type="submit" class="btn" id="save-med-btn" data-i18n="save_med"></button>
                 </form>
             </div>
-        </div>
+        </section>
 
-        <!-- Camera Scanner Page -->
-        <div id="scanner-page" class="page-view">
-            <h1>Pill Bottle Label OCR Scanner</h1>
-            <p class="muted" style="margin-bottom: 20px;">Upload a prescription label photo to let AI extract medication data.</p>
-            <div class="card" style="max-width: 600px; text-align: center; border: 2px dashed var(--accent-cyan);">
-                <input type="file" id="bottle-upload" accept="image/*" style="display: none;" onchange="handleBottleUpload(event)">
-                <button class="btn" onclick="document.getElementById('bottle-upload').click()"><i class="fa-solid fa-upload"></i> Upload Bottle Photo</button>
-                <div id="scanner-results" class="muted" style="margin-top: 15px;">Waiting for image upload...</div>
+        <!-- Scanner -->
+        <section id="scanner-page" class="page-view">
+            <h1 data-i18n="scan_title"></h1>
+            <p class="sub" data-i18n="scan_sub"></p>
+            <div class="card" style="max-width: 640px; text-align:center; border: 2px dashed var(--sage);">
+                <input type="file" id="bottle-upload" accept="image/*" style="display:none;" onchange="handleBottleUpload(event)">
+                <button class="btn" onclick="document.getElementById('bottle-upload').click()"><i class="fa-solid fa-upload"></i> <span data-i18n="scan_upload"></span></button>
+                <div id="scanner-results" class="muted" style="margin-top:15px;" data-i18n="scan_waiting"></div>
             </div>
-            <p class="disclaimer" style="max-width: 600px;">AI can misread labels. Always double-check the result against your bottle before saving.</p>
-        </div>
+            <p class="disclaimer" style="max-width:640px;" data-i18n="scan_warning"></p>
+        </section>
 
-        <!-- Inventory Page -->
-        <div id="inventory-page" class="page-view">
-            <h1>Pill Inventory & Low Stock Alerts</h1>
-            <p class="muted" style="margin-bottom: 20px;">Track remaining pill counts and receive refill warnings.</p>
-            <div class="card">
-                <div id="inventory-list">Loading inventory...</div>
-            </div>
-        </div>
-
-        <!-- Pill Visualizer Page -->
-        <div id="visualizer-page" class="page-view">
-            <h1>Pill Identification Visualizer</h1>
-            <p class="muted" style="margin-bottom: 20px;">Compare physical pill characteristics (shape, color, imprint) against a small sample database.</p>
-            <div class="card" style="max-width: 600px;">
-                <label for="pill-shape">Pill Shape</label>
-                <select id="pill-shape" class="input-field">
-                    <option value="">Any</option>
-                    <option value="round">Round</option>
-                    <option value="oval">Oval</option>
+        <!-- Inventory -->
+        <section id="inventory-page" class="page-view">
+            <h1 data-i18n="inv_title"></h1>
+            <p class="sub" data-i18n="inv_sub"></p>
+            <div class="card" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                <span class="label" style="margin:0;" data-i18n="inv_threshold"></span>
+                <select id="threshold-select" class="input inline" onchange="setThreshold(this.value)">
+                    <option value="5">5</option><option value="6">6</option><option value="7">7</option>
                 </select>
-                <label for="pill-color">Pill Color</label>
-                <select id="pill-color" class="input-field">
-                    <option value="">Any</option>
-                    <option value="white">White</option>
-                    <option value="brown">Brown</option>
-                </select>
-                <label for="pill-imprint">Imprint Code (e.g., BAYER, MET 500)</label>
-                <input type="text" id="pill-imprint" class="input-field" placeholder="Enter imprint" maxlength="30">
-                <button class="btn" onclick="identifyPill()">Search Pill Database</button>
-                <div id="visualizer-result" style="margin-top: 15px; font-weight: 600; color: var(--accent-cyan);"></div>
-                <p class="disclaimer">This is a small demo database. Never rely on it to identify an unknown pill. Ask a pharmacist.</p>
+                <span class="muted" data-i18n="days_word"></span>
             </div>
-        </div>
+            <div class="card"><div id="inventory-list"></div></div>
+        </section>
 
-        <!-- Safety & Interaction Checker Page -->
-        <div id="safety-page" class="page-view">
-            <h1>Drug Interaction & Safety Checker</h1>
-            <p class="muted" style="margin-bottom: 20px;">AI-powered check for your active medications.</p>
-            <div class="card">
-                <button class="btn" id="safety-btn" onclick="runSafetyCheck()"><i class="fa-solid fa-shield-heart"></i> Run AI Safety & Interaction Scan</button>
-                <div id="safety-results" class="muted" style="margin-top: 15px; line-height: 1.6;">Click the button above to analyze your medications.</div>
-                <p class="disclaimer">AI output is informational only and not medical advice. Confirm with your pharmacist or doctor.</p>
+        <!-- Pill visualizer -->
+        <section id="visualizer-page" class="page-view">
+            <h1 data-i18n="vis_title"></h1>
+            <p class="sub" data-i18n="vis_sub"></p>
+            <div class="card" style="max-width: 680px;">
+                <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+                    <div>
+                        <div class="label" data-i18n="vis_preview"></div>
+                        <div class="pill-preview" id="vis-preview" style="width:120px; height:120px;"></div>
+                    </div>
+                    <div style="flex:1 1 300px;">
+                        <div class="grid-2">
+                            <div><label for="vis-shape" data-i18n="f_shape"></label><select id="vis-shape" class="input" onchange="updateVisPreview()"></select></div>
+                            <div><label for="vis-color" data-i18n="f_color"></label><select id="vis-color" class="input" onchange="updateVisPreview()"></select></div>
+                        </div>
+                        <label for="vis-imprint" data-i18n="f_imprint"></label>
+                        <input type="text" id="vis-imprint" class="input" maxlength="12" oninput="updateVisPreview()" data-i18n-ph="ph_imprint">
+                        <button class="btn" onclick="checkPill()" data-i18n="vis_check"></button>
+                    </div>
+                </div>
+                <div id="vis-result" style="margin-top:16px; font-weight:600; line-height:1.6;"></div>
+                <p class="disclaimer" data-i18n="vis_disclaimer"></p>
             </div>
-        </div>
+            <h3 style="margin: 8px 0 12px;" data-i18n="vis_mine"></h3>
+            <div class="pill-gallery" id="vis-gallery"></div>
+        </section>
+
+        <!-- Caregiver -->
+        <section id="caregiver-page" class="page-view">
+            <h1 data-i18n="cg_title"></h1>
+            <p class="sub" data-i18n="cg_sub"></p>
+            <div class="card" style="max-width: 680px;">
+                <label class="check-row"><input type="checkbox" id="cg-enabled"> <span data-i18n="cg_enable"></span></label>
+                <div class="grid-2">
+                    <div><label for="cg-patient" data-i18n="cg_yourname"></label><input type="text" id="cg-patient" class="input" maxlength="60"></div>
+                    <div><label for="cg-name" data-i18n="cg_name"></label><input type="text" id="cg-name" class="input" maxlength="60"></div>
+                </div>
+                <div class="grid-2">
+                    <div><label for="cg-email" data-i18n="cg_email"></label><input type="email" id="cg-email" class="input" maxlength="254"></div>
+                    <div><label for="cg-phone" data-i18n="cg_phone"></label><input type="tel" id="cg-phone" class="input" maxlength="30" placeholder="+14155550123"></div>
+                </div>
+                <label class="check-row"><input type="checkbox" id="cg-consent"> <span data-i18n="cg_consent"></span></label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn" onclick="saveCaregiver()" data-i18n="cg_save"></button>
+                    <button class="btn btn-sand" onclick="testCaregiver()" data-i18n="cg_test"></button>
+                </div>
+                <div id="cg-status" style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+                <p class="disclaimer" data-i18n="cg_note"></p>
+            </div>
+        </section>
+
+        <!-- Safety -->
+        <section id="safety-page" class="page-view">
+            <h1 data-i18n="safe_title"></h1>
+            <p class="sub" data-i18n="safe_sub"></p>
+            <div class="card">
+                <button class="btn" id="safety-btn" onclick="runSafetyCheck()"><i class="fa-solid fa-shield-heart"></i> <span data-i18n="safe_run"></span></button>
+                <div id="safety-results" class="muted" style="margin-top:15px; line-height:1.6;" data-i18n="safe_idle"></div>
+                <p class="disclaimer" data-i18n="safe_disclaimer"></p>
+            </div>
+        </section>
+
+        <!-- Assistant -->
+        <section id="assistant-page" class="page-view">
+            <h1 data-i18n="ai_title"></h1>
+            <p class="sub" data-i18n="ai_sub"></p>
+            <div class="card">
+                <div class="chat-box" id="chat-box" aria-live="polite"></div>
+                <div class="chat-row">
+                    <input type="text" class="input" id="chat-input" data-i18n-ph="ai_placeholder" onkeydown="if(event.key==='Enter') sendChat()">
+                    <button class="btn btn-sand" id="mic-btn" onclick="toggleMic()" data-i18n-aria="ai_mic" aria-label="Speak"><i class="fa-solid fa-microphone"></i></button>
+                    <button class="btn" id="chat-send" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="ai_send"></span></button>
+                </div>
+                <label class="check-row" style="margin:12px 0 0;"><input type="checkbox" id="chat-autospeak"> <span data-i18n="ai_autospeak"></span></label>
+                <p class="disclaimer" data-i18n="disclaimer"></p>
+            </div>
+        </section>
+        <p class="disclaimer" style="text-align:center; margin-top: 28px;" data-i18n="disclaimer"></p>
     </main>
 
     <div id="toast" role="status" aria-live="polite"></div>
 
     <script>
-        let allMedications = [];
-        let lastScan = null;
-        const translations = {
-            en: { nav_schedule: "Today's Schedule", nav_add: "Add Medication", nav_scanner: "Camera Bottle OCR", nav_inventory: "Inventory & Refills", nav_visualizer: "Pill Visualizer", nav_safety: "Interaction Checker" },
-            es: { nav_schedule: "Horario de Hoy", nav_add: "Añadir Medicamento", nav_scanner: "Escáner OCR", nav_inventory: "Inventario", nav_visualizer: "Visualizador de Pastillas", nav_safety: "Verificador de Interacciones" }
+    /* ====================================================================
+       Translations (English, Spanish, French, Mandarin)
+    ==================================================================== */
+    const I18N = {
+      en: {
+        sidebar_tag: "Smart Medication Manager", nav_schedule: "Today's Schedule", nav_add: "Add Medication", nav_scanner: "Scan Bottle Label",
+        nav_inventory: "Inventory & Refills", nav_visualizer: "Pill Visualizer", nav_caregiver: "Caregiver Alerts", nav_safety: "Interaction Checker", nav_assistant: "Ask MedSnap AI",
+        theme_light: "Light mode", theme_dark: "Dark mode", read_all: "Read schedule aloud", stop_audio: "Stop",
+        streak_n: "{n}-Day Health Streak! 🔥", streak_start: "Take all of today's doses to start a streak 🔥", streak_best: "Best: {n}",
+        progress: "{taken} of {total} taken today",
+        sched_title: "Today's Prescription Schedule", sched_sub: "Track your daily doses, check food guidelines, and keep your streak going.",
+        morning: "Morning", afternoon: "Afternoon", evening: "Evening", no_meds: "No medications scheduled.", loading: "Loading...",
+        pending_title: "Doses still to take today", pending_text: "Mark each one as taken when you've taken it.",
+        low_title: "Refill soon", low_text: "Running low: {names}.",
+        taken: "Taken", pending: "Pending", overdue: "Overdue", notified: "Caregiver notified", mark_taken: "Mark taken", undo: "Undo",
+        delete_med: "Delete", confirm_delete: "Remove {name} from your list?", listen: "Listen", critical_tag: "Critical", at_time: "at {time}",
+        add_title: "Add New Medication", add_sub: "Enter pill details, daily doses, and food or timing instructions.",
+        f_name: "Medication name", f_dosage: "Dosage", f_slot: "Time of day", f_time: "Reminder time", f_stock: "Pills you have now", f_daily: "Pills taken per day",
+        f_badges: "Food & timing guide", f_food: "Other instructions (optional)", f_critical: "Critical dose: alert my caregiver if it isn't taken within 60 minutes",
+        f_pill: "Pill appearance (optional)", f_shape: "Shape", f_color: "Color", f_imprint: "Imprint", f_directions: "Directions",
+        save_med: "Save medication", saved: "Medication saved!", ph_name: "e.g., Lisinopril", ph_dosage: "e.g., 10mg", ph_food: "e.g., Take after breakfast", ph_imprint: "e.g., MET 500",
+        b_with_food: "Take with food", b_empty_stomach: "Take on an empty stomach", b_avoid_dairy: "Avoid dairy", b_avoid_alcohol: "Avoid alcohol",
+        b_avoid_grapefruit: "Avoid grapefruit", b_before_bed: "Take before bedtime", b_with_water: "Take with water",
+        s_round: "Round", s_oval: "Oval", s_capsule: "Capsule", s_oblong: "Oblong", s_square: "Square", s_diamond: "Diamond", s_triangle: "Triangle", s_hexagon: "Hexagon",
+        c_white: "White", c_yellow: "Yellow", c_orange: "Orange", c_pink: "Pink", c_red: "Red", c_brown: "Brown", c_green: "Green", c_blue: "Blue", c_purple: "Purple", c_gray: "Gray",
+        any_opt: "Any",
+        scan_title: "Scan a Bottle Label", scan_sub: "Upload a photo of a prescription label and AI will fill in the details.", scan_upload: "Upload bottle photo",
+        scan_waiting: "Waiting for an image...", scan_scanning: "⏳ Reading the label...", scan_done: "Scan complete. Please verify:", scan_use: "Use this in Add Medication",
+        scan_warning: "AI can misread labels. Always check the result against your bottle before saving.", scan_filled: "Form filled in. Check it, then save.", not_found: "(not found)",
+        inv_title: "Pill Inventory & Refills", inv_sub: "Pill counts go down automatically when you mark a dose as taken.",
+        inv_left: "{n} pills left (about {days} days)", inv_ok: "Stock OK", inv_low: "Refill soon", inv_out: "Out of stock",
+        inv_threshold: "Warn me when about this many days are left:", days_word: "days", refill_btn: "Add pills", refill_amount: "Pills added", refilled: "Stock updated.",
+        vis_title: "Pill Identification Visualizer", vis_sub: "Pick the shape, color, and imprint of the tablet in your hand to double-check it's the right one.",
+        vis_preview: "Preview", vis_check: "Check this pill", vis_mine: "Your medications", vis_match: "✅ Matches your medication: {names}",
+        vis_nomatch: "⚠️ No match among your medications. Don't take this pill until a pharmacist confirms what it is.", vis_sample: "Also similar to (sample database): {names}",
+        vis_disclaimer: "A matching look does not prove a pill is correct. Many pills look alike, so confirm with your pharmacist.", vis_need: "Choose a shape, color, or imprint first.",
+        vis_noappear: "No appearance saved",
+        cg_title: "Caregiver Alerts", cg_sub: "Optionally notify someone you trust if a critical dose isn't taken.", cg_enable: "Send alerts to my caregiver",
+        cg_yourname: "Your name (shown in alerts)", cg_name: "Caregiver's name", cg_email: "Caregiver's email", cg_phone: "Caregiver's phone (with country code)",
+        cg_consent: "My caregiver agreed to receive these alerts, which include medication names.", cg_save: "Save caregiver settings", cg_test: "Send test message",
+        cg_saved: "Caregiver settings saved.", cg_test_sent: "Test message sent.",
+        cg_email_ok: "Email alerts: ready", cg_email_no: "Email alerts: not set up on this server", cg_sms_ok: "SMS alerts: ready", cg_sms_no: "SMS alerts: not set up on this server",
+        cg_note: "A critical dose triggers one alert if it still isn't marked taken 60 minutes after its reminder time. Turn on \"Critical dose\" when you add a medication. On Render's free plan the server sleeps when idle, so alerts can be late or missed.",
+        safe_title: "Drug Interaction & Safety Checker", safe_sub: "AI-powered check across your medications.", safe_run: "Run AI safety scan",
+        safe_wait: "🛡️ Checking your medications...", safe_disclaimer: "AI output is informational only, not medical advice. Confirm with your pharmacist or doctor.",
+        safe_need: "Add at least one medication first.", safe_idle: "Press the button to check your medications.",
+        ai_title: "Ask MedSnap AI", ai_sub: "Ask about your medications, timing, or food guidance.", ai_placeholder: "Type or speak your question...", ai_send: "Send",
+        ai_thinking: "Thinking...", ai_you: "You", ai_bot: "MedSnap", ai_autospeak: "Read answers aloud", ai_mic: "Speak", ai_mic_unsupported: "Voice input isn't supported in this browser.",
+        ai_welcome: "Hi! Ask me anything about your medications. For dose changes or emergencies, always contact your pharmacist, doctor, or emergency services.",
+        err_server: "Could not reach the server.", try_again: "Try again", speak_unsupported: "Read-aloud isn't supported in this browser.",
+        speak_novoice: "No voice for this language is installed on your device, so the default voice is used.", nothing_to_read: "Nothing to read yet.",
+        sp_intro: "Here is your medication schedule.", sp_med: "{name}, {dosage}. Take in the {slot}, at {time}.", sp_instr: "Instructions: {text}",
+        disclaimer: "MedSnap is a reminder tool and does not give medical advice. Always follow your doctor's and pharmacist's instructions."
+      },
+      es: {
+        sidebar_tag: "Gestor inteligente de medicamentos", nav_schedule: "Horario de hoy", nav_add: "Añadir medicamento", nav_scanner: "Escanear etiqueta",
+        nav_inventory: "Inventario y recargas", nav_visualizer: "Visualizador de pastillas", nav_caregiver: "Alertas al cuidador", nav_safety: "Verificador de interacciones", nav_assistant: "Pregunta a MedSnap IA",
+        theme_light: "Modo claro", theme_dark: "Modo oscuro", read_all: "Leer horario en voz alta", stop_audio: "Detener",
+        streak_n: "¡Racha de salud de {n} días! 🔥", streak_start: "Toma todas las dosis de hoy para iniciar una racha 🔥", streak_best: "Mejor: {n}",
+        progress: "{taken} de {total} tomadas hoy",
+        sched_title: "Horario de recetas de hoy", sched_sub: "Registra tus dosis diarias, revisa las indicaciones de comida y mantén tu racha.",
+        morning: "Mañana", afternoon: "Tarde", evening: "Noche", no_meds: "No hay medicamentos programados.", loading: "Cargando...",
+        pending_title: "Dosis pendientes de hoy", pending_text: "Márcalas como tomadas cuando las tomes.",
+        low_title: "Recarga pronto", low_text: "Quedan pocas: {names}.",
+        taken: "Tomada", pending: "Pendiente", overdue: "Atrasada", notified: "Cuidador avisado", mark_taken: "Marcar tomada", undo: "Deshacer",
+        delete_med: "Eliminar", confirm_delete: "¿Quitar {name} de tu lista?", listen: "Escuchar", critical_tag: "Crítica", at_time: "a las {time}",
+        add_title: "Añadir nuevo medicamento", add_sub: "Introduce los datos de la pastilla, las dosis diarias y las indicaciones de comida u horario.",
+        f_name: "Nombre del medicamento", f_dosage: "Dosis", f_slot: "Momento del día", f_time: "Hora del recordatorio", f_stock: "Pastillas que tienes ahora", f_daily: "Pastillas por día",
+        f_badges: "Guía de comida y horario", f_food: "Otras instrucciones (opcional)", f_critical: "Dosis crítica: avisar a mi cuidador si no se toma en 60 minutos",
+        f_pill: "Aspecto de la pastilla (opcional)", f_shape: "Forma", f_color: "Color", f_imprint: "Marca grabada", f_directions: "Indicaciones",
+        save_med: "Guardar medicamento", saved: "¡Medicamento guardado!", ph_name: "p. ej., Lisinopril", ph_dosage: "p. ej., 10mg", ph_food: "p. ej., Tomar después del desayuno", ph_imprint: "p. ej., MET 500",
+        b_with_food: "Tomar con comida", b_empty_stomach: "Tomar en ayunas", b_avoid_dairy: "Evitar lácteos", b_avoid_alcohol: "Evitar alcohol",
+        b_avoid_grapefruit: "Evitar toronja", b_before_bed: "Tomar antes de dormir", b_with_water: "Tomar con agua",
+        s_round: "Redonda", s_oval: "Ovalada", s_capsule: "Cápsula", s_oblong: "Alargada", s_square: "Cuadrada", s_diamond: "Rombo", s_triangle: "Triángulo", s_hexagon: "Hexágono",
+        c_white: "Blanco", c_yellow: "Amarillo", c_orange: "Naranja", c_pink: "Rosa", c_red: "Rojo", c_brown: "Marrón", c_green: "Verde", c_blue: "Azul", c_purple: "Morado", c_gray: "Gris",
+        any_opt: "Cualquiera",
+        scan_title: "Escanear etiqueta del frasco", scan_sub: "Sube una foto de la etiqueta de la receta y la IA completará los datos.", scan_upload: "Subir foto del frasco",
+        scan_waiting: "Esperando una imagen...", scan_scanning: "⏳ Leyendo la etiqueta...", scan_done: "Escaneo completo. Por favor verifica:", scan_use: "Usar en Añadir medicamento",
+        scan_warning: "La IA puede leer mal las etiquetas. Comprueba siempre el resultado con tu frasco antes de guardar.", scan_filled: "Formulario completado. Revísalo y guarda.", not_found: "(no encontrado)",
+        inv_title: "Inventario y recargas", inv_sub: "El número de pastillas baja automáticamente al marcar una dosis como tomada.",
+        inv_left: "Quedan {n} pastillas (unos {days} días)", inv_ok: "Stock suficiente", inv_low: "Recarga pronto", inv_out: "Sin existencias",
+        inv_threshold: "Avísame cuando queden aproximadamente:", days_word: "días", refill_btn: "Añadir pastillas", refill_amount: "Pastillas añadidas", refilled: "Inventario actualizado.",
+        vis_title: "Visualizador de identificación de pastillas", vis_sub: "Elige la forma, el color y la marca de la tableta que tienes en la mano para comprobar que es la correcta.",
+        vis_preview: "Vista previa", vis_check: "Comprobar esta pastilla", vis_mine: "Tus medicamentos", vis_match: "✅ Coincide con tu medicamento: {names}",
+        vis_nomatch: "⚠️ No coincide con ninguno de tus medicamentos. No tomes esta pastilla hasta que un farmacéutico confirme qué es.", vis_sample: "También similar a (base de datos de ejemplo): {names}",
+        vis_disclaimer: "Que se vea igual no demuestra que la pastilla sea la correcta. Muchas pastillas se parecen, así que confirma con tu farmacéutico.", vis_need: "Elige primero una forma, un color o una marca.",
+        vis_noappear: "Sin aspecto guardado",
+        cg_title: "Alertas al cuidador", cg_sub: "Si quieres, avisa a alguien de confianza cuando no se tome una dosis crítica.", cg_enable: "Enviar alertas a mi cuidador",
+        cg_yourname: "Tu nombre (aparece en las alertas)", cg_name: "Nombre del cuidador", cg_email: "Correo del cuidador", cg_phone: "Teléfono del cuidador (con código de país)",
+        cg_consent: "Mi cuidador aceptó recibir estas alertas, que incluyen nombres de medicamentos.", cg_save: "Guardar ajustes del cuidador", cg_test: "Enviar mensaje de prueba",
+        cg_saved: "Ajustes del cuidador guardados.", cg_test_sent: "Mensaje de prueba enviado.",
+        cg_email_ok: "Alertas por correo: listas", cg_email_no: "Alertas por correo: no configuradas en este servidor", cg_sms_ok: "Alertas por SMS: listas", cg_sms_no: "Alertas por SMS: no configuradas en este servidor",
+        cg_note: "Una dosis crítica envía una alerta si sigue sin marcarse como tomada 60 minutos después de su hora. Activa «Dosis crítica» al añadir un medicamento. En el plan gratuito de Render el servidor se duerme cuando no se usa, así que las alertas pueden retrasarse o perderse.",
+        safe_title: "Verificador de interacciones y seguridad", safe_sub: "Revisión con IA de tus medicamentos.", safe_run: "Ejecutar análisis de seguridad con IA",
+        safe_wait: "🛡️ Revisando tus medicamentos...", safe_disclaimer: "La respuesta de la IA es solo informativa, no consejo médico. Confirma con tu farmacéutico o médico.",
+        safe_need: "Primero añade al menos un medicamento.", safe_idle: "Pulsa el botón para revisar tus medicamentos.",
+        ai_title: "Pregunta a MedSnap IA", ai_sub: "Pregunta sobre tus medicamentos, horarios o indicaciones de comida.", ai_placeholder: "Escribe o dicta tu pregunta...", ai_send: "Enviar",
+        ai_thinking: "Pensando...", ai_you: "Tú", ai_bot: "MedSnap", ai_autospeak: "Leer respuestas en voz alta", ai_mic: "Hablar", ai_mic_unsupported: "Este navegador no admite entrada de voz.",
+        ai_welcome: "¡Hola! Pregúntame lo que quieras sobre tus medicamentos. Para cambios de dosis o emergencias, contacta siempre a tu farmacéutico, médico o servicios de emergencia.",
+        err_server: "No se pudo conectar con el servidor.", try_again: "Reintentar", speak_unsupported: "Este navegador no admite lectura en voz alta.",
+        speak_novoice: "Tu dispositivo no tiene una voz instalada para este idioma, así que se usa la voz predeterminada.", nothing_to_read: "Todavía no hay nada que leer.",
+        sp_intro: "Este es tu horario de medicamentos.", sp_med: "{name}, {dosage}. Tomar en la {slot}, a las {time}.", sp_instr: "Instrucciones: {text}",
+        disclaimer: "MedSnap es una herramienta de recordatorio y no da consejo médico. Sigue siempre las indicaciones de tu médico y farmacéutico."
+      },
+      fr: {
+        sidebar_tag: "Gestionnaire de médicaments intelligent", nav_schedule: "Programme du jour", nav_add: "Ajouter un médicament", nav_scanner: "Scanner l'étiquette",
+        nav_inventory: "Stock et renouvellements", nav_visualizer: "Identifier une pilule", nav_caregiver: "Alertes aidant", nav_safety: "Vérificateur d'interactions", nav_assistant: "Demander à MedSnap IA",
+        theme_light: "Mode clair", theme_dark: "Mode sombre", read_all: "Lire le programme à voix haute", stop_audio: "Arrêter",
+        streak_n: "Série santé de {n} jours ! 🔥", streak_start: "Prenez toutes vos doses aujourd'hui pour lancer une série 🔥", streak_best: "Record : {n}",
+        progress: "{taken} sur {total} prises aujourd'hui",
+        sched_title: "Programme des traitements du jour", sched_sub: "Suivez vos doses quotidiennes, consultez les consignes alimentaires et gardez votre série.",
+        morning: "Matin", afternoon: "Après-midi", evening: "Soir", no_meds: "Aucun médicament prévu.", loading: "Chargement...",
+        pending_title: "Doses restant à prendre aujourd'hui", pending_text: "Marquez chaque dose comme prise une fois fait.",
+        low_title: "À renouveler bientôt", low_text: "Stock bas : {names}.",
+        taken: "Prise", pending: "En attente", overdue: "En retard", notified: "Aidant prévenu", mark_taken: "Marquer prise", undo: "Annuler",
+        delete_med: "Supprimer", confirm_delete: "Retirer {name} de votre liste ?", listen: "Écouter", critical_tag: "Critique", at_time: "à {time}",
+        add_title: "Ajouter un médicament", add_sub: "Saisissez les détails de la pilule, les doses quotidiennes et les consignes alimentaires ou horaires.",
+        f_name: "Nom du médicament", f_dosage: "Dosage", f_slot: "Moment de la journée", f_time: "Heure du rappel", f_stock: "Pilules actuellement en stock", f_daily: "Pilules par jour",
+        f_badges: "Guide alimentaire et horaire", f_food: "Autres consignes (facultatif)", f_critical: "Dose critique : prévenir mon aidant si elle n'est pas prise sous 60 minutes",
+        f_pill: "Aspect de la pilule (facultatif)", f_shape: "Forme", f_color: "Couleur", f_imprint: "Inscription", f_directions: "Posologie",
+        save_med: "Enregistrer le médicament", saved: "Médicament enregistré !", ph_name: "p. ex. Lisinopril", ph_dosage: "p. ex. 10 mg", ph_food: "p. ex. À prendre après le petit-déjeuner", ph_imprint: "p. ex. MET 500",
+        b_with_food: "À prendre pendant le repas", b_empty_stomach: "À prendre à jeun", b_avoid_dairy: "Éviter les produits laitiers", b_avoid_alcohol: "Éviter l'alcool",
+        b_avoid_grapefruit: "Éviter le pamplemousse", b_before_bed: "À prendre au coucher", b_with_water: "À prendre avec de l'eau",
+        s_round: "Ronde", s_oval: "Ovale", s_capsule: "Gélule", s_oblong: "Oblongue", s_square: "Carrée", s_diamond: "Losange", s_triangle: "Triangle", s_hexagon: "Hexagone",
+        c_white: "Blanc", c_yellow: "Jaune", c_orange: "Orange", c_pink: "Rose", c_red: "Rouge", c_brown: "Marron", c_green: "Vert", c_blue: "Bleu", c_purple: "Violet", c_gray: "Gris",
+        any_opt: "Peu importe",
+        scan_title: "Scanner l'étiquette du flacon", scan_sub: "Téléversez une photo de l'étiquette de l'ordonnance et l'IA remplira les champs.", scan_upload: "Téléverser une photo",
+        scan_waiting: "En attente d'une image...", scan_scanning: "⏳ Lecture de l'étiquette...", scan_done: "Scan terminé. Veuillez vérifier :", scan_use: "Utiliser dans Ajouter un médicament",
+        scan_warning: "L'IA peut mal lire les étiquettes. Vérifiez toujours le résultat avec votre flacon avant d'enregistrer.", scan_filled: "Formulaire rempli. Vérifiez-le, puis enregistrez.", not_found: "(introuvable)",
+        inv_title: "Stock et renouvellements", inv_sub: "Le nombre de pilules diminue automatiquement quand vous marquez une dose comme prise.",
+        inv_left: "{n} pilules restantes (environ {days} jours)", inv_ok: "Stock suffisant", inv_low: "À renouveler bientôt", inv_out: "Rupture de stock",
+        inv_threshold: "Prévenez-moi quand il reste environ :", days_word: "jours", refill_btn: "Ajouter des pilules", refill_amount: "Pilules ajoutées", refilled: "Stock mis à jour.",
+        vis_title: "Identification visuelle des pilules", vis_sub: "Choisissez la forme, la couleur et l'inscription du comprimé que vous avez en main pour vérifier que c'est le bon.",
+        vis_preview: "Aperçu", vis_check: "Vérifier cette pilule", vis_mine: "Vos médicaments", vis_match: "✅ Correspond à votre médicament : {names}",
+        vis_nomatch: "⚠️ Aucune correspondance parmi vos médicaments. Ne prenez pas cette pilule avant qu'un pharmacien ait confirmé de quoi il s'agit.", vis_sample: "Ressemble aussi à (base d'exemple) : {names}",
+        vis_disclaimer: "Une apparence identique ne prouve pas qu'une pilule est la bonne. Beaucoup de pilules se ressemblent : confirmez avec votre pharmacien.", vis_need: "Choisissez d'abord une forme, une couleur ou une inscription.",
+        vis_noappear: "Aucun aspect enregistré",
+        cg_title: "Alertes aidant", cg_sub: "Si vous le souhaitez, prévenez une personne de confiance quand une dose critique n'est pas prise.", cg_enable: "Envoyer des alertes à mon aidant",
+        cg_yourname: "Votre nom (affiché dans les alertes)", cg_name: "Nom de l'aidant", cg_email: "E-mail de l'aidant", cg_phone: "Téléphone de l'aidant (avec indicatif)",
+        cg_consent: "Mon aidant a accepté de recevoir ces alertes, qui mentionnent les noms des médicaments.", cg_save: "Enregistrer les réglages", cg_test: "Envoyer un message test",
+        cg_saved: "Réglages enregistrés.", cg_test_sent: "Message test envoyé.",
+        cg_email_ok: "Alertes e-mail : prêtes", cg_email_no: "Alertes e-mail : non configurées sur ce serveur", cg_sms_ok: "Alertes SMS : prêtes", cg_sms_no: "Alertes SMS : non configurées sur ce serveur",
+        cg_note: "Une dose critique déclenche une alerte si elle n'est toujours pas marquée comme prise 60 minutes après son heure. Activez « Dose critique » en ajoutant un médicament. Avec l'offre gratuite de Render, le serveur se met en veille quand il est inactif : les alertes peuvent être retardées ou manquées.",
+        safe_title: "Vérificateur d'interactions et de sécurité", safe_sub: "Analyse de vos médicaments par IA.", safe_run: "Lancer l'analyse de sécurité IA",
+        safe_wait: "🛡️ Analyse de vos médicaments...", safe_disclaimer: "Les réponses de l'IA sont informatives et ne constituent pas un avis médical. Confirmez avec votre pharmacien ou médecin.",
+        safe_need: "Ajoutez d'abord au moins un médicament.", safe_idle: "Appuyez sur le bouton pour analyser vos médicaments.",
+        ai_title: "Demander à MedSnap IA", ai_sub: "Posez vos questions sur vos médicaments, les horaires ou l'alimentation.", ai_placeholder: "Écrivez ou dictez votre question...", ai_send: "Envoyer",
+        ai_thinking: "Réflexion...", ai_you: "Vous", ai_bot: "MedSnap", ai_autospeak: "Lire les réponses à voix haute", ai_mic: "Parler", ai_mic_unsupported: "La saisie vocale n'est pas prise en charge par ce navigateur.",
+        ai_welcome: "Bonjour ! Posez-moi vos questions sur vos médicaments. Pour un changement de dose ou une urgence, contactez toujours votre pharmacien, votre médecin ou les urgences.",
+        err_server: "Impossible de joindre le serveur.", try_again: "Réessayer", speak_unsupported: "La lecture à voix haute n'est pas prise en charge par ce navigateur.",
+        speak_novoice: "Aucune voix pour cette langue n'est installée sur votre appareil ; la voix par défaut est utilisée.", nothing_to_read: "Rien à lire pour le moment.",
+        sp_intro: "Voici votre programme de médicaments.", sp_med: "{name}, {dosage}. À prendre le {slot}, à {time}.", sp_instr: "Consignes : {text}",
+        disclaimer: "MedSnap est un outil de rappel et ne donne pas de conseils médicaux. Suivez toujours les consignes de votre médecin et de votre pharmacien."
+      },
+      zh: {
+        sidebar_tag: "智能用药管理", nav_schedule: "今日安排", nav_add: "添加药物", nav_scanner: "扫描药瓶标签",
+        nav_inventory: "库存与补药", nav_visualizer: "药片识别", nav_caregiver: "看护人提醒", nav_safety: "药物相互作用检查", nav_assistant: "询问 MedSnap AI",
+        theme_light: "浅色模式", theme_dark: "深色模式", read_all: "朗读今日安排", stop_audio: "停止",
+        streak_n: "连续健康打卡 {n} 天！🔥", streak_start: "今天按时服完所有药物，开始连续打卡 🔥", streak_best: "最佳：{n}",
+        progress: "今天已服 {taken}/{total}",
+        sched_title: "今日用药安排", sched_sub: "记录每日服药，查看饮食提示，保持连续打卡。",
+        morning: "早晨", afternoon: "下午", evening: "晚上", no_meds: "暂无安排的药物。", loading: "加载中...",
+        pending_title: "今天还有未服的药物", pending_text: "服药后请标记为已服。",
+        low_title: "请尽快补药", low_text: "库存不足：{names}。",
+        taken: "已服", pending: "待服", overdue: "已逾期", notified: "已通知看护人", mark_taken: "标记已服", undo: "撤销",
+        delete_med: "删除", confirm_delete: "要将 {name} 从列表中移除吗？", listen: "朗读", critical_tag: "重要", at_time: "{time}",
+        add_title: "添加新药物", add_sub: "填写药片信息、每日剂量以及饮食或时间说明。",
+        f_name: "药物名称", f_dosage: "剂量", f_slot: "服药时段", f_time: "提醒时间", f_stock: "当前药片数量", f_daily: "每日服用数量",
+        f_badges: "饮食与时间提示", f_food: "其他说明（可选）", f_critical: "重要药物：60 分钟内未服用则通知看护人",
+        f_pill: "药片外观（可选）", f_shape: "形状", f_color: "颜色", f_imprint: "压印文字", f_directions: "用法",
+        save_med: "保存药物", saved: "药物已保存！", ph_name: "例如：赖诺普利", ph_dosage: "例如：10mg", ph_food: "例如：早餐后服用", ph_imprint: "例如：MET 500",
+        b_with_food: "随餐服用", b_empty_stomach: "空腹服用", b_avoid_dairy: "避免乳制品", b_avoid_alcohol: "避免饮酒",
+        b_avoid_grapefruit: "避免葡萄柚", b_before_bed: "睡前服用", b_with_water: "用水送服",
+        s_round: "圆形", s_oval: "椭圆形", s_capsule: "胶囊", s_oblong: "长方形", s_square: "正方形", s_diamond: "菱形", s_triangle: "三角形", s_hexagon: "六边形",
+        c_white: "白色", c_yellow: "黄色", c_orange: "橙色", c_pink: "粉色", c_red: "红色", c_brown: "棕色", c_green: "绿色", c_blue: "蓝色", c_purple: "紫色", c_gray: "灰色",
+        any_opt: "不限",
+        scan_title: "扫描药瓶标签", scan_sub: "上传处方标签照片，AI 会帮你填写信息。", scan_upload: "上传药瓶照片",
+        scan_waiting: "等待上传图片...", scan_scanning: "⏳ 正在识别标签...", scan_done: "扫描完成，请核对：", scan_use: "填入“添加药物”",
+        scan_warning: "AI 可能会读错标签。保存前请务必对照药瓶核实结果。", scan_filled: "已填写表单，请检查后保存。", not_found: "（未识别）",
+        inv_title: "库存与补药", inv_sub: "标记已服后，药片数量会自动减少。",
+        inv_left: "剩余 {n} 片（约 {days} 天）", inv_ok: "库存充足", inv_low: "请尽快补药", inv_out: "已用完",
+        inv_threshold: "剩余约以下天数时提醒我：", days_word: "天", refill_btn: "补充药片", refill_amount: "补充数量", refilled: "库存已更新。",
+        vis_title: "药片识别", vis_sub: "选择手中药片的形状、颜色和压印文字，核对是否是正确的药片。",
+        vis_preview: "预览", vis_check: "核对这颗药片", vis_mine: "你的药物", vis_match: "✅ 与你的药物相符：{names}",
+        vis_nomatch: "⚠️ 与你的药物都不相符。请先让药剂师确认后再服用。", vis_sample: "也与示例数据库中的相似：{names}",
+        vis_disclaimer: "外观相同并不能证明药片正确。很多药片外观相似，请向药剂师确认。", vis_need: "请先选择形状、颜色或压印文字。",
+        vis_noappear: "未保存外观信息",
+        cg_title: "看护人提醒", cg_sub: "重要药物未服用时，可选择通知你信任的人。", cg_enable: "向我的看护人发送提醒",
+        cg_yourname: "你的姓名（显示在提醒中）", cg_name: "看护人姓名", cg_email: "看护人邮箱", cg_phone: "看护人电话（含国家区号）",
+        cg_consent: "我的看护人同意接收这些提醒（提醒中包含药物名称）。", cg_save: "保存看护人设置", cg_test: "发送测试消息",
+        cg_saved: "看护人设置已保存。", cg_test_sent: "测试消息已发送。",
+        cg_email_ok: "邮件提醒：可用", cg_email_no: "邮件提醒：服务器未配置", cg_sms_ok: "短信提醒：可用", cg_sms_no: "短信提醒：服务器未配置",
+        cg_note: "重要药物若在提醒时间后 60 分钟仍未标记为已服，将发送一次提醒。添加药物时请开启“重要药物”。Render 免费版在闲置时会休眠，提醒可能延迟或错过。",
+        safe_title: "药物相互作用与安全检查", safe_sub: "用 AI 检查你的所有药物。", safe_run: "运行 AI 安全检查",
+        safe_wait: "🛡️ 正在检查你的药物...", safe_disclaimer: "AI 输出仅供参考，不构成医疗建议。请向药剂师或医生确认。",
+        safe_need: "请先添加至少一种药物。", safe_idle: "点击按钮开始检查你的药物。",
+        ai_title: "询问 MedSnap AI", ai_sub: "询问药物、服药时间或饮食注意事项。", ai_placeholder: "输入或语音提问...", ai_send: "发送",
+        ai_thinking: "思考中...", ai_you: "你", ai_bot: "MedSnap", ai_autospeak: "朗读回答", ai_mic: "语音输入", ai_mic_unsupported: "此浏览器不支持语音输入。",
+        ai_welcome: "你好！可以问我任何关于药物的问题。涉及调整剂量或紧急情况，请务必联系药剂师、医生或急救服务。",
+        err_server: "无法连接服务器。", try_again: "重试", speak_unsupported: "此浏览器不支持朗读。",
+        speak_novoice: "你的设备未安装该语言的语音，将使用默认语音。", nothing_to_read: "暂时没有可朗读的内容。",
+        sp_intro: "这是你的用药安排。", sp_med: "{name}，{dosage}。请在{slot}{time}服用。", sp_instr: "说明：{text}",
+        disclaimer: "MedSnap 是提醒工具，不提供医疗建议。请始终遵循医生和药剂师的指导。"
+      }
+    };
+
+    const LANG_CODES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
+    const BADGE_KEYS = ['with_food', 'empty_stomach', 'avoid_dairy', 'avoid_alcohol', 'avoid_grapefruit', 'before_bed', 'with_water'];
+    const BADGE_ICONS = { with_food: '🍽️', empty_stomach: '⏳', avoid_dairy: '🥛', avoid_alcohol: '🍷', avoid_grapefruit: '🍊', before_bed: '🌙', with_water: '💧' };
+    const SHAPE_KEYS = ['round', 'oval', 'capsule', 'oblong', 'square', 'diamond', 'triangle', 'hexagon'];
+    const COLOR_KEYS = ['white', 'yellow', 'orange', 'pink', 'red', 'brown', 'green', 'blue', 'purple', 'gray'];
+    const COLOR_HEX = { white: '#F4F4F0', yellow: '#F2D544', orange: '#F29B38', pink: '#F4A6C6', red: '#D63E3E', brown: '#8A5A33', green: '#4CAF6A', blue: '#4A86D8', purple: '#8A6BD1', gray: '#A0A6AA' };
+    const SLOT_DEFAULT_TIME = { Morning: '08:00', Afternoon: '13:00', Evening: '20:00' };
+
+    /* ====================================================================
+       State + helpers
+    ==================================================================== */
+    let lang = 'en';
+    let S = { meds: [], streak: 0, best: 0, caregiver: {}, alerts: { email: false, sms: false } };
+    let transCache = {};          // transCache[lang][originalText] = translated text
+    let lastScan = null;
+    let chatHistory = [];
+    let caregiverFormLoaded = false;
+    let warnedNoVoice = false;
+
+    function t(key, vars) {
+        let s = (I18N[lang] && I18N[lang][key]);
+        if (s === undefined) s = I18N.en[key];
+        if (s === undefined) s = key;
+        if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] !== undefined ? vars[k] : m));
+        return s;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    let toastTimer;
+    function showToast(message, type) {
+        const el = document.getElementById('toast');
+        el.textContent = message;
+        el.className = 'show ' + (type || '');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { el.className = ''; }, 3800);
+    }
+
+    function getClientId() {
+        try {
+            let id = localStorage.getItem('medsnap_client_id');
+            if (!id) {
+                const raw = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + Math.random().toString(36).slice(2));
+                id = String(raw).replace(/[^A-Za-z0-9_-]/g, '');
+                localStorage.setItem('medsnap_client_id', id);
+            }
+            return id;
+        } catch (e) {
+            window.__fallbackId = window.__fallbackId || ('anon' + Math.random().toString(36).slice(2, 12));
+            return window.__fallbackId;
+        }
+    }
+
+    function getTimezone() {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; }
+    }
+
+    async function api(path, options) {
+        options = options || {};
+        const headers = Object.assign({ 'X-Client-Id': getClientId(), 'X-Timezone': getTimezone() }, options.headers || {});
+        const res = await fetch(path, Object.assign({}, options, { headers }));
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* not JSON */ }
+        if (!res.ok || !data || data.success === false) {
+            throw new Error((data && data.error) || (t('err_server') + ' (' + res.status + ')'));
+        }
+        return data;
+    }
+
+    function jsonOptions(method, body) {
+        return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+    }
+
+    function applyState(data) {
+        S.meds = data.medications || [];
+        S.streak = data.streak || 0;
+        S.best = data.best_streak || 0;
+        S.caregiver = data.caregiver || {};
+        S.alerts = data.alerts_available || { email: false, sms: false };
+        renderAll();
+        ensureTranslations();
+    }
+
+    async function refresh() {
+        try {
+            applyState(await api('/api/state'));
+        } catch (e) {
+            console.error(e);
+            const msg = `<p style="color: var(--danger);">${escapeHtml(t('err_server'))} <a href="#" onclick="refresh(); return false;">${escapeHtml(t('try_again'))}</a></p>`;
+            ['Morning', 'Afternoon', 'Evening'].forEach(s => { document.getElementById('list-' + s).innerHTML = msg; });
+            document.getElementById('inventory-list').innerHTML = msg;
+        }
+    }
+
+    /* ====================================================================
+       Language + theme
+    ==================================================================== */
+    function applyStaticTranslations() {
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+        document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+        updateThemeButton();
+        renderBadgeChips();
+        fillSelect('med-shape', SHAPE_KEYS, 's_');
+        fillSelect('med-color', COLOR_KEYS, 'c_');
+        fillSelect('vis-shape', SHAPE_KEYS, 's_');
+        fillSelect('vis-color', COLOR_KEYS, 'c_');
+        renderChatWelcome();
+    }
+
+    function setLanguage(code) {
+        if (!I18N[code]) code = 'en';
+        lang = code;
+        try { localStorage.setItem('medsnap_lang', code); } catch (e) {}
+        document.getElementById('lang-select').value = code;
+        applyStaticTranslations();
+        renderAll();
+        ensureTranslations();
+        if (window.speechSynthesis) speechSynthesis.cancel();
+    }
+
+    function updateThemeButton() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.getElementById('theme-icon').className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        // Button offers the *other* mode
+        document.getElementById('theme-text').textContent = dark ? t('theme_light') : t('theme_dark');
+    }
+
+    function toggleTheme() {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('medsnap_theme', next); } catch (e) {}
+        updateThemeButton();
+    }
+
+    // Translate free-text instructions (e.g. "Take with your largest meal") through the server.
+    async function ensureTranslations() {
+        if (lang === 'en') return;
+        const cache = (transCache[lang] = transCache[lang] || {});
+        const missing = [...new Set(S.meds.map(m => m.food_guide).filter(x => x && !(x in cache)))];
+        if (!missing.length) return;
+        const requestLang = lang;
+        try {
+            const data = await api('/api/translate', jsonOptions('POST', { language: requestLang, texts: missing }));
+            Object.assign(transCache[requestLang], data.translations || {});
+            if (lang === requestLang) renderSchedule();
+        } catch (e) { /* keep the original text */ }
+    }
+
+    function instrText(m) {
+        const txt = m.food_guide || '';
+        if (lang !== 'en' && transCache[lang] && transCache[lang][txt]) return transCache[lang][txt];
+        return txt;
+    }
+
+    /* ====================================================================
+       Navigation
+    ==================================================================== */
+    function switchPage(pageId) {
+        document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+    document.querySelectorAll('.nav-item').forEach(n => {
+        n.addEventListener('click', () => switchPage(n.dataset.page));
+        n.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); switchPage(n.dataset.page); } });
+    });
+
+    /* ====================================================================
+       Pill drawing
+    ==================================================================== */
+    function textColorFor(hex) {
+        const n = parseInt(hex.slice(1), 16);
+        const lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255));
+        return lum > 150 ? '#1F2A25' : '#FFFFFF';
+    }
+
+    function pillSvg(shape, color, imprint, size) {
+        size = size || 56;
+        if (!shape && !color) {
+            return `<span style="font-size:${Math.round(size * 0.6)}px; line-height:1;" aria-hidden="true">💊</span>`;
+        }
+        const fill = COLOR_HEX[color] || '#E4E4DF';
+        const stroke = 'rgba(0,0,0,.35)';
+        let body;
+        switch (shape) {
+            case 'oval': body = `<ellipse cx="50" cy="50" rx="43" ry="28" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`; break;
+            case 'capsule': body = `<rect x="6" y="28" width="88" height="44" rx="22" fill="${fill}" stroke="${stroke}" stroke-width="3"/><line x1="50" y1="28" x2="50" y2="72" stroke="${stroke}" stroke-width="2"/>`; break;
+            case 'oblong': body = `<rect x="6" y="30" width="88" height="40" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`; break;
+            case 'square': body = `<rect x="16" y="16" width="68" height="68" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`; break;
+            case 'diamond': body = `<polygon points="50,8 92,50 50,92 8,50" fill="${fill}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round"/>`; break;
+            case 'triangle': body = `<polygon points="50,10 92,84 8,84" fill="${fill}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round"/>`; break;
+            case 'hexagon': body = `<polygon points="50,8 88,29 88,71 50,92 12,71 12,29" fill="${fill}" stroke="${stroke}" stroke-width="3" stroke-linejoin="round"/>`; break;
+            default: body = `<circle cx="50" cy="50" r="40" fill="${fill}" stroke="${stroke}" stroke-width="3"/>`;
+        }
+        const label = (imprint || '').slice(0, 8);
+        const fontSize = label.length > 5 ? 11 : 14;
+        const text = label ? `<text x="50" y="${50 + fontSize / 3}" text-anchor="middle" font-size="${fontSize}" font-weight="700" fill="${textColorFor(fill)}" font-family="system-ui, sans-serif">${escapeHtml(label)}</text>` : '';
+        return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" role="img" aria-label="${escapeHtml([shape, color, imprint].filter(Boolean).join(' '))}">${body}${text}</svg>`;
+    }
+
+    function fillSelect(id, keys, prefix) {
+        const sel = document.getElementById(id);
+        const previous = sel.value;
+        sel.innerHTML = `<option value="">${escapeHtml(t('any_opt'))}</option>` +
+            keys.map(k => `<option value="${k}">${escapeHtml(t(prefix + k))}</option>`).join('');
+        sel.value = previous || '';
+    }
+
+    function renderBadgeChips() {
+        const box = document.getElementById('badge-chips');
+        const checked = new Set([...box.querySelectorAll('input:checked')].map(i => i.value));
+        box.innerHTML = BADGE_KEYS.map(k => `
+            <label class="chip"><input type="checkbox" value="${k}" ${checked.has(k) ? 'checked' : ''}>
+            <span>${BADGE_ICONS[k]} ${escapeHtml(t('b_' + k))}</span></label>`).join('');
+    }
+
+    /* ====================================================================
+       Rendering
+    ==================================================================== */
+    function renderAll() {
+        renderTopbar();
+        renderSchedule();
+        renderInventory();
+        renderGallery();
+        renderCaregiver();
+    }
+
+    function renderTopbar() {
+        const taken = S.meds.filter(m => m.taken).length;
+        document.getElementById('progress-text').textContent = t('progress', { taken, total: S.meds.length });
+        const pb = document.getElementById('progress-badge');
+        pb.className = 'badge ' + (S.meds.length > 0 && taken === S.meds.length ? 'badge-ok' : 'badge-warn');
+        const sb = document.getElementById('streak-badge');
+        sb.textContent = S.streak > 0 ? t('streak_n', { n: S.streak }) + (S.best > S.streak ? '  ·  ' + t('streak_best', { n: S.best }) : '') : t('streak_start');
+    }
+
+    function isOverdue(m) {
+        if (m.taken || !/^\d{2}:\d{2}$/.test(m.scheduled_time || '')) return false;
+        const [h, mi] = m.scheduled_time.split(':').map(Number);
+        const now = new Date();
+        return now.getHours() * 60 + now.getMinutes() > h * 60 + mi;
+    }
+
+    function daysLeft(m) { return m.stock / Math.max(1, m.daily_dose); }
+    function threshold() { try { return parseInt(localStorage.getItem('medsnap_threshold'), 10) || 7; } catch (e) { return 7; } }
+
+    function medCard(m) {
+        const badges = (m.badges || []).map(k => `<span class="tag">${BADGE_ICONS[k] || ''} ${escapeHtml(t('b_' + k))}</span>`).join('');
+        const instr = instrText(m);
+        const status = m.taken ? `<span class="badge badge-ok">${escapeHtml(t('taken'))}</span>`
+            : (isOverdue(m) ? `<span class="badge badge-danger">${escapeHtml(t('overdue'))}</span>` : `<span class="badge badge-warn">${escapeHtml(t('pending'))}</span>`);
+        const critical = m.critical ? `<span class="badge badge-danger" title="${escapeHtml(t('f_critical'))}">⚠️ ${escapeHtml(t('critical_tag'))}</span>` : '';
+        const notified = m.alerted ? `<span class="badge badge-danger">🔔 ${escapeHtml(t('notified'))}</span>` : '';
+        return `
+        <div class="med-item">
+            <div class="med-main">
+                <div class="pill-preview" style="width:64px;height:64px;">${pillSvg(m.pill && m.pill.shape, m.pill && m.pill.color, m.pill && m.pill.imprint, 48)}</div>
+                <div style="min-width:0;">
+                    <div class="med-name"><b>${escapeHtml(m.name)}</b> (${escapeHtml(m.dosage)}) <span class="muted">· ${escapeHtml(t('at_time', { time: m.scheduled_time }))}</span></div>
+                    <div>${badges}</div>
+                    ${instr ? `<div class="med-note">🍽️ ${escapeHtml(instr)}</div>` : ''}
+                </div>
+            </div>
+            <div class="med-actions">
+                ${critical}${notified}${status}
+                <button class="btn btn-sand btn-small" onclick="speakMed(${Number(m.id)})" aria-label="${escapeHtml(t('listen'))}: ${escapeHtml(m.name)}"><i class="fa-solid fa-volume-high"></i> ${escapeHtml(t('listen'))}</button>
+                <button class="btn btn-small" onclick="toggleTaken(${Number(m.id)})">${escapeHtml(m.taken ? t('undo') : t('mark_taken'))}</button>
+                <button class="btn btn-danger btn-small" onclick="deleteMedication(${Number(m.id)})" aria-label="${escapeHtml(t('delete_med'))}: ${escapeHtml(m.name)}"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>`;
+    }
+
+    function renderSchedule() {
+        ['Morning', 'Afternoon', 'Evening'].forEach(slot => {
+            const box = document.getElementById('list-' + slot);
+            const meds = S.meds.filter(m => m.slot === slot).sort((a, b) => (a.scheduled_time || '').localeCompare(b.scheduled_time || ''));
+            box.innerHTML = meds.length ? meds.map(medCard).join('') : `<p class="muted">${escapeHtml(t('no_meds'))}</p>`;
+        });
+        document.getElementById('pending-banner').style.display = S.meds.some(m => !m.taken) ? 'block' : 'none';
+        const low = S.meds.filter(m => daysLeft(m) <= threshold());
+        document.getElementById('low-banner').style.display = low.length ? 'block' : 'none';
+        document.getElementById('low-text').textContent = t('low_text', { names: low.map(m => m.name).join(', ') });
+    }
+
+    function renderInventory() {
+        const sel = document.getElementById('threshold-select');
+        if (sel) sel.value = String(threshold());
+        const box = document.getElementById('inventory-list');
+        if (!S.meds.length) { box.innerHTML = `<p class="muted">${escapeHtml(t('no_meds'))}</p>`; return; }
+        box.innerHTML = S.meds.map(m => {
+            const days = daysLeft(m);
+            const out = m.stock <= 0;
+            const low = days <= threshold();
+            const badge = out ? `<span class="badge badge-danger">⚠️ ${escapeHtml(t('inv_out'))}</span>`
+                : low ? `<span class="badge badge-warn">⚠️ ${escapeHtml(t('inv_low'))}</span>`
+                : `<span class="badge badge-ok">${escapeHtml(t('inv_ok'))}</span>`;
+            const pct = Math.max(2, Math.min(100, (days / 30) * 100));
+            return `
+            <div class="med-item" style="display:block;">
+                <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                    <div><b>${escapeHtml(m.name)}</b> <span class="muted">(${escapeHtml(m.dosage)})</span><br>
+                        <span class="muted">${escapeHtml(t('inv_left', { n: m.stock, days: days.toFixed(1) }))}</span></div>
+                    <div>${badge}</div>
+                </div>
+                <div class="bar ${low || out ? 'low' : ''}"><div style="width:${pct}%"></div></div>
+                <div style="display:flex; gap:8px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+                    <input type="number" class="input" style="width:110px; margin:0;" id="refill-${Number(m.id)}" value="30" min="1" max="10000" aria-label="${escapeHtml(t('refill_amount'))}">
+                    <button class="btn btn-sand btn-small" onclick="refillMed(${Number(m.id)})">${escapeHtml(t('refill_btn'))}</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderGallery() {
+        const box = document.getElementById('vis-gallery');
+        box.innerHTML = S.meds.map(m => {
+            const p = m.pill || {};
+            const has = p.shape || p.color || p.imprint;
+            const desc = has ? [p.color ? t('c_' + p.color) : '', p.shape ? t('s_' + p.shape) : '', p.imprint || ''].filter(Boolean).join(' · ') : t('vis_noappear');
+            return `<div class="pill-tile"><div style="height:64px; display:flex; align-items:center; justify-content:center;">${pillSvg(p.shape, p.color, p.imprint, 60)}</div>
+                <div style="margin-top:8px;"><b>${escapeHtml(m.name)}</b></div><div class="muted" style="font-size:.8rem;">${escapeHtml(desc)}</div></div>`;
+        }).join('');
+        updateVisPreview();
+    }
+
+    function renderCaregiver() {
+        const cg = S.caregiver || {};
+        if (!caregiverFormLoaded) {
+            document.getElementById('cg-enabled').checked = !!cg.enabled;
+            document.getElementById('cg-patient').value = cg.patient_name || '';
+            document.getElementById('cg-name').value = cg.name || '';
+            document.getElementById('cg-email').value = cg.email || '';
+            document.getElementById('cg-phone').value = cg.phone || '';
+            document.getElementById('cg-consent').checked = !!cg.consent;
+            caregiverFormLoaded = true;
+        }
+        const chip = (ok, okKey, noKey) => `<span class="badge ${ok ? 'badge-ok' : 'badge-warn'}">${ok ? '✅' : '⚠️'} ${escapeHtml(t(ok ? okKey : noKey))}</span>`;
+        document.getElementById('cg-status').innerHTML = chip(S.alerts.email, 'cg_email_ok', 'cg_email_no') + chip(S.alerts.sms, 'cg_sms_ok', 'cg_sms_no');
+    }
+
+    /* ====================================================================
+       Actions
+    ==================================================================== */
+    async function toggleTaken(id) {
+        try { applyState(await api('/api/medications/' + id + '/take', { method: 'POST' })); }
+        catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function deleteMedication(id) {
+        const med = S.meds.find(m => m.id === id);
+        if (!confirm(t('confirm_delete', { name: med ? med.name : '' }))) return;
+        try { applyState(await api('/api/medications/' + id, { method: 'DELETE' })); }
+        catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function refillMed(id) {
+        const amount = parseInt(document.getElementById('refill-' + id).value, 10);
+        try {
+            applyState(await api('/api/medications/' + id + '/refill', jsonOptions('POST', { amount })));
+            showToast(t('refilled'), 'ok');
+        } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    function setThreshold(v) {
+        try { localStorage.setItem('medsnap_threshold', v); } catch (e) {}
+        renderSchedule();
+        renderInventory();
+    }
+
+    function onSlotChange() {
+        document.getElementById('med-time').value = SLOT_DEFAULT_TIME[document.getElementById('med-slot').value] || '09:00';
+    }
+
+    function updateAddPreview() {
+        document.getElementById('add-preview').innerHTML = pillSvg(
+            document.getElementById('med-shape').value, document.getElementById('med-color').value,
+            document.getElementById('med-imprint').value, 64);
+    }
+
+    async function submitMedication(event) {
+        event.preventDefault();
+        const btn = document.getElementById('save-med-btn');
+        btn.disabled = true;
+        const payload = {
+            name: document.getElementById('med-name').value.trim(),
+            dosage: document.getElementById('med-dosage').value.trim(),
+            slot: document.getElementById('med-slot').value,
+            scheduled_time: document.getElementById('med-time').value,
+            stock: parseInt(document.getElementById('med-stock').value, 10),
+            daily_dose: parseInt(document.getElementById('med-daily').value, 10),
+            badges: [...document.querySelectorAll('#badge-chips input:checked')].map(i => i.value),
+            food_guide: document.getElementById('med-food').value.trim(),
+            critical: document.getElementById('med-critical').checked,
+            pill: {
+                shape: document.getElementById('med-shape').value,
+                color: document.getElementById('med-color').value,
+                imprint: document.getElementById('med-imprint').value.trim()
+            }
         };
-
-        // ---------- helpers ----------
-        function escapeHtml(value) {
-            return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        try {
+            applyState(await api('/api/medications', jsonOptions('POST', payload)));
+            showToast(t('saved'), 'ok');
+            document.getElementById('add-med-form').reset();
+            renderBadgeChips();
+            updateAddPreview();
+            switchPage('schedule-page');
+        } catch (e) {
+            showToast(e.message, 'error');
+        } finally {
+            btn.disabled = false;
         }
+    }
 
-        let toastTimer;
-        function showToast(message, type) {
-            const el = document.getElementById('toast');
-            el.textContent = message;
-            el.className = 'show ' + (type || '');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => { el.className = ''; }, 3500);
-        }
-
-        // Each browser gets its own private ID so visitors don't share medication lists.
-        function getClientId() {
-            try {
-                let id = localStorage.getItem('medsnap_client_id');
-                if (!id) {
-                    const raw = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + Math.random().toString(36).slice(2));
-                    id = String(raw).replace(/[^A-Za-z0-9_-]/g, '');
-                    localStorage.setItem('medsnap_client_id', id);
-                }
-                return id;
-            } catch (e) {
-                window.__fallbackId = window.__fallbackId || ('anon' + Math.random().toString(36).slice(2, 12));
-                return window.__fallbackId;
+    /* ----- label scanner ----- */
+    async function handleBottleUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const box = document.getElementById('scanner-results');
+        box.textContent = t('scan_scanning');
+        lastScan = null;
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const data = await api('/api/analyze', { method: 'POST', body: formData });
+            lastScan = data.parsed;
+            if (data.parsed && (data.parsed.name || data.parsed.dosage)) {
+                const p = data.parsed;
+                box.innerHTML = `<b>${escapeHtml(t('scan_done'))}</b>
+                    <div class="result-box" style="margin-top:10px;">${escapeHtml(t('f_name'))}: ${escapeHtml(p.name || t('not_found'))}
+${escapeHtml(t('f_dosage'))}: ${escapeHtml(p.dosage || t('not_found'))}
+${escapeHtml(t('f_slot'))}: ${escapeHtml(t(p.slot.toLowerCase()))}
+${escapeHtml(t('f_directions'))}: ${escapeHtml(p.directions || t('not_found'))}</div>
+                    <button class="btn" style="margin-top:12px;" onclick="fillFromScan()"><i class="fa-solid fa-wand-magic-sparkles"></i> ${escapeHtml(t('scan_use'))}</button>`;
+            } else {
+                box.innerHTML = `<div class="result-box">${escapeHtml(data.ocr_result || '')}</div>`;
             }
+        } catch (err) {
+            box.innerHTML = `<span style="color: var(--danger);">${escapeHtml(err.message)}</span>`;
+        } finally {
+            event.target.value = '';
         }
+    }
 
-        async function api(path, options) {
-            options = options || {};
-            const headers = Object.assign({ 'X-Client-Id': getClientId() }, options.headers || {});
-            const res = await fetch(path, Object.assign({}, options, { headers }));
-            let data = null;
-            try { data = await res.json(); } catch (e) { /* not JSON */ }
-            if (!res.ok || !data || data.success === false) {
-                throw new Error((data && data.error) || ('Request failed (' + res.status + ')'));
-            }
-            return data;
+    function fillFromScan() {
+        if (!lastScan) return;
+        document.getElementById('med-name').value = lastScan.name || '';
+        document.getElementById('med-dosage').value = lastScan.dosage || '';
+        document.getElementById('med-slot').value = lastScan.slot || 'Morning';
+        onSlotChange();
+        if (lastScan.directions) document.getElementById('med-food').value = lastScan.directions;
+        switchPage('add-page');
+        showToast(t('scan_filled'), 'ok');
+    }
+
+    /* ----- pill visualizer ----- */
+    function updateVisPreview() {
+        document.getElementById('vis-preview').innerHTML = pillSvg(
+            document.getElementById('vis-shape').value, document.getElementById('vis-color').value,
+            document.getElementById('vis-imprint').value, 96);
+    }
+
+    async function checkPill() {
+        const shape = document.getElementById('vis-shape').value;
+        const color = document.getElementById('vis-color').value;
+        const imprint = document.getElementById('vis-imprint').value.trim();
+        const out = document.getElementById('vis-result');
+        if (!shape && !color && !imprint) { out.textContent = t('vis_need'); return; }
+        const norm = s => String(s || '').toUpperCase().replace(/[\s-]/g, '');
+        const mine = S.meds.filter(m => {
+            const p = m.pill || {};
+            if (!(p.shape || p.color || p.imprint)) return false;
+            return (!shape || p.shape === shape) && (!color || p.color === color) && (!imprint || norm(p.imprint).includes(norm(imprint)));
+        });
+        let html = mine.length ? escapeHtml(t('vis_match', { names: mine.map(m => m.name + ' ' + m.dosage).join(', ') }))
+            : escapeHtml(t('vis_nomatch'));
+        out.style.color = mine.length ? 'var(--ink)' : 'var(--danger)';
+        out.innerHTML = html;
+        try {
+            const data = await api('/api/identify-pill', jsonOptions('POST', { shape, color, imprint }));
+            if (data.matches.length) out.innerHTML += `<div class="muted" style="font-weight:500; margin-top:6px;">${escapeHtml(t('vis_sample', { names: data.matches.join(', ') }))}</div>`;
+        } catch (e) { /* sample database is optional */ }
+    }
+
+    /* ----- caregiver ----- */
+    function caregiverPayload() {
+        return {
+            enabled: document.getElementById('cg-enabled').checked,
+            patient_name: document.getElementById('cg-patient').value.trim(),
+            name: document.getElementById('cg-name').value.trim(),
+            email: document.getElementById('cg-email').value.trim(),
+            phone: document.getElementById('cg-phone').value.trim(),
+            consent: document.getElementById('cg-consent').checked
+        };
+    }
+
+    async function saveCaregiver() {
+        try {
+            caregiverFormLoaded = false;
+            applyState(await api('/api/caregiver', jsonOptions('PUT', caregiverPayload())));
+            showToast(t('cg_saved'), 'ok');
+        } catch (e) { caregiverFormLoaded = true; showToast(e.message, 'error'); }
+    }
+
+    async function testCaregiver() {
+        try {
+            caregiverFormLoaded = false;
+            applyState(await api('/api/caregiver', jsonOptions('PUT', caregiverPayload())));
+            await api('/api/caregiver/test', { method: 'POST' });
+            showToast(t('cg_test_sent'), 'ok');
+        } catch (e) { caregiverFormLoaded = true; showToast(e.message, 'error'); }
+    }
+
+    /* ----- safety checker ----- */
+    async function runSafetyCheck() {
+        const box = document.getElementById('safety-results');
+        const btn = document.getElementById('safety-btn');
+        if (!S.meds.length) { box.textContent = t('safe_need'); return; }
+        btn.disabled = true;
+        box.textContent = t('safe_wait');
+        try {
+            const data = await api('/api/interactions', jsonOptions('POST', { medications: S.meds.map(m => m.name), language: lang }));
+            box.innerHTML = `<div class="result-box">${escapeHtml(data.analysis)}</div>`;
+        } catch (e) {
+            box.textContent = e.message;
+        } finally { btn.disabled = false; }
+    }
+
+    /* ====================================================================
+       Voice: read aloud (text-to-speech) and voice input
+    ==================================================================== */
+    function pickVoice() {
+        if (!window.speechSynthesis) return null;
+        const prefix = LANG_CODES[lang].slice(0, 2).toLowerCase();
+        return speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(prefix)) || null;
+    }
+
+    function speak(text) {
+        if (!('speechSynthesis' in window) || !window.SpeechSynthesisUtterance) {
+            showToast(t('speak_unsupported'), 'error');
+            return;
         }
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = LANG_CODES[lang];
+        const voice = pickVoice();
+        if (voice) u.voice = voice;
+        else if (speechSynthesis.getVoices().length && !warnedNoVoice) { warnedNoVoice = true; showToast(t('speak_novoice')); }
+        speechSynthesis.speak(u);
+    }
 
-        function jsonOptions(method, body) {
-            return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+    function stopSpeaking() { if (window.speechSynthesis) speechSynthesis.cancel(); }
+
+    function medSentence(m) {
+        let text = t('sp_med', { name: m.name, dosage: m.dosage, slot: t(m.slot.toLowerCase()), time: m.scheduled_time });
+        const badges = (m.badges || []).map(k => t('b_' + k));
+        if (badges.length) text += ' ' + badges.join('. ') + '.';
+        const instr = instrText(m);
+        if (instr) text += ' ' + t('sp_instr', { text: instr });
+        return text;
+    }
+
+    function speakMed(id) {
+        const m = S.meds.find(x => x.id === id);
+        if (m) speak(medSentence(m));
+    }
+
+    function speakAll() {
+        if (!S.meds.length) { showToast(t('nothing_to_read')); return; }
+        const sorted = [...S.meds].sort((a, b) => (a.scheduled_time || '').localeCompare(b.scheduled_time || ''));
+        speak(t('sp_intro') + ' ' + sorted.map(medSentence).join(' '));
+    }
+
+    if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => {};
+
+    let recognition = null, listening = false;
+    function toggleMic() {
+        const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const btn = document.getElementById('mic-btn');
+        if (!Rec) { showToast(t('ai_mic_unsupported'), 'error'); return; }
+        if (listening && recognition) { recognition.stop(); return; }
+        recognition = new Rec();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = LANG_CODES[lang];
+        recognition.onstart = () => { listening = true; btn.classList.add('mic-on'); };
+        recognition.onresult = e => { document.getElementById('chat-input').value = e.results[0][0].transcript; };
+        recognition.onerror = () => { listening = false; btn.classList.remove('mic-on'); };
+        recognition.onend = () => { listening = false; btn.classList.remove('mic-on'); };
+        recognition.start();
+    }
+
+    /* ====================================================================
+       AI assistant chat
+    ==================================================================== */
+    function appendChat(sender, text) {
+        const box = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = 'chat-msg';
+        const label = sender === 'user' ? t('ai_you') : t('ai_bot');
+        div.innerHTML = `<b style="color: var(--ink-soft);">${escapeHtml(label)}:</b> ${escapeHtml(text)}`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+        return div;
+    }
+
+    function renderChatWelcome() {
+        const box = document.getElementById('chat-box');
+        if (chatHistory.length === 0) {
+            box.innerHTML = '';
+            appendChat('assistant', t('ai_welcome'));
         }
+    }
 
-        // ---------- navigation ----------
-        function switchPage(pageId) {
-            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === pageId));
-            document.getElementById(pageId).classList.add('active');
-        }
+    async function sendChat() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        if (!message) return;
+        input.value = '';
+        chatHistory.push({ role: 'user', content: message });
+        appendChat('user', message);
+        const thinking = appendChat('assistant', t('ai_thinking'));
+        const btn = document.getElementById('chat-send');
+        btn.disabled = true;
+        try {
+            const data = await api('/api/chat', jsonOptions('POST', { messages: chatHistory, language: lang, medications: S.meds.map(m => m.name) }));
+            thinking.remove();
+            chatHistory.push({ role: 'assistant', content: data.answer });
+            appendChat('assistant', data.answer);
+            if (document.getElementById('chat-autospeak').checked) speak(data.answer);
+        } catch (e) {
+            thinking.remove();
+            chatHistory.pop();  // let the user retry the same question
+            appendChat('assistant', '⚠️ ' + e.message);
+        } finally { btn.disabled = false; }
+    }
 
-        // ---------- medications ----------
-        async function fetchMedications() {
-            try {
-                const data = await api('/api/medications');
-                allMedications = data.medications;
-                renderAll();
-            } catch (e) {
-                console.error('Failed to load medications', e);
-                const msg = '<p style="color: var(--alert-red);">Could not reach the server. <a href="#" onclick="fetchMedications(); return false;" style="color: var(--accent-cyan);">Try again</a></p>';
-                ['morning-list', 'afternoon-list', 'evening-list', 'inventory-list'].forEach(id => { document.getElementById(id).innerHTML = msg; });
-            }
-        }
-
-        function renderAll() {
-            renderSchedule();
-            renderInventory();
-            renderProgress();
-        }
-
-        function renderProgress() {
-            const taken = allMedications.filter(m => m.taken).length;
-            const total = allMedications.length;
-            document.getElementById('progress-text').textContent = taken + ' of ' + total + ' taken today';
-            const badge = document.getElementById('progress-badge');
-            badge.className = 'badge ' + (total > 0 && taken === total ? 'badge-green' : 'badge-yellow');
-        }
-
-        function renderSchedule() {
-            const slots = { Morning: 'morning-list', Afternoon: 'afternoon-list', Evening: 'evening-list' };
-            let hasPending = false;
-
-            Object.keys(slots).forEach(slotName => {
-                const container = document.getElementById(slots[slotName]);
-                const medsInSlot = allMedications.filter(m => m.slot === slotName);
-                if (medsInSlot.length === 0) {
-                    container.innerHTML = '<p class="muted">No medications scheduled.</p>';
-                    return;
-                }
-                container.innerHTML = medsInSlot.map(m => {
-                    if (!m.taken) hasPending = true;
-                    return `
-                        <div class="med-item">
-                            <div>
-                                <b>${escapeHtml(m.name)}</b> (${escapeHtml(m.dosage)})<br>
-                                <span style="font-size: 0.85rem; color: var(--accent-cyan);">🍽️ ${escapeHtml(m.food_guide)}</span>
-                            </div>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <span class="badge ${m.taken ? 'badge-green' : 'badge-yellow'}">${m.taken ? 'Taken' : 'Pending'}</span>
-                                <button class="btn" style="padding: 6px 12px; font-size: 0.85rem;" onclick="toggleTaken(${Number(m.id)})">${m.taken ? 'Undo' : 'Mark Taken'}</button>
-                                <button class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;" onclick="deleteMedication(${Number(m.id)})" aria-label="Delete ${escapeHtml(m.name)}"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </div>`;
-                }).join('');
-            });
-
-            document.getElementById('missed-alert-banner').style.display = hasPending ? 'block' : 'none';
-        }
-
-        function renderInventory() {
-            const invDiv = document.getElementById('inventory-list');
-            if (allMedications.length === 0) {
-                invDiv.innerHTML = '<p class="muted">No medications yet. Add one to start tracking inventory.</p>';
-                return;
-            }
-            invDiv.innerHTML = allMedications.map(m => {
-                const daysLeft = (m.stock / Math.max(1, m.daily_dose)).toFixed(1);
-                const badge = m.stock <= 5 ? '<span class="badge badge-red">⚠️ Low Stock</span>' : '<span class="badge badge-green">Stock OK</span>';
-                return `
-                    <div class="med-item">
-                        <div><b>${escapeHtml(m.name)}</b> — ${Number(m.stock)} pills remaining (~${daysLeft} days left)</div>
-                        <div>${badge}</div>
-                    </div>`;
-            }).join('');
-        }
-
-        async function toggleTaken(id) {
-            try {
-                await api('/api/medications/' + id + '/take', { method: 'POST' });
-                await fetchMedications();
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-
-        async function deleteMedication(id) {
-            const med = allMedications.find(m => m.id === id);
-            if (!confirm('Remove ' + (med ? med.name : 'this medication') + ' from your list?')) return;
-            try {
-                await api('/api/medications/' + id, { method: 'DELETE' });
-                showToast('Medication removed.', 'ok');
-                await fetchMedications();
-            } catch (e) {
-                showToast(e.message, 'error');
-            }
-        }
-
-        async function submitMedication(event) {
-            event.preventDefault();
-            const btn = document.getElementById('save-med-btn');
-            btn.disabled = true;
-            const payload = {
-                name: document.getElementById('med-name').value.trim(),
-                dosage: document.getElementById('med-dosage').value.trim(),
-                slot: document.getElementById('med-slot').value,
-                stock: parseInt(document.getElementById('med-stock').value, 10),
-                daily_dose: parseInt(document.getElementById('med-daily').value, 10),
-                food_guide: document.getElementById('med-food').value.trim() || 'Take as directed.'
-            };
-            try {
-                await api('/api/medications', jsonOptions('POST', payload));
-                showToast('Medication saved!', 'ok');
-                document.getElementById('add-med-form').reset();
-                await fetchMedications();
-                switchPage('schedule-page');
-            } catch (e) {
-                showToast(e.message, 'error');
-            } finally {
-                btn.disabled = false;
-            }
-        }
-
-        // ---------- label scanner ----------
-        async function handleBottleUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const resBox = document.getElementById('scanner-results');
-            resBox.textContent = '⏳ Scanning bottle label with AI OCR...';
-            lastScan = null;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const data = await api('/api/analyze', { method: 'POST', body: formData });
-                lastScan = data.parsed;
-                if (data.parsed && (data.parsed.name || data.parsed.dosage)) {
-                    resBox.innerHTML = `
-                        <b style="color: var(--alert-green);">Scan complete. Please verify:</b>
-                        <div class="result-box" style="margin-top: 10px;">Name: ${escapeHtml(data.parsed.name || '(not found)')}
-Dosage: ${escapeHtml(data.parsed.dosage || '(not found)')}
-Time slot: ${escapeHtml(data.parsed.slot)}
-Directions: ${escapeHtml(data.parsed.directions || '(not found)')}</div>
-                        <button class="btn" style="margin-top: 12px;" onclick="fillFromScan()"><i class="fa-solid fa-wand-magic-sparkles"></i> Use this in Add Medication</button>`;
-                } else {
-                    resBox.innerHTML = `<b>Scan finished</b><div class="result-box" style="margin-top: 10px;">${escapeHtml(data.ocr_result || 'No text found.')}</div>`;
-                }
-            } catch (err) {
-                resBox.innerHTML = `<span style="color: var(--alert-red);">Error: ${escapeHtml(err.message)}</span>`;
-            } finally {
-                event.target.value = ''; // allow re-uploading the same file
-            }
-        }
-
-        function fillFromScan() {
-            if (!lastScan) return;
-            document.getElementById('med-name').value = lastScan.name || '';
-            document.getElementById('med-dosage').value = lastScan.dosage || '';
-            document.getElementById('med-slot').value = lastScan.slot || 'Morning';
-            if (lastScan.directions) document.getElementById('med-food').value = lastScan.directions;
-            switchPage('add-page');
-            showToast('Form filled in. Check it, then save.', 'ok');
-        }
-
-        // ---------- pill visualizer ----------
-        async function identifyPill() {
-            const resDiv = document.getElementById('visualizer-result');
-            try {
-                const data = await api('/api/identify-pill', jsonOptions('POST', {
-                    shape: document.getElementById('pill-shape').value,
-                    color: document.getElementById('pill-color').value,
-                    imprint: document.getElementById('pill-imprint').value
-                }));
-                resDiv.textContent = data.matches.length > 0
-                    ? '✅ Possible match: ' + data.matches.join(', ')
-                    : '❌ No match found in the sample database.';
-            } catch (e) {
-                resDiv.textContent = 'Search failed: ' + e.message;
-            }
-        }
-
-        // ---------- safety checker ----------
-        async function runSafetyCheck() {
-            const resDiv = document.getElementById('safety-results');
-            const btn = document.getElementById('safety-btn');
-            if (allMedications.length === 0) {
-                resDiv.textContent = 'Add at least one medication first.';
-                return;
-            }
-            btn.disabled = true;
-            resDiv.textContent = '🛡️ Running AI interaction safety check...';
-            try {
-                const data = await api('/api/interactions', jsonOptions('POST', { medications: allMedications.map(m => m.name) }));
-                resDiv.innerHTML = `<div class="result-box">${escapeHtml(data.analysis)}</div>`;
-            } catch (e) {
-                resDiv.textContent = 'Failed to run safety check: ' + e.message;
-            } finally {
-                btn.disabled = false;
-            }
-        }
-
-        // ---------- read aloud / language ----------
-        function speakSchedule() {
-            if (!('speechSynthesis' in window)) {
-                showToast('Text-to-speech is not supported by your browser.', 'error');
-                return;
-            }
-            if (allMedications.length === 0) {
-                showToast('No medications to read.', 'error');
-                return;
-            }
-            window.speechSynthesis.cancel();
-            let text = 'Here is your MedSnap schedule reminder. ';
-            allMedications.forEach(m => {
-                text += `Medication ${m.name}, dosage ${m.dosage}, scheduled for ${m.slot}. Food instruction: ${m.food_guide}. `;
-            });
-            window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-        }
-
-        function changeLanguage(lang) {
-            document.body.setAttribute('data-lang', lang);
-            const t = translations[lang];
-            if (!t) return;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) el.textContent = t[key];
-            });
-        }
-
-        // Initialize on load
-        fetchMedications();
+    /* ====================================================================
+       Start
+    ==================================================================== */
+    (function init() {
+        let saved = 'en';
+        try { saved = localStorage.getItem('medsnap_lang') || 'en'; } catch (e) {}
+        lang = I18N[saved] ? saved : 'en';
+        document.getElementById('lang-select').value = lang;
+        document.getElementById('med-time').value = SLOT_DEFAULT_TIME.Morning;
+        applyStaticTranslations();
+        updateAddPreview();
+        refresh();
+    })();
     </script>
 </body>
 </html>
