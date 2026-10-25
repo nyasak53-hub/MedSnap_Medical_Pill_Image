@@ -7,6 +7,7 @@ import base64
 import hashlib
 import secrets
 import smtplib
+import shutil
 import tempfile
 import threading
 import webbrowser
@@ -18,7 +19,7 @@ from functools import wraps
 from zoneinfo import ZoneInfo
 
 import httpx
-from flask import Flask, request, jsonify, send_from_directory, Response
+from flask import Flask, request, jsonify, send_from_directory, Response, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
 from groq import Groq
@@ -235,29 +236,85 @@ def migrate_state(raw):
     return state
 
 
-def _read_store():
-    if os.path.exists(DATA_FILE):
+class StorageBusy(Exception):
+    """A saved-data file exists but couldn't be read right now. Never treat it as empty."""
+
+
+def _load_json(path):
+    """Read a saved JSON file safely.
+    - Missing file: returns None (nothing saved yet).
+    - Briefly locked (OneDrive, antivirus, backup tools): retries for a moment.
+    - Damaged: falls back to the automatic .bak copy.
+    It never returns "empty" for a file that exists, so saved accounts can't be wiped by a failed read."""
+    backup = path + ".bak"
+    if not os.path.exists(path) and not os.path.exists(backup):
+        return None
+    last = None
+    for attempt in range(6):
         try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
+            with open(path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             if isinstance(data, dict):
                 return data
-        except Exception as exc:
-            print(f"[warn] Could not read data file: {exc}")
-    return {}
+            last = ValueError("not a JSON object")
+            break
+        except FileNotFoundError:
+            break
+        except PermissionError as exc:
+            last = exc
+            time.sleep(0.15)
+        except (OSError, ValueError) as exc:
+            last = exc
+            break
+    if os.path.exists(backup):
+        try:
+            with open(backup, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                print(f"[warn] {os.path.basename(path)} could not be read ({last}); using the backup copy.")
+                return data
+        except Exception:
+            pass
+    if not os.path.exists(path):
+        return None
+    print(f"[error] {path} could not be read ({last}). Nothing was overwritten.")
+    raise StorageBusy(str(last))
 
 
-def _write_store(store):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    fd, tmp_path = tempfile.mkstemp(dir=DATA_DIR, suffix=".tmp")
+def _save_json(path, data):
+    """Write atomically (never half-written) and keep the previous version as a .bak copy."""
+    folder = os.path.dirname(path) or "."
+    os.makedirs(folder, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=folder, suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(store, f)
-        os.replace(tmp_path, DATA_FILE)  # atomic: never leaves a half-written file
+            json.dump(data, f)
+        if os.path.exists(path):
+            try:
+                shutil.copyfile(path, path + ".bak")
+            except OSError:
+                pass
+        for attempt in range(6):
+            try:
+                os.replace(tmp_path, path)
+                return
+            except PermissionError:
+                if attempt == 5:
+                    raise
+                time.sleep(0.15)   # file briefly locked by sync/antivirus software
     except Exception:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
         raise
+
+
+def _read_store():
+    data = _load_json(DATA_FILE)
+    return data if data is not None else {}
+
+
+def _write_store(store):
+    _save_json(DATA_FILE, store)
 
 
 def mutate(client_id, fn):
@@ -273,6 +330,7 @@ def mutate(client_id, fn):
                 _write_store(store)
             except Exception as exc:
                 print(f"[warn] Could not save data: {exc}")
+                raise StorageBusy(str(exc))
         return result
 
 
@@ -285,30 +343,14 @@ LOGIN_LOG = {}
 
 
 def _read_users():
-    if os.path.exists(USERS_FILE):
-        try:
-            with open(USERS_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            if isinstance(data, dict):
-                data.setdefault("users", {})
-                data.setdefault("tokens", {})
-                return data
-        except Exception as exc:
-            print(f"[warn] Could not read users file: {exc}")
-    return {"users": {}, "tokens": {}}
+    data = _load_json(USERS_FILE) or {}
+    data.setdefault("users", {})
+    data.setdefault("tokens", {})
+    return data
 
 
 def _write_users(data):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    fd, tmp_path = tempfile.mkstemp(dir=DATA_DIR, suffix=".tmp")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(data, f)
-        os.replace(tmp_path, USERS_FILE)
-    except Exception:
-        if os.path.exists(tmp_path):
-            os.remove(tmp_path)
-        raise
+    _save_json(USERS_FILE, data)
 
 
 def _token_key(token):
@@ -332,6 +374,41 @@ def account_for_token(token):
         return data["users"].get(entry["email"])
 
 
+AUTH_COOKIE = "medsnap_token"
+REMEMBER_SECONDS = 400 * 24 * 3600  # stay signed in (browsers cap cookies at about 400 days)
+
+
+def request_tokens():
+    """The sign-in token can come from the page (X-Auth-Token) or the remember-me cookie."""
+    return [t for t in (request.headers.get("X-Auth-Token", ""), request.cookies.get(AUTH_COOKIE, "")) if t]
+
+
+def account_for_request():
+    for tok in request_tokens():
+        account = account_for_token(tok)
+        if account:
+            return account
+    return None
+
+
+def is_https():
+    return request.headers.get("X-Forwarded-Proto", request.scheme) == "https"
+
+
+def signed_in_response(payload, token):
+    """Reply to sign up / sign in and set a long-lasting cookie so the person stays signed in."""
+    resp = make_response(jsonify(payload))
+    resp.set_cookie(AUTH_COOKIE, token, max_age=REMEMBER_SECONDS, httponly=True, samesite="Lax",
+                    secure=is_https(), path="/")
+    return resp
+
+
+def signed_out_response(payload):
+    resp = make_response(jsonify(payload))
+    resp.delete_cookie(AUTH_COOKIE, path="/")
+    return resp
+
+
 def login_allowed(ip, limit=10):
     """At most 10 sign-in/sign-up attempts per 15 minutes from one address."""
     now = time.time()
@@ -348,7 +425,7 @@ def require_client(fn):
     """Every data request must come from a signed-in account."""
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        account = account_for_token(request.headers.get("X-Auth-Token", ""))
+        account = account_for_request()
         if not account:
             return jsonify({"success": False, "error": "Please sign in to continue.", "auth": False}), 401
         return fn(account["cid"], *args, **kwargs)
@@ -594,7 +671,7 @@ def auth_signup():
                                  "language": data.get("language") if data.get("language") in LANGUAGE_NAMES else "en"})
         state["caregiver"]["patient_name"] = name
     mutate(cid, setup)
-    return jsonify({"success": True, "token": token, "name": name})
+    return signed_in_response({"success": True, "token": token, "name": name}, token)
 
 
 @app.route("/api/auth/login", methods=["POST"])
@@ -607,26 +684,56 @@ def auth_login():
     with USERS_LOCK:
         users = _read_users()
         user = users["users"].get(email)
-        if not user or not check_password_hash(user["hash"], password):
-            return jsonify({"success": False, "error": "That email or password doesn't match."}), 401
+        if not user:
+            return jsonify({"success": False, "no_account": True,
+                            "error": f"There's no MedSnap account for {email} on this server yet. "
+                                     "Check the spelling, or choose Sign up to create one."}), 401
+        if not check_password_hash(user["hash"], password):
+            return jsonify({"success": False, "error": "That password isn't right. Tap the eye icon to see what's "
+                                                      "typed, and check Caps Lock."}), 401
         token = _new_token(users, email)
         _write_users(users)
-    return jsonify({"success": True, "token": token, "name": user["name"]})
+    return signed_in_response({"success": True, "token": token, "name": user["name"]}, token)
 
 
 @app.route("/api/auth/logout", methods=["POST"])
 def auth_logout():
-    token = request.headers.get("X-Auth-Token", "")
     with USERS_LOCK:
         users = _read_users()
-        if users["tokens"].pop(_token_key(token), None) is not None:
+        changed = False
+        for tok in request_tokens():
+            changed = users["tokens"].pop(_token_key(tok), None) is not None or changed
+        if changed:
             _write_users(users)
-    return jsonify({"success": True})
+    return signed_out_response({"success": True})
+
+
+@app.route("/api/auth/delete", methods=["POST"])
+def auth_delete():
+    """Permanently delete the signed-in account and everything saved for it."""
+    if not login_allowed(client_ip()):
+        return jsonify({"success": False, "error": "Too many attempts. Please wait a few minutes."}), 429
+    account = account_for_request()
+    if not account:
+        return jsonify({"success": False, "error": "Please sign in to continue.", "auth": False}), 401
+    password = str((request.get_json(silent=True) or {}).get("password") or "")
+    if not check_password_hash(account["hash"], password):
+        return jsonify({"success": False, "error": "That password isn't right, so your account was not deleted."}), 403
+    with USERS_LOCK:
+        users = _read_users()
+        users["users"].pop(account["email"], None)
+        users["tokens"] = {k: v for k, v in users["tokens"].items() if v.get("email") != account["email"]}
+        _write_users(users)
+    with DATA_LOCK:
+        store = _read_store()
+        if store.pop(account["cid"], None) is not None:
+            _write_store(store)
+    return signed_out_response({"success": True})
 
 
 @app.route("/api/auth/me", methods=["GET"])
 def auth_me():
-    account = account_for_token(request.headers.get("X-Auth-Token", ""))
+    account = account_for_request()
     if not account:
         return jsonify({"success": False, "error": "Not signed in.", "auth": False}), 401
     return jsonify({"success": True, "name": account["name"], "email": account["email"]})
@@ -1271,10 +1378,17 @@ def chat():
         return jsonify({"success": False, "error": "The AI assistant isn't configured on this server (missing GROQ_API_KEY)."}), 503
 
     system_prompt = (
-        "You are MedSnap's friendly medication assistant. Answer questions about medications, "
-        "schedules, side effects, and food or timing guidance in short, clear, plain language. "
-        "You are not a doctor: never change doses or tell the user to stop a prescription; for those, "
-        "or for anything urgent or severe, tell them to contact their pharmacist, doctor, or emergency services. "
+        "You are Buddy, MedSnap's friendly medication helper. Many users are older adults, so keep every reply "
+        "calm, warm and easy to read. "
+        "STYLE RULES: Keep answers under about 90 words. Start with one short, kind sentence that answers the question. "
+        "Then give at most 3 short bullet points, each one simple sentence. Use plain everyday words, not medical jargon "
+        "or numbers like blood-pressure readings unless the user asks. No headings, no tables, and no more than one list. "
+        "You may make one or two key words **bold**. End with one short line about who to contact if needed. "
+        "If the user wants more detail, they can ask, so don't try to cover everything at once. "
+        "SAFETY: You are not a doctor: never change doses or tell the user to stop a prescription; for those, tell them "
+        "to talk to their pharmacist or doctor. If the user describes something that could be an emergency (chest pain, "
+        "trouble breathing, fainting, confusion, signs of stroke, a severe allergic reaction, or a possible overdose), "
+        "your FIRST sentence must tell them to call 911 now or press the Emergency button. "
         + (f"The user's current medications: {', '.join(meds)}. " if meds else "")
         + language_instruction(lang)
     )
@@ -1415,6 +1529,12 @@ def analyze(cid):
 # ==========================================================================
 # Error handlers: always return something readable, never a blank page
 # ==========================================================================
+@app.errorhandler(StorageBusy)
+def handle_storage_busy(_err):
+    return jsonify({"success": False, "error": "MedSnap couldn't open its saved data for a moment. "
+                                               "Nothing was lost. Please try again."}), 503
+
+
 @app.errorhandler(ApiError)
 def handle_api_error(err):
     return jsonify({"success": False, "error": err.message}), err.status
@@ -1445,10 +1565,21 @@ def server_error(_):
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", 5000))
-    print(f"\nMedSnap running at http://127.0.0.1:{port}\n")
+    print(f"\nMedSnap running at http://127.0.0.1:{port}")
+    try:
+        n = len(_read_users()["users"])
+        print(f"Accounts are saved in: {USERS_FILE} ({n} account{'s' if n != 1 else ''})\n")
+    except Exception as exc:
+        print(f"[warn] Could not read the accounts file yet: {exc}\n")
     if not os.environ.get("RENDER"):
         try:
             webbrowser.open(f"http://127.0.0.1:{port}")
         except Exception:
             pass
-    app.run(host=host, port=port, debug=False)
+    try:
+        app.run(host=host, port=port, debug=False)
+    except OSError as exc:
+        print(f"\n[MedSnap] Could not start on port {port}: {exc}")
+        print("  - Is MedSnap already running in another terminal? Close that one (Ctrl+C) and try again.")
+        print("  - On a Mac, turn off System Settings > General > AirDrop & Handoff > AirPlay Receiver (it uses port 5000).")
+        print("  - Or start MedSnap on another port, e.g.  PORT=5050 python app.py\n")
