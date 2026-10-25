@@ -59,15 +59,16 @@ else:
     print("[warn] GROQ_API_KEY not set; AI features are disabled.")
 
 # Change these from Render's Environment tab without touching code.
-VISION_MODELS = [
-    m.strip()
-    for m in os.environ.get(
-        "GROQ_VISION_MODELS",
-        "meta-llama/llama-4-scout-17b-16e-instruct,qwen/qwen3.6-27b",
-    ).split(",")
-    if m.strip()
-]
-TEXT_MODEL = os.environ.get("GROQ_TEXT_MODEL", "llama-3.3-70b-versatile")
+# Groq retires models from time to time (llama-3.3-70b-versatile and llama-4-scout were shut down in 2026),
+# so each list has fallbacks. A model set in .env / Render is tried first. See console.groq.com/docs/models
+def _model_list(env_name, defaults):
+    custom = [m.strip() for m in os.environ.get(env_name, "").split(",") if m.strip()]
+    return list(dict.fromkeys(custom + defaults))
+
+
+TEXT_MODELS = _model_list("GROQ_TEXT_MODEL", ["openai/gpt-oss-120b", "openai/gpt-oss-20b", "qwen/qwen3.8-27b"])
+VISION_MODELS = _model_list("GROQ_VISION_MODELS", ["qwen/qwen3.8-27b"])
+TEXT_MODEL = TEXT_MODELS[0]
 
 # Caregiver alert delivery (all optional; features switch on when configured)
 SMTP_HOST = normalize_secret(os.environ.get("SMTP_HOST"))
@@ -960,6 +961,56 @@ def identify_pill():
     return jsonify({"success": True, "matches": matches})
 
 
+def _reasoning_options(model):
+    """Keep 'thinking' models quick and make sure the answer comes back as plain text."""
+    if model.startswith("openai/gpt-oss"):
+        return {"reasoning_effort": "low"}
+    if model.startswith("qwen/"):
+        return {"reasoning_effort": "none"}
+    return {}
+
+
+def ai_complete(messages, vision=False, temperature=0.3, max_tokens=1000):
+    """Ask Groq, trying each model in turn. Returns the answer text or raises the last error."""
+    last_error = None
+    for model in (VISION_MODELS if vision else TEXT_MODELS):
+        try:
+            kwargs = {"model": model, "messages": messages, "temperature": temperature, "max_tokens": max_tokens}
+            extra = _reasoning_options(model)
+            if extra:
+                kwargs["extra_body"] = extra
+            response = client.chat.completions.create(**kwargs)
+            text = response.choices[0].message.content or ""
+            text = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
+            if text:
+                return text
+            last_error = RuntimeError(f"{model} returned an empty answer")
+        except Exception as exc:
+            last_error = exc
+            print(f"[error] Groq model {model} failed: {exc}")
+            if getattr(exc, "status_code", None) == 401:
+                break  # a bad key fails for every model
+    raise last_error or RuntimeError("No AI model is configured.")
+
+
+def ai_error_message(exc):
+    """Turn a Groq error into something a person can act on."""
+    status = getattr(exc, "status_code", None)
+    name = type(exc).__name__
+    if status == 401:
+        return "Groq rejected the API key. Check GROQ_API_KEY in your .env file (no quotes or spaces), then restart app.py."
+    if status == 403:
+        return "Groq refused the request (403). Check that your Groq account and key are active."
+    if status == 429:
+        return "Groq's usage limit was reached for the moment. Wait a minute and try again."
+    if status in (400, 404):
+        return ("The AI model isn't available. Set GROQ_TEXT_MODEL in .env to a current model from "
+                "console.groq.com/docs/models, then restart app.py.")
+    if "Connection" in name or "Timeout" in name:
+        return "The server couldn't connect to Groq. Check this computer's internet connection and try again."
+    return f"The AI service had a problem: {str(exc)[:160]}"
+
+
 @app.route("/api/pill-photo", methods=["POST"])
 @require_client
 def pill_photo(cid):
@@ -980,20 +1031,13 @@ def pill_photo(cid):
         '"imprint" (letters/numbers printed on it, or ""), "description" (one short sentence). '
         'If there is no pill in the photo, return all empty strings and description "No pill found".'
     )
-    reading = None
-    for model in VISION_MODELS:
-        try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {"url": image_url}}]}],
-                temperature=0.1, max_tokens=300)
-            reading = extract_json(response.choices[0].message.content or "")
-            if reading is not None:
-                break
-        except Exception as exc:
-            print(f"[error] pill photo model {model} failed: {exc}")
+    try:
+        raw = ai_complete([{"role": "user", "content": [
+            {"type": "text", "text": prompt},
+            {"type": "image_url", "image_url": {"url": image_url}}]}], vision=True, temperature=0.1, max_tokens=400)
+    except Exception as exc:
+        return jsonify({"success": False, "error": ai_error_message(exc)}), 502
+    reading = extract_json(raw)
     if reading is None:
         return jsonify({"success": False, "error": "The AI couldn't read the photo. Try again with better light."}), 502
     pill = clean_pill(reading)
@@ -1054,13 +1098,11 @@ def check_interactions():
         f"End with a reminder to confirm with a pharmacist or doctor. {language_instruction(lang)}"
     )
     try:
-        response = client.chat.completions.create(
-            model=TEXT_MODEL, messages=[{"role": "user", "content": prompt}],
-            temperature=0.2, max_tokens=600)
-        return jsonify({"success": True, "analysis": response.choices[0].message.content})
+        analysis = ai_complete([{"role": "user", "content": prompt}], temperature=0.2, max_tokens=1200)
+        return jsonify({"success": True, "analysis": analysis})
     except Exception as exc:
         print(f"[error] interactions: {exc}")
-        return jsonify({"success": False, "error": "The AI service could not be reached. Try again shortly."}), 502
+        return jsonify({"success": False, "error": ai_error_message(exc)}), 502
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -1089,13 +1131,11 @@ def chat():
         + language_instruction(lang)
     )
     try:
-        response = client.chat.completions.create(
-            model=TEXT_MODEL, messages=[{"role": "system", "content": system_prompt}] + messages,
-            temperature=0.3, max_tokens=500)
-        return jsonify({"success": True, "answer": response.choices[0].message.content})
+        answer = ai_complete([{"role": "system", "content": system_prompt}] + messages, temperature=0.3, max_tokens=1000)
+        return jsonify({"success": True, "answer": answer})
     except Exception as exc:
         print(f"[error] chat: {exc}")
-        return jsonify({"success": False, "error": "The AI service could not be reached. Try again shortly."}), 502
+        return jsonify({"success": False, "error": ai_error_message(exc)}), 502
 
 
 TRANSLATION_CACHE = {}
@@ -1120,10 +1160,7 @@ def translate():
             f"in the same order, with exactly {len(missing)} items.\n" + json.dumps(missing, ensure_ascii=False)
         )
         try:
-            response = client.chat.completions.create(
-                model=TEXT_MODEL, messages=[{"role": "user", "content": prompt}],
-                temperature=0, max_tokens=1200)
-            raw = response.choices[0].message.content or ""
+            raw = ai_complete([{"role": "user", "content": prompt}], temperature=0, max_tokens=1600)
             match = re.search(r"\[.*\]", raw, re.S)
             translated = json.loads(match.group(0)) if match else []
             if isinstance(translated, list) and len(translated) == len(missing):
@@ -1178,15 +1215,11 @@ def analyze():
         '"slot" (one of "Morning", "Afternoon", "Evening", based on the directions), '
         '"directions" (the label directions, short). Use an empty string for anything you cannot read.'
     )
-    for model in VISION_MODELS:
+    for _ in (1,):
         try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {"url": image_url}}]}],
-                temperature=0.1, max_tokens=500)
-            raw = response.choices[0].message.content or ""
+            raw = ai_complete([{"role": "user", "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": image_url}}]}], vision=True, temperature=0.1, max_tokens=600)
             parsed = extract_json(raw)
             if parsed:
                 parsed = {
@@ -1197,8 +1230,8 @@ def analyze():
                 }
             return jsonify({"success": True, "filename": upload.filename, "ocr_result": raw, "parsed": parsed})
         except Exception as exc:
-            print(f"[error] vision model {model} failed: {exc}")
-    return jsonify({"success": False, "error": "The AI vision service failed. Check the Render logs and the GROQ_VISION_MODELS setting."}), 502
+            return jsonify({"success": False, "error": ai_error_message(exc)}), 502
+    return jsonify({"success": False, "error": "The AI vision service failed."}), 502
 
 
 # ==========================================================================
