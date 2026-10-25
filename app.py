@@ -4,6 +4,8 @@ import re
 import json
 import time
 import base64
+import hashlib
+import secrets
 import smtplib
 import tempfile
 import threading
@@ -21,6 +23,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from groq import Groq
 from PIL import Image, ImageOps
+from werkzeug.security import check_password_hash, generate_password_hash
 
 # ==========================================================================
 # Setup
@@ -273,13 +276,82 @@ def mutate(client_id, fn):
         return result
 
 
+# ==========================================================================
+# Accounts (sign up / sign in). Each account owns one saved state in the data file.
+# ==========================================================================
+USERS_FILE = os.path.join(DATA_DIR, "users.json")
+USERS_LOCK = threading.RLock()
+LOGIN_LOG = {}
+
+
+def _read_users():
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                data.setdefault("users", {})
+                data.setdefault("tokens", {})
+                return data
+        except Exception as exc:
+            print(f"[warn] Could not read users file: {exc}")
+    return {"users": {}, "tokens": {}}
+
+
+def _write_users(data):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=DATA_DIR, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+        os.replace(tmp_path, USERS_FILE)
+    except Exception:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
+
+
+def _token_key(token):
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+def _new_token(data, email):
+    token = secrets.token_urlsafe(32)
+    data["tokens"][_token_key(token)] = {"email": email, "created": time.time()}
+    return token
+
+
+def account_for_token(token):
+    if not token or len(token) > 200:
+        return None
+    with USERS_LOCK:
+        data = _read_users()
+        entry = data["tokens"].get(_token_key(token))
+        if not entry:
+            return None
+        return data["users"].get(entry["email"])
+
+
+def login_allowed(ip, limit=10):
+    """At most 10 sign-in/sign-up attempts per 15 minutes from one address."""
+    now = time.time()
+    stamps = [t for t in LOGIN_LOG.get(ip, []) if now - t < 900]
+    if len(stamps) >= limit:
+        LOGIN_LOG[ip] = stamps
+        return False
+    stamps.append(now)
+    LOGIN_LOG[ip] = stamps
+    return True
+
+
 def require_client(fn):
+    """Every data request must come from a signed-in account."""
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        cid = request.headers.get("X-Client-Id", "")
-        if not CLIENT_ID_RE.match(cid):
-            return jsonify({"success": False, "error": "Missing or invalid client id."}), 400
-        return fn(cid, *args, **kwargs)
+        account = account_for_token(request.headers.get("X-Auth-Token", ""))
+        if not account:
+            return jsonify({"success": False, "error": "Please sign in to continue.", "auth": False}), 401
+        return fn(account["cid"], *args, **kwargs)
     return wrapper
 
 
@@ -484,6 +556,82 @@ def healthz():
 # ==========================================================================
 # Medication API
 # ==========================================================================
+@app.route("/api/auth/signup", methods=["POST"])
+def auth_signup():
+    if not login_allowed(client_ip()):
+        return jsonify({"success": False, "error": "Too many attempts. Please wait a few minutes."}), 429
+    data = request.get_json(silent=True) or {}
+    name = clean_text(data.get("name"), "", 60)
+    email = clean_text(data.get("email"), "", 254).lower()
+    password = str(data.get("password") or "")
+    age = str(data.get("age") or "").strip()
+    if not name:
+        return jsonify({"success": False, "error": "Please enter your name."}), 400
+    if not EMAIL_RE.match(email):
+        return jsonify({"success": False, "error": "Please enter a valid email address."}), 400
+    if len(password) < 8:
+        return jsonify({"success": False, "error": "Your password needs at least 8 characters."}), 400
+    if age and not (age.isdigit() and 1 <= int(age) <= 120):
+        return jsonify({"success": False, "error": "Age should be a number between 1 and 120."}), 400
+    with USERS_LOCK:
+        users = _read_users()
+        if email in users["users"]:
+            return jsonify({"success": False, "error": "An account with that email already exists. Try signing in."}), 409
+        # Keep anything already entered in this browser before the person made an account.
+        owned = {u["cid"] for u in users["users"].values()}
+        cid = request.headers.get("X-Client-Id", "")
+        if not CLIENT_ID_RE.match(cid) or cid in owned:
+            cid = "acct_" + secrets.token_hex(12)
+        users["users"][email] = {"email": email, "name": name, "cid": cid,
+                                 "hash": generate_password_hash(password), "created": time.time()}
+        token = _new_token(users, email)
+        _write_users(users)
+    tz = request_tz()
+
+    def setup(state):
+        state["profile"].update({"name": name, "age": age, "timezone": state["profile"].get("timezone") or tz,
+                                 "allergies": clean_text(data.get("allergies"), "", 500),
+                                 "language": data.get("language") if data.get("language") in LANGUAGE_NAMES else "en"})
+        state["caregiver"]["patient_name"] = name
+    mutate(cid, setup)
+    return jsonify({"success": True, "token": token, "name": name})
+
+
+@app.route("/api/auth/login", methods=["POST"])
+def auth_login():
+    if not login_allowed(client_ip()):
+        return jsonify({"success": False, "error": "Too many attempts. Please wait a few minutes."}), 429
+    data = request.get_json(silent=True) or {}
+    email = clean_text(data.get("email"), "", 254).lower()
+    password = str(data.get("password") or "")
+    with USERS_LOCK:
+        users = _read_users()
+        user = users["users"].get(email)
+        if not user or not check_password_hash(user["hash"], password):
+            return jsonify({"success": False, "error": "That email or password doesn't match."}), 401
+        token = _new_token(users, email)
+        _write_users(users)
+    return jsonify({"success": True, "token": token, "name": user["name"]})
+
+
+@app.route("/api/auth/logout", methods=["POST"])
+def auth_logout():
+    token = request.headers.get("X-Auth-Token", "")
+    with USERS_LOCK:
+        users = _read_users()
+        if users["tokens"].pop(_token_key(token), None) is not None:
+            _write_users(users)
+    return jsonify({"success": True})
+
+
+@app.route("/api/auth/me", methods=["GET"])
+def auth_me():
+    account = account_for_token(request.headers.get("X-Auth-Token", ""))
+    if not account:
+        return jsonify({"success": False, "error": "Not signed in.", "auth": False}), 401
+    return jsonify({"success": True, "name": account["name"], "email": account["email"]})
+
+
 @app.route("/api/state", methods=["GET"])
 @require_client
 def get_state(cid):
@@ -1198,40 +1346,70 @@ def encode_image(pil_img):
 
 
 @app.route("/api/analyze", methods=["POST"])
-def analyze():
-    upload = request.files.get("file")
-    if not upload or upload.filename == "":
-        return jsonify({"success": False, "error": "No prescription or pill bottle image uploaded."}), 400
+@require_client
+def analyze(cid):
+    """Scan a prescription label and/or medicine bottle (up to 3 photos) and return form fields.
+    Nothing is saved here: the person checks the filled-in form and presses Save themselves."""
+    uploads = [f for f in request.files.getlist("file") if f and f.filename][:3]
+    if not uploads:
+        return jsonify({"success": False, "error": "No prescription or bottle photo received."}), 400
     if not client:
-        return jsonify({"success": False, "error": "AI scanning is not configured on this server (missing GROQ_API_KEY)."}), 503
-    try:
-        image_url = encode_image(Image.open(io.BytesIO(upload.read())))
-    except Exception:
-        return jsonify({"success": False, "error": "That file could not be read as an image."}), 400
+        return jsonify({"success": False, "error": "Label scanning needs the AI key (GROQ_API_KEY) on the server."}), 503
+    images = []
+    for upload in uploads:
+        try:
+            images.append(encode_image(Image.open(io.BytesIO(upload.read()))))
+        except Exception:
+            return jsonify({"success": False, "error": "One of the photos could not be read as an image."}), 400
 
     prompt = (
-        "You are an OCR tool reading a pill bottle or prescription label. Reply with ONLY a JSON "
-        'object, no other text, with these keys: "name" (medication name), "dosage" (e.g. "10mg"), '
-        '"slot" (one of "Morning", "Afternoon", "Evening", based on the directions), '
-        '"directions" (the label directions, short). Use an empty string for anything you cannot read.'
+        "These photos show a prescription label and/or a medicine bottle for ONE medication. Read them together. "
+        "Report ONLY what is actually printed. Never guess or invent a value; use \"\" or 0 when it isn't shown. "
+        "Reply with ONLY a JSON object with these keys:\n"
+        '"name": medication name as printed (e.g. "Metformin HCl"),\n'
+        '"dosage": strength (e.g. "500 mg"),\n'
+        '"pills_per_dose": number of tablets/capsules per dose as an integer (e.g. "take 2 tablets" -> 2), or 0,\n'
+        '"times_per_day": how many times a day (once daily -> 1, twice daily -> 2, every 8 hours -> 3), or 0,\n'
+        '"time": a specific time if printed, as 24-hour "HH:MM", else "". Use "08:00" for "in the morning", '
+        '"21:00" for "at bedtime", "18:00" for "with dinner/evening", else "",\n'
+        '"quantity": number of pills dispensed (e.g. "Qty: 60" -> 60), or 0,\n'
+        '"directions": the directions exactly as printed, short,\n'
+        '"food_guide": any food or timing advice printed (e.g. "Take with food"), short, or "",\n'
+        '"badges": a list using ONLY these exact words that the label clearly states: '
+        '"with_food","empty_stomach","avoid_dairy","avoid_alcohol","avoid_sugar","before_bed","with_water",'
+        '"before_lunch","before_breakfast","before_dinner",\n'
+        '"shape": pill shape if the label describes it (round, oval, oblong, square, diamond, triangle, hexagon), else "",\n'
+        '"color": pill color if described (white, yellow, pink, red, purple, green, blue, brown, orange), else "",\n'
+        '"imprint": imprint letters/numbers if described, else "",\n'
+        '"readable": true if a medication label was visible, false if not.'
     )
-    for _ in (1,):
-        try:
-            raw = ai_complete([{"role": "user", "content": [
-                {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {"url": image_url}}]}], vision=True, temperature=0.1, max_tokens=600)
-            parsed = extract_json(raw)
-            if parsed:
-                parsed = {
-                    "name": clean_text(parsed.get("name"), "", 80),
-                    "dosage": clean_text(parsed.get("dosage"), "", 60),
-                    "slot": normalize_slot(parsed.get("slot")),
-                    "directions": clean_text(parsed.get("directions"), "", 200),
-                }
-            return jsonify({"success": True, "filename": upload.filename, "ocr_result": raw, "parsed": parsed})
-        except Exception as exc:
-            return jsonify({"success": False, "error": ai_error_message(exc)}), 502
-    return jsonify({"success": False, "error": "The AI vision service failed."}), 502
+    content = [{"type": "text", "text": prompt}] + [{"type": "image_url", "image_url": {"url": u}} for u in images]
+    try:
+        raw = ai_complete([{"role": "user", "content": content}], vision=True, temperature=0.1, max_tokens=900)
+    except Exception as exc:
+        return jsonify({"success": False, "error": ai_error_message(exc)}), 502
+
+    data = extract_json(raw)
+    if not data or data.get("readable") is False or not clean_text(data.get("name"), "", 80):
+        return jsonify({"success": False, "error": "MedSnap couldn't read a medication label in that photo. "
+                        "Try again closer, in good light, with the label flat and in focus."}), 422
+    time_str = str(data.get("time") or "").strip()
+    pill = clean_pill(data)
+    parsed = {
+        "name": clean_text(data.get("name"), "", 80),
+        "dosage": clean_text(data.get("dosage"), "", 60),
+        "pills_per_dose": clamp_int(data.get("pills_per_dose"), 0, 0, 20),
+        "times_per_day": clamp_int(data.get("times_per_day"), 0, 0, 12),
+        "time": time_str if TIME_RE.match(time_str) else "",
+        "quantity": clamp_int(data.get("quantity"), 0, 0, 10000),
+        "directions": clean_text(data.get("directions"), "", 300),
+        "food_guide": clean_text(data.get("food_guide"), "", 200),
+        "badges": [b for b in dict.fromkeys(data.get("badges") or []) if b in VALID_BADGES and b != "avoid_grapefruit"],
+        "shape": pill["shape"] if pill["shape"] != "capsule" else "",
+        "color": pill["color"] if pill["color"] != "gray" else "",
+        "imprint": pill["imprint"],
+    }
+    return jsonify({"success": True, "parsed": parsed, "photos": len(images)})
 
 
 # ==========================================================================

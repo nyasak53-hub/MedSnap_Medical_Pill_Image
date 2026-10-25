@@ -324,6 +324,31 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 .boxes input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); }
 .days-boxes span { min-width: 4.2rem; justify-content: center; }
 .preview-row { display: flex; gap: 1rem; align-items: center; }
+.scan-box { border: 1px dashed var(--line-2); background: var(--card-2); border-radius: 1.1rem; padding: 1rem 1.1rem; margin-bottom: 1.6rem; }
+.scan-head { display: flex; align-items: center; gap: .9rem; }
+.scan-head b { display: block; font-size: .9rem; font-weight: 600; }
+.scan-head small { display: block; font-size: .74rem; color: var(--ink-2); line-height: 1.45; }
+.scan-head .btn { margin-left: auto; flex: none; }
+.scan-area { margin-top: 1rem; }
+.scan-area .cam { aspect-ratio: 4 / 3; margin-bottom: .8rem; }
+.thumbs { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.thumb { position: relative; width: 4.6rem; height: 4.6rem; border-radius: .7rem; overflow: hidden; border: 1px solid var(--line); background: #0F1A15; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb button { position: absolute; top: .2rem; right: .2rem; width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 0; background: rgba(0,0,0,.6); color: #fff; display: grid; place-items: center; cursor: pointer; }
+.thumbs .count { align-self: center; font-size: .75rem; color: var(--ink-2); }
+.scan-msg { font-size: .8rem; line-height: 1.55; border-radius: .8rem; padding: .75rem .9rem; margin-top: .8rem; }
+.scan-msg.ok { background: var(--done-bg); color: var(--ink); }
+.scan-msg.warn { background: var(--sand-bg); border: 1px solid var(--sand-line); color: var(--ink); }
+.scan-msg.err { background: var(--miss-bg); color: var(--miss-ink); }
+.scan-msg p + p { margin-top: .4rem; }
+.input.filled, .boxes label.filled span { border-color: var(--brand-2); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-2) 22%, transparent); }
+.scan-card { display: flex; gap: 1rem; align-items: center; padding: 1.2rem 1.3rem; margin-top: 1rem; }
+.scan-card b { display: block; font-size: .9rem; font-weight: 600; }
+.scan-card small { display: block; font-size: .76rem; color: var(--ink-2); line-height: 1.5; }
+.scan-card .btn { margin-left: auto; flex: none; }
+.head-btns { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 2.2rem; }
+.head-btns .btn { margin-top: 0 !important; }
+@media (max-width: 900px) { .head-btns { margin: 0 0 1.6rem; } .scan-head, .scan-card { flex-wrap: wrap; } .scan-head .btn, .scan-card .btn { margin-left: 0; } }
 .preview-row .pv { width: 4.6rem; height: 4.6rem; border-radius: 1rem; background: var(--card-2); display: grid; place-items: center; flex: none; }
 #emDlg { width: min(30rem, calc(100vw - 2rem)); }
 .em-call { display: flex; align-items: center; justify-content: center; gap: .7rem; background: var(--em-ink); color: #fff; border-radius: 1rem; padding: 1.2rem; font-size: 1.4rem; font-weight: 700; margin: 1.2rem 0 .6rem; }
@@ -351,6 +376,16 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 .typing span { display: inline-block; width: .4rem; height: .4rem; border-radius: 50%; background: var(--muted); margin-right: .2rem; animation: bl 1s infinite; }
 .typing span:nth-child(2) { animation-delay: .15s; } .typing span:nth-child(3) { animation-delay: .3s; }
 @keyframes bl { 50% { opacity: .25; } }
+.gate { position: fixed; inset: 0; z-index: 90; background: var(--bg); overflow-y: auto; display: grid; place-items: center; padding: 2rem 1rem; }
+.gate-card { width: min(30rem, 100%); padding: 2.2rem 2rem; }
+.gate .logo { justify-content: center; margin-bottom: 1.4rem; }
+.gate h1 { font-size: 1.9rem; font-weight: 600; letter-spacing: -.04em; text-align: center; margin-bottom: .4rem; }
+.gate .lede { text-align: center; margin-bottom: 1.6rem; font-size: .9rem; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--card-2); border-radius: 999px; padding: .3rem; margin-bottom: 1.6rem; }
+.tabs button { border: 0; background: none; border-radius: 999px; padding: .7rem; font-weight: 600; font-size: .9rem; color: var(--ink-2); cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.gate .err { background: var(--miss-bg); color: var(--miss-ink); border-radius: .8rem; padding: .75rem 1rem; font-size: .85rem; font-weight: 600; margin-bottom: 1.2rem; }
+.gate .btn-wide { margin-top: .6rem; }
 .toast { position: fixed; left: 50%; bottom: 2rem; transform: translateX(-50%); z-index: 100; background: var(--ink); color: var(--bg); padding: .85rem 1.3rem; border-radius: .9rem; font-weight: 600; font-size: .9rem; box-shadow: 0 10px 30px rgba(0,0,0,.2); max-width: calc(100vw - 2rem); }
 .toast.err { background: var(--miss-ink); color: #fff; }
 
@@ -416,6 +451,7 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 <dialog id="medDlg"></dialog>
 <dialog id="stockDlg" style="width:min(28rem, calc(100vw - 2rem))"></dialog>
 <dialog id="emDlg"></dialog>
+<div class="gate" id="gate" hidden></div>
 <div id="toastBox" aria-live="polite"></div>
 
 <script>
@@ -463,6 +499,8 @@ function ic(name, size = 20, sw = 1.7) {
 /* ---------- translations (app words only; medication names/instructions stay as entered) ---------- */
 const I18N = {
 en: {
+  g_signin:'Sign in', g_signup:'Create account', g_in_title:'Welcome back', g_in_sub:'Sign in to see your medicines and routine.', g_up_title:"Let's get you set up", g_up_sub:'Your account keeps your medicines safe on any device. Age and allergies are optional.', g_password:'Password', g_pw_hint:'At least 8 characters.', g_signin_btn:'Sign in', g_signup_btn:'Create my account',
+  sc_btn:'Scan label', sc_hide:'Close scanner', sc_title:'Scan a prescription or bottle', sc_sub:'Take a photo of the label and MedSnap fills in this form for you. Add up to 3 photos, like the prescription and the bottle.', sc_hint:'Hold the label flat, close up and in good light.', sc_take_more:'Take another photo', sc_read:'Read label', sc_reading:'Reading the label…', sc_photos:'{n} of 3 photos', sc_photo_n:'Photo {n}', sc_remove:'Remove photo', sc_max:'That is the 3-photo limit. Press Read label.', sc_need:'Take or upload a photo first.', sc_done_t:'Filled in from the label:', sc_done:'{f}. The filled boxes are outlined.', sc_times:'The label says {n} times a day. MedSnap keeps one dose time per medication, so after saving, add it again for each other time of day.', sc_check:'Please check every detail against your label before saving, and fill in anything it didn’t show, like which days to take it.', sc_pc_t:'New prescription?', sc_pc_s:'Scan the label or bottle to add it to your medications, inventory and calendar.',
   your_space:'Your space', your_details:'Your details', n_today:'Today', n_calendar:'Calendar', n_streaks:'Streaks', n_meds:'Medications',
   n_inventory:'Inventory', n_pillcheck:'Pill check', n_caregiver:'Caregiver', n_profile:'Profile & preferences',
   need_hand:'Need a hand?', need_hand_sub:'Your routine, one step at a time.', your_care:'Your care', personal_account:'Personal account', sign_out:'Sign out', menu:'Menu',
@@ -532,6 +570,8 @@ en: {
   err_server:'Could not reach the server.', err_offline:"MedSnap can't reach its server (app.py). Make sure it's running.", err_page:'This page hit a problem. Please refresh.', retry:'Try again', off_banner_t:"MedSnap can't reach its server.", off_banner:'In the VS Code terminal run: python app.py — then open http://127.0.0.1:5000/app', tz_hint:'For example America/New_York',
 },
 es: {
+  g_signin:'Iniciar sesión', g_signup:'Crear cuenta', g_in_title:'Hola de nuevo', g_in_sub:'Inicia sesión para ver tus medicamentos y tu rutina.', g_up_title:'Vamos a prepararte', g_up_sub:'Tu cuenta guarda tus medicamentos en cualquier dispositivo. La edad y las alergias son opcionales.', g_password:'Contraseña', g_pw_hint:'Al menos 8 caracteres.', g_signin_btn:'Iniciar sesión', g_signup_btn:'Crear mi cuenta',
+  sc_btn:'Escanear etiqueta', sc_hide:'Cerrar escáner', sc_title:'Escanea una receta o un frasco', sc_sub:'Toma una foto de la etiqueta y MedSnap completará este formulario. Hasta 3 fotos, por ejemplo la receta y el frasco.', sc_hint:'Sostén la etiqueta plana, de cerca y con buena luz.', sc_take_more:'Tomar otra foto', sc_read:'Leer etiqueta', sc_reading:'Leyendo la etiqueta…', sc_photos:'{n} de 3 fotos', sc_photo_n:'Foto {n}', sc_remove:'Quitar foto', sc_max:'Ese es el límite de 3 fotos. Pulsa Leer etiqueta.', sc_need:'Primero toma o sube una foto.', sc_done_t:'Completado desde la etiqueta:', sc_done:'{f}. Los campos completados están resaltados.', sc_times:'La etiqueta dice {n} veces al día. MedSnap guarda una hora por medicamento, así que después de guardar, agrégalo otra vez para cada hora.', sc_check:'Revisa cada dato con tu etiqueta antes de guardar y completa lo que no aparezca, como los días.', sc_pc_t:'¿Receta nueva?', sc_pc_s:'Escanea la etiqueta o el frasco para agregarlo a tus medicamentos, inventario y calendario.',
   your_space:'Tu espacio', your_details:'Tus datos', n_today:'Hoy', n_calendar:'Calendario', n_streaks:'Rachas', n_meds:'Medicamentos',
   n_inventory:'Inventario', n_pillcheck:'Verificar pastilla', n_caregiver:'Cuidador', n_profile:'Perfil y preferencias',
   need_hand:'¿Necesitas ayuda?', need_hand_sub:'Tu rutina, paso a paso.', your_care:'Tu cuidado', personal_account:'Cuenta personal', sign_out:'Salir', menu:'Menú',
@@ -601,6 +641,8 @@ es: {
   err_server:'No se pudo conectar con el servidor.', err_offline:'MedSnap no puede conectar con su servidor (app.py). Asegúrate de que esté en marcha.', err_page:'Esta página tuvo un problema. Actualiza.', retry:'Reintentar', off_banner_t:'MedSnap no puede conectar con su servidor.', off_banner:'En la terminal de VS Code ejecuta: python app.py — luego abre http://127.0.0.1:5000/app', tz_hint:'Por ejemplo America/New_York',
 },
 fr: {
+  g_signin:'Se connecter', g_signup:'Créer un compte', g_in_title:'Bon retour', g_in_sub:'Connectez-vous pour voir vos médicaments et votre routine.', g_up_title:'Créons votre compte', g_up_sub:"Votre compte garde vos médicaments sur tous vos appareils. L'âge et les allergies sont facultatifs.", g_password:'Mot de passe', g_pw_hint:'Au moins 8 caractères.', g_signin_btn:'Se connecter', g_signup_btn:'Créer mon compte',
+  sc_btn:"Scanner l'étiquette", sc_hide:'Fermer le scanner', sc_title:'Scanner une ordonnance ou un flacon', sc_sub:"Prenez l'étiquette en photo et MedSnap remplit ce formulaire. Jusqu'à 3 photos, par exemple l'ordonnance et le flacon.", sc_hint:"Tenez l'étiquette à plat, de près et bien éclairée.", sc_take_more:'Prendre une autre photo', sc_read:"Lire l'étiquette", sc_reading:"Lecture de l'étiquette…", sc_photos:'{n} photo(s) sur 3', sc_photo_n:'Photo {n}', sc_remove:'Retirer la photo', sc_max:"Limite de 3 photos atteinte. Appuyez sur Lire l'étiquette.", sc_need:"Prenez ou importez d'abord une photo.", sc_done_t:"Rempli depuis l'étiquette :", sc_done:'{f}. Les champs remplis sont entourés.', sc_times:"L'étiquette indique {n} fois par jour. MedSnap garde une heure par médicament : après l'enregistrement, ajoutez-le pour chaque autre heure.", sc_check:"Vérifiez chaque détail avec l'étiquette avant d'enregistrer, et complétez ce qui manque, comme les jours.", sc_pc_t:'Nouvelle ordonnance ?', sc_pc_s:"Scannez l'étiquette ou le flacon pour l'ajouter à vos médicaments, votre stock et votre calendrier.",
   your_space:'Votre espace', your_details:'Vos informations', n_today:"Aujourd'hui", n_calendar:'Calendrier', n_streaks:'Séries', n_meds:'Médicaments',
   n_inventory:'Stock', n_pillcheck:'Vérifier un comprimé', n_caregiver:'Aidant', n_profile:'Profil et préférences',
   need_hand:"Besoin d'aide ?", need_hand_sub:'Votre routine, pas à pas.', your_care:'Vos soins', personal_account:'Compte personnel', sign_out:'Quitter', menu:'Menu',
@@ -670,6 +712,8 @@ fr: {
   err_server:'Impossible de joindre le serveur.', err_offline:"MedSnap ne joint pas son serveur (app.py). Vérifiez qu'il tourne.", err_page:'Cette page a rencontré un problème. Actualisez.', retry:'Réessayer', off_banner_t:'MedSnap ne joint pas son serveur.', off_banner:'Dans le terminal VS Code, lancez : python app.py — puis ouvrez http://127.0.0.1:5000/app', tz_hint:'Par exemple America/New_York',
 },
 zh: {
+  g_signin:'登录', g_signup:'创建账户', g_in_title:'欢迎回来', g_in_sub:'登录查看您的药物和日常安排。', g_up_title:'开始设置', g_up_sub:'账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。', g_password:'密码', g_pw_hint:'至少 8 个字符。', g_signin_btn:'登录', g_signup_btn:'创建我的账户',
+  sc_btn:'扫描标签', sc_hide:'关闭扫描', sc_title:'扫描处方或药瓶', sc_sub:'拍下标签，MedSnap 会帮您填写此表。最多 3 张照片，例如处方和药瓶。', sc_hint:'将标签放平，靠近拍摄，光线要充足。', sc_take_more:'再拍一张', sc_read:'读取标签', sc_reading:'正在读取标签…', sc_photos:'已拍 {n}/3 张', sc_photo_n:'照片 {n}', sc_remove:'删除照片', sc_max:'已达 3 张上限，请点“读取标签”。', sc_need:'请先拍照或上传照片。', sc_done_t:'已根据标签填写：', sc_done:'{f}。已填写的项目带有边框。', sc_times:'标签写着每天 {n} 次。MedSnap 每种药只记录一个时间，保存后请为其他时间再添加一次。', sc_check:'保存前请对照标签检查每一项，并补充标签上没有的信息，例如服药日期。', sc_pc_t:'有新处方？', sc_pc_s:'扫描标签或药瓶，即可添加到药物、库存和日历中。',
   your_space:'我的空间', your_details:'我的信息', n_today:'今天', n_calendar:'日历', n_streaks:'连续记录', n_meds:'药物',
   n_inventory:'库存', n_pillcheck:'药片核对', n_caregiver:'照护人', n_profile:'个人资料与偏好',
   need_hand:'需要帮助吗？', need_hand_sub:'您的日常，一步一步来。', your_care:'我的照护', personal_account:'个人账户', sign_out:'退出', menu:'菜单',
@@ -774,14 +818,16 @@ function getClientId() {
     return window.__fallbackId;
   }
 }
+function getToken() { try { return localStorage.getItem('medsnap_token') || ''; } catch (e) { return ''; } }
+function setToken(v) { try { if (v) localStorage.setItem('medsnap_token', v); else localStorage.removeItem('medsnap_token'); } catch (e) {} }
 function getTimezone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } }
 /* Where app.py is. Normally the same server that sent this page. If the page was opened another way
    (VS Code Live Server, double-clicking index.html), fall back to Flask on this computer. */
 const LOCAL_FLASK = 'http://127.0.0.1:5000';
-let API_BASE = location.protocol === 'file:' ? LOCAL_FLASK : '';
+let API_BASE = (location.protocol === 'file:' || location.pathname.endsWith('.html')) ? LOCAL_FLASK : '';
 async function api(path, options) {
   options = options || {};
-  const headers = Object.assign({ 'X-Client-Id': getClientId(), 'X-Timezone': getTimezone() }, options.headers || {});
+  const headers = Object.assign({ 'X-Client-Id': getClientId(), 'X-Timezone': getTimezone(), 'X-Auth-Token': getToken() }, options.headers || {});
   let res;
   try { res = await fetch(API_BASE + path, Object.assign({}, options, { headers })); }
   catch (e) { throw new Error(t('err_offline')); }
@@ -789,6 +835,11 @@ async function api(path, options) {
   try { data = await res.json(); } catch (e) { /* not JSON */ }
   // A reply that isn't JSON means we reached some other web server, not app.py.
   if (!data) throw new Error(t('err_offline'));
+  if (res.status === 401 && data.auth === false) {
+    setToken('');
+    showGate('signin');
+    const err = new Error(data.error); err.auth = true; throw err;
+  }
   if (!res.ok || data.success === false) throw new Error(data.error || (t('err_server') + ' (' + res.status + ')'));
   return data;
 }
@@ -862,14 +913,15 @@ async function connect() {
       API_BASE = base;
       const d = await api('/api/state');
       if (d && Array.isArray(d.medications)) return d;
-    } catch (e) { /* try the next one */ }
+    } catch (e) { if (e.auth) return 'auth'; /* otherwise try the next one */ }
   }
   API_BASE = bases[0];
   return null;
 }
 async function refresh() {
   const d = await connect();
-  if (d) { offline = false; applyState(d); return; }
+  if (d === 'auth') return;   // the sign-in screen is showing
+  if (d) { offline = false; hideGate(); applyState(d); return; }
   offline = true;
   loaded = true;   // still show every page, with a banner explaining how to start the server
   render(true);
@@ -913,8 +965,8 @@ function renderSidebar() {
     <nav class="nav">${link('caregiver', 'heart', 'n_caregiver')}${link('profile', 'user', 'n_profile')}</nav>
     <div class="side-foot">
       <button class="help-card" data-act="buddy-open"><span class="ic">${ic('help', 20, 1.6)}</span><span><b>${esc(t('need_hand'))}</b><small>${esc(t('need_hand_sub'))}</small></span></button>
-      <div class="me"><span class="avatar">${esc(initial())}</span><div><b>${esc(t('your_care'))}</b><small>${esc(t('personal_account'))}</small></div>
-        <a href="/" title="${esc(t('sign_out'))}" aria-label="${esc(t('sign_out'))}">${ic('logout', 20, 1.6)}</a></div>
+      <div class="me"><span class="avatar">${esc(initial())}</span><div><b>${esc(S.profile.name || t('your_care'))}</b><small>${esc(t('personal_account'))}</small></div>
+        <a href="#" data-act="sign-out" title="${esc(t('sign_out'))}" aria-label="${esc(t('sign_out'))}">${ic('logout', 20, 1.6)}</a></div>
     </div>`;
 }
 function initial() { return ((S.profile.name || '').trim()[0] || 'Y').toUpperCase(); }
@@ -958,7 +1010,8 @@ function viewToday() {
   let body;
   if (!S.meds.length) {
     body = `<div class="card empty"><div class="tile">${ic('pill', 26, 1.6)}</div><h2>${esc(t('empty_title'))}</h2><p>${esc(t('empty_sub'))}</p>
-      <button class="btn" data-act="med-new">${ic('plus', 20, 2)}${esc(t('add_med'))}</button></div>`;
+      <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap"><button class="btn btn-light" data-act="med-scan">${ic('camera', 20, 1.8)}${esc(t('sc_btn'))}</button>
+      <button class="btn" data-act="med-new">${ic('plus', 20, 2)}${esc(t('add_med'))}</button></div></div>`;
   } else if (!doses.length) {
     body = `<div class="card empty"><div class="tile">${ic('calendar', 26, 1.6)}</div><h2>${esc(t('td_none_title'))}</h2><p>${esc(t('td_none_sub'))}</p></div>`;
   } else {
@@ -1073,7 +1126,8 @@ function daysText(m) {
 }
 function viewMeds() {
   const head = `<div class="head-row"><div><p class="eyebrow">${esc(t('m_eyebrow'))}</p><h1 class="title">${esc(t('m_title'))}</h1><p class="lede">${esc(t('m_sub'))}</p></div>
-    <button class="btn" data-act="med-new">${ic('plus', 20, 2)}${esc(t('add_med'))}</button></div>`;
+    <div class="head-btns"><button class="btn btn-light" data-act="med-scan">${ic('camera', 20, 1.8)}${esc(t('sc_btn'))}</button>
+    <button class="btn" data-act="med-new">${ic('plus', 20, 2)}${esc(t('add_med'))}</button></div></div>`;
   if (!S.meds.length) return head + `<div class="card empty"><div class="tile">${ic('pill', 26, 1.6)}</div><h2>${esc(t('empty_title'))}</h2><p>${esc(t('empty_sub'))}</p></div>
     <p class="note">${ic('shield', 18, 1.6)}${esc(t('m_private'))}</p>`;
   return head + S.meds.map(m => `<article class="card med-row">
@@ -1093,14 +1147,22 @@ function viewMeds() {
 
 /* ---------- Add / edit medication form ---------- */
 let editingId = null;
-function openMedForm(med) {
+function openMedForm(med, opts) {
+  opts = opts || {};
   editingId = med ? med.id : null;
+  resetScan();
   const m = med || { name: '', dosage: '', instructions: '', food_guide: '', badges: [], days: [0, 1, 2, 3, 4, 5, 6], scheduled_time: '08:00', stock: 30, daily_dose: 1, pill: { shape: '', color: '', imprint: '' }, critical: false };
   const dlg = $('#medDlg');
   dlg.innerHTML = `<form data-form="med">
     <div class="dlg-head"><span class="tile">${ic('pill', 22, 1.6)}</span><div><h2>${esc(med ? t('f_edit') : t('f_new'))}</h2><p>${esc(t('f_sub'))}</p></div>
       <button type="button" class="icon-btn" data-act="dlg-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
     <div class="dlg-body">
+      ${med ? '' : `<div class="scan-box">
+        <div class="scan-head"><span class="tile">${ic('camera', 22, 1.6)}</span><div><b>${esc(t('sc_title'))}</b><small>${esc(t('sc_sub'))}</small></div>
+          <button type="button" class="btn btn-light btn-sm" data-act="scan-toggle" id="scanToggle">${ic('camera', 16, 1.8)}${esc(t('sc_btn'))}</button></div>
+        <div class="scan-area" id="scanArea" hidden></div>
+        <div id="scanMsg"></div>
+      </div>`}
       <div class="field"><label for="fName">${esc(t('f_name'))}</label><input class="input" id="fName" name="name" required maxlength="120" value="${esc(m.name)}" placeholder="${esc(t('f_name_ph'))}" autocomplete="off"></div>
       <div class="field"><label for="fDose">${esc(t('f_dose'))}</label><input class="input" id="fDose" name="dosage" maxlength="60" value="${esc(m.dosage)}" placeholder="${esc(t('f_dose_ph'))}"></div>
       <div class="field"><label for="fInstr">${esc(t('f_instr'))}</label><textarea class="input" id="fInstr" name="instructions" maxlength="300" placeholder="${esc(t('f_instr_ph'))}">${esc(m.instructions)}</textarea></div>
@@ -1125,8 +1187,117 @@ function openMedForm(med) {
     <div class="dlg-foot"><button type="button" class="btn btn-light" data-act="dlg-close">${esc(t('cancel'))}</button><button type="submit" class="btn">${esc(t('save_med'))}${ic('arrow', 18, 1.8)}</button></div>
   </form>`;
   dlg.showModal();
+  if (opts.scan && !med) openScan(); else $('#fName').focus();
+}
+/* ---------- label / bottle scanner (inside the Add medication window) ---------- */
+let scanOpen = false, scanStream = null, scanFacing = 'environment', scanShots = [], scanBusy = false, scanCamMsg = '';
+function resetScan() { stopScan(); scanShots.forEach(x => URL.revokeObjectURL(x.url)); scanShots = []; scanOpen = false; scanBusy = false; scanCamMsg = ''; }
+function stopScan() { if (scanStream) scanStream.getTracks().forEach(tr => tr.stop()); scanStream = null; }
+function openScan() { scanOpen = true; const a = $('#scanArea'); if (a) a.hidden = false; renderScan(); startScan(); }
+function renderScan() {
+  const area = $('#scanArea'); if (!area) return;
+  const tg = $('#scanToggle'); if (tg) tg.innerHTML = scanOpen ? `${ic('x', 16, 1.8)}${esc(t('sc_hide'))}` : `${ic('camera', 16, 1.8)}${esc(t('sc_btn'))}`;
+  area.hidden = !scanOpen;
+  if (!scanOpen) return;
+  const full = scanShots.length >= 3;
+  const screen = scanStream && !full
+    ? `<video id="scanVideo" autoplay playsinline muted class="${scanFacing === 'user' ? 'mirror' : ''}"></video><span class="guide"></span>`
+    : `<div class="placeholder">${ic('camera', 36, 1.4)}${esc(full ? t('sc_max') : (scanCamMsg || t('sc_hint')))}</div>`;
+  area.innerHTML = `
+    <div class="cam-row"><div class="seg" role="group">
+      <button type="button" data-act="scan-face" data-v="environment" aria-pressed="${scanFacing === 'environment'}">${ic('camera', 15, 1.8)}${esc(t('cam_back'))}</button>
+      <button type="button" data-act="scan-face" data-v="user" aria-pressed="${scanFacing === 'user'}">${ic('switchcam', 15, 1.8)}${esc(t('cam_front'))}</button>
+    </div></div>
+    <div class="cam">${screen}</div>
+    ${scanShots.length ? `<div class="thumbs">${scanShots.map((x, i) => `<div class="thumb"><img src="${x.url}" alt="${esc(t('sc_photo_n', { n: i + 1 }))}"><button type="button" data-act="scan-del" data-i="${i}" aria-label="${esc(t('sc_remove'))}">${ic('x', 12, 2.4)}</button></div>`).join('')}<span class="count">${esc(t('sc_photos', { n: scanShots.length }))}</span></div>` : ''}
+    <div class="cam-row">
+      ${scanStream && !full ? `<button type="button" class="btn btn-sm" data-act="scan-snap">${ic('camera', 16, 1.8)}${esc(scanShots.length ? t('sc_take_more') : t('cam_snap'))}</button>`
+        : !full ? `<button type="button" class="btn btn-sm btn-light" data-act="scan-start">${ic('camera', 16, 1.8)}${esc(t('cam_start'))}</button>` : ''}
+      ${!full ? `<label class="btn btn-light btn-sm" style="cursor:pointer">${ic('upload', 16, 1.8)}${esc(t('cam_upload'))}<input type="file" accept="image/*" multiple data-change="scan-file" hidden></label>` : ''}
+      <button type="button" class="btn btn-sm" data-act="scan-read" ${scanShots.length && !scanBusy ? '' : 'disabled'} style="margin-left:auto">${esc(scanBusy ? t('sc_reading') : t('sc_read'))}${scanBusy ? '' : ic('arrow', 16, 1.8)}</button>
+    </div>`;
+  const v = $('#scanVideo');
+  if (v && scanStream) { v.srcObject = scanStream; v.play().catch(() => {}); }
+}
+async function startScan() {
+  scanCamMsg = '';
+  if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { scanCamMsg = t('cam_https'); renderScan(); return; }
+  stopScan();
+  try {
+    try { scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: scanFacing }, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false }); }
+    catch (e) {
+      if (e.name !== 'OverconstrainedError' && e.name !== 'NotFoundError') throw e;
+      scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: scanFacing }, audio: false });
+    }
+  } catch (e) {
+    scanStream = null;
+    scanCamMsg = e.name === 'NotAllowedError' ? t('cam_denied') : e.name === 'NotFoundError' ? t('cam_none') : t('cam_err', { e: e.message || e.name });
+  }
+  if (!$('#medDlg').open || !scanOpen) { stopScan(); return; }
+  renderScan();
+}
+function addShot(blob) {
+  if (scanShots.length >= 3) { showToast(t('sc_max'), 'error'); return; }
+  scanShots.push({ blob, url: URL.createObjectURL(blob) });
+  if (scanShots.length >= 3) stopScan();
+}
+function snapScan() {
+  const v = $('#scanVideo'); if (!v || !v.videoWidth) return;
+  const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext('2d').drawImage(v, 0, 0);
+  c.toBlob(b => { if (b) { addShot(b); renderScan(); } }, 'image/jpeg', 0.92);
+}
+function setScanMsg(kind, html) { const m = $('#scanMsg'); if (m) m.innerHTML = html ? `<div class="scan-msg ${kind}" role="status">${html}</div>` : ''; }
+async function readScan() {
+  if (!scanShots.length) { showToast(t('sc_need'), 'error'); return; }
+  scanBusy = true; renderScan(); setScanMsg('', '');
+  const fd = new FormData();
+  scanShots.forEach((x, i) => fd.append('file', x.blob, `label-${i + 1}.jpg`));
+  try {
+    const d = await api('/api/analyze', { method: 'POST', body: fd });
+    fillFromScan(d.parsed || {});
+    scanOpen = false; stopScan();
+  } catch (e) {
+    setScanMsg('err', esc(e.message));
+  }
+  scanBusy = false; renderScan();
+}
+function fillFromScan(p) {
+  const form = $('[data-form="med"]'); if (!form) return;
+  form.querySelectorAll('.filled').forEach(el => el.classList.remove('filled'));
+  const got = [];
+  const set = (id, val, label) => {
+    if (val === undefined || val === null || val === '' || val === 0) return;
+    const el = $('#' + id); if (!el) return;
+    el.value = val; el.classList.add('filled'); got.push(label);
+  };
+  set('fName', p.name, t('f_name'));
+  set('fDose', p.dosage, t('f_dose'));
+  set('fInstr', p.directions, t('f_instr'));
+  set('fFood', p.food_guide, t('f_food'));
+  let time = p.time;
+  if (!time && p.times_per_day === 1) time = (p.badges || []).includes('before_bed') ? '21:00' : '08:00';
+  set('fTime', time, t('f_time'));
+  set('fStock', p.quantity, t('f_stock'));
+  set('fPpd', p.pills_per_dose, t('f_ppd'));
+  set('fShape', p.shape, t('f_shape'));
+  set('fColor', p.color, t('f_color'));
+  set('fImprint', p.imprint, t('f_imprint'));
+  if ((p.badges || []).length) {
+    form.querySelectorAll('input[name="badges"]').forEach(cb => {
+      if (p.badges.includes(cb.value)) { cb.checked = true; cb.closest('label').classList.add('filled'); }
+    });
+    got.push(t('f_guidance'));
+  }
+  updateFormPreview();
+  let html = `<p><b>${esc(t('sc_done_t'))}</b> ${esc(t('sc_done', { f: got.join(', ') }))}</p>`;
+  if (p.times_per_day > 1) html += `<p>${esc(t('sc_times', { n: p.times_per_day }))}</p>`;
+  html += `<p>${esc(t('sc_check'))}</p>`;
+  setScanMsg(p.times_per_day > 1 ? 'warn' : 'ok', html);
   $('#fName').focus();
 }
+$('#medDlg').addEventListener('close', resetScan);
+
 function updateFormPreview() {
   const p = $('#fPreview'); if (!p) return;
   p.innerHTML = pillSvg($('#fShape').value, $('#fColor').value, $('#fImprint').value, 52);
@@ -1198,6 +1369,8 @@ function viewPillcheck() {
     <div>
       <div class="side-k">${esc(t('helpful').toUpperCase())}</div><div class="side-t">${esc(t('match_title'))}</div>
       <div class="ref">${ic('shield', 22, 1.6)}<div><b>${esc(t('ref_title'))}</b><p>${esc(t('ref_text'))}</p></div></div>
+      <div class="card scan-card"><span class="tile">${ic('camera', 22, 1.6)}</span><div><b>${esc(t('sc_pc_t'))}</b><small>${esc(t('sc_pc_s'))}</small></div>
+        <button class="btn btn-sm" data-act="med-scan">${esc(t('sc_btn'))}${ic('arrow', 16, 1.8)}</button></div>
       <div class="result">${pcResultHtml()}</div>
       <p class="note" style="margin-left:0">${ic('help', 18, 1.6)}${esc(t('pc_sub'))}</p>
     </div>
@@ -1391,6 +1564,53 @@ function openEmergency() {
   $('#emDlg').showModal();
 }
 
+/* ---------- sign in / create account ---------- */
+let gateMode = 'signin', gateError = '';
+function showGate(mode) {
+  gateMode = mode || gateMode;
+  const g = $('#gate'); g.hidden = false;
+  const up = gateMode === 'signup';
+  g.innerHTML = `<div class="card gate-card">
+    <div class="logo"><span class="logo-mark">${ic('leaf', 22, 2)}</span><span class="logo-word">med<span>snap</span></span></div>
+    <h1>${esc(up ? t('g_up_title') : t('g_in_title'))}</h1><p class="lede">${esc(up ? t('g_up_sub') : t('g_in_sub'))}</p>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="${!up}" data-act="gate-mode" data-v="signin">${esc(t('g_signin'))}</button>
+      <button type="button" role="tab" aria-selected="${up}" data-act="gate-mode" data-v="signup">${esc(t('g_signup'))}</button>
+    </div>
+    ${gateError ? `<div class="err" role="alert">${esc(gateError)}</div>` : ''}
+    <form data-form="gate">
+      ${up ? `<div class="field"><label for="gName">${esc(t('f_pname'))}</label><input class="input" id="gName" name="name" required maxlength="60" autocomplete="name"></div>` : ''}
+      <div class="field"><label for="gEmail">${esc(t('cg_email'))}</label><input class="input" id="gEmail" name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label for="gPw">${esc(t('g_password'))}</label><input class="input" id="gPw" name="password" type="password" required ${up ? 'minlength="8" autocomplete="new-password"' : 'autocomplete="current-password"'}>
+        ${up ? `<p class="hint">${esc(t('g_pw_hint'))}</p>` : ''}</div>
+      ${up ? `<div class="field"><label for="gAge">${esc(t('f_age'))}</label><input class="input" id="gAge" name="age" inputmode="numeric" maxlength="3" placeholder="${esc(t('optional'))}"></div>
+      <div class="field"><label for="gAll">${esc(t('f_allergies'))}</label><textarea class="input" id="gAll" name="allergies" maxlength="500" placeholder="${esc(t('optional'))}"></textarea></div>` : ''}
+      <button class="btn btn-wide" type="submit">${esc(up ? t('g_signup_btn') : t('g_signin_btn'))}${ic('arrow', 18, 1.8)}</button>
+    </form>
+    <p class="note" style="justify-content:center;margin:1.4rem 0 0">${ic('shield', 16, 1.6)}${esc(t('private'))}</p>
+  </div>`;
+  const first = g.querySelector('input'); if (first) first.focus();
+}
+function hideGate() { const g = $('#gate'); g.hidden = true; g.innerHTML = ''; gateError = ''; }
+async function submitGate(form) {
+  const f = Object.fromEntries(new FormData(form));
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    const path = gateMode === 'signup' ? '/api/auth/signup' : '/api/auth/login';
+    const d = await api(path, jsonOptions('POST', Object.assign(f, { language: lang })));
+    setToken(d.token);
+    hideGate();
+    await refresh();
+  } catch (e) {
+    gateError = e.message; showGate(gateMode);
+  }
+}
+async function signOut() {
+  try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) {}
+  setToken('');
+  location.href = API_BASE ? 'landing.html' : '/';
+}
+
 /* ---------- render ---------- */
 const VIEWS = { today: viewToday, calendar: viewCalendar, streaks: viewStreaks, medications: viewMeds, inventory: viewInventory, pillcheck: viewPillcheck, caregiver: viewCaregiver, profile: viewProfile };
 function renderPage(force) {
@@ -1422,6 +1642,8 @@ document.addEventListener('click', async e => {
   const id = el.dataset.id ? Number(el.dataset.id) : null;
   switch (el.dataset.act) {
     case 'retry': e.preventDefault(); refresh(); break;
+    case 'gate-mode': gateError = ''; showGate(el.dataset.v); break;
+    case 'sign-out': e.preventDefault(); signOut(); break;
     case 'open-nav': document.body.classList.add('nav-open'); break;
     case 'close-nav': document.body.classList.remove('nav-open'); break;
     case 'take': el.disabled = true; await run(api(`/api/medications/${id}/take`, { method: 'POST' })); break;
@@ -1433,6 +1655,13 @@ document.addEventListener('click', async e => {
     }
     case 'week': weekOffset = el.dataset.dir === '0' ? 0 : weekOffset + Number(el.dataset.dir); renderPage(true); break;
     case 'med-new': openMedForm(null); break;
+    case 'med-scan': if (route === 'pillcheck') { stopCamera(); renderPage(true); } openMedForm(null, { scan: true }); break;
+    case 'scan-toggle': if (scanOpen) { scanOpen = false; stopScan(); renderScan(); } else openScan(); break;
+    case 'scan-face': scanFacing = el.dataset.v; if (scanStream) await startScan(); else renderScan(); break;
+    case 'scan-start': await startScan(); break;
+    case 'scan-snap': snapScan(); break;
+    case 'scan-del': { const x = scanShots.splice(Number(el.dataset.i), 1)[0]; if (x) URL.revokeObjectURL(x.url); if (!scanStream && scanShots.length < 3) startScan(); else renderScan(); break; }
+    case 'scan-read': readScan(); break;
     case 'med-edit': openMedForm(S.meds.find(m => m.id === id)); break;
     case 'med-delete': {
       const m = S.meds.find(x => x.id === id);
@@ -1472,6 +1701,7 @@ document.addEventListener('change', e => {
   if (c === 'preview') updateFormPreview();
   if (c === 'theme') { document.documentElement.setAttribute('data-theme', e.target.value); try { localStorage.setItem('medsnap_theme', e.target.value); } catch (err) {} }
   if (c === 'dyslexia') { document.documentElement.classList.toggle('dyslexic', e.target.checked); try { localStorage.setItem('medsnap_dyslexia', e.target.checked ? '1' : '0'); } catch (err) {} }
+  if (c === 'scan-file') { [...e.target.files].slice(0, 3 - scanShots.length).forEach(addShot); e.target.value = ''; renderScan(); }
   if (c === 'cam-file') { const f = e.target.files[0]; if (f) { stopCamera(); setShot(f); renderPage(true); } }
 });
 document.addEventListener('input', e => {
@@ -1507,6 +1737,7 @@ document.addEventListener('submit', async e => {
     const d = await run(api('/api/caregiver', jsonOptions('PUT', payload)));
     if (d) { showToast(d.delivery === 'sending' ? t('cg_saved_on', { name: payload.name || t('your_caregiver') }) : t('cg_saved')); renderPage(true); }
   }
+  if (kind === 'gate') { submitGate(form); return; }
   if (kind === 'buddy') { const inp = $('#bdInput'); const v = inp.value; inp.value = ''; sendChat(v); }
 });
 document.addEventListener('keydown', e => {
@@ -1515,9 +1746,10 @@ document.addEventListener('keydown', e => {
 
 /* ---------- start ---------- */
 render(true);
-refresh();
+if (getToken()) refresh();
+else showGate(location.hash === '#signup' ? 'signup' : 'signin');
 // Keep "due"/"missed" accurate and pick up changes made on another device.
-setInterval(() => { if (!document.querySelector('dialog[open]') && !chatBusy) api('/api/state').then(d => { applyState(d); }).catch(() => {}); }, 60000);
+setInterval(() => { if (getToken() && $('#gate').hidden && !document.querySelector('dialog[open]') && !chatBusy) api('/api/state').then(d => { applyState(d); }).catch(() => {}); }, 60000);
 </script>
 </body>
 </html>
