@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedSnap | Smart Medication Manager</title>
-    <script>try { document.documentElement.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); } catch (e) {}</script>
+    <title>MedSnap | Never miss a dose</title>
+    <script>try { var d = document.documentElement; d.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); d.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1'); if (localStorage.getItem('medsnap_dyslexia') === '1') d.classList.add('dyslexic'); if (localStorage.getItem('medsnap_contrast') === '1') d.classList.add('hc'); } catch (e) {}</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
     <style>
         /* Palette: #8BA49A sage, #CBDED3 mint, #3B6255 forest, #D2C49E sand */
         :root {
@@ -21,7 +24,7 @@
             --accent: #8BA49A; --accent-text: #10241c; --glow-1: rgba(59,98,85,.6); --glow-2: rgba(210,196,158,.16);
             --shadow: 0 16px 40px rgba(0,0,0,.4);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; transition: background-color .3s, color .3s, border-color .3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; transition: background-color .3s, color .3s, border-color .3s; }
         body { background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
         .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(to right, rgba(59,98,85,.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,98,85,.06) 1px, transparent 1px); background-size: 50px 50px; z-index: -2; }
         .orb { position: fixed; width: 560px; height: 560px; border-radius: 50%; filter: blur(130px); z-index: -1; pointer-events: none; }
@@ -93,6 +96,11 @@
         textarea.auth-input { min-height: 64px; resize: vertical; }
         .auth-row { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
         .auth-hint { font-size: .76rem; color: var(--muted); margin-top: 4px; }
+        .pw-wrap { position: relative; }
+        .pw-wrap .auth-input { padding-right: 46px; }
+        .pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 9px; font-size: 1rem; }
+        .pw-eye:hover { background: rgba(59,98,85,.1); color: var(--ink); }
+        .auth-err button { display: block; margin-top: 8px; background: none; border: 0; padding: 0; color: inherit; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; }
         .auth-err { background: rgba(159,58,40,.12); color: #9F3A28; border: 1px solid rgba(159,58,40,.35); border-radius: 12px; padding: 10px 13px; font-size: .86rem; font-weight: 700; margin-bottom: 13px; }
         [data-theme="dark"] .auth-err { color: #F0A08E; }
         .auth-submit { width: 100%; justify-content: center; border: 0; cursor: pointer; margin-top: 4px; padding: 13px 22px; font-size: 1rem; }
@@ -148,101 +156,259 @@
         @media (max-width: 980px) { .stat-grid { grid-template-columns: 1fr 1fr; } .chart-grid, .helps { grid-template-columns: 1fr; } }
         @media (max-width: 560px) { .stat-grid { grid-template-columns: 1fr; } nav { padding: 14px 5%; } .nav-controls { gap: 6px; } .nav-controls > .btn-launch { display: none; } .theme-btn { padding: 7px 10px; } .btn-ghost, .btn-signup { padding: 8px 12px; font-size: .85rem; } .auth-group { gap: 6px; } .hi-chip span { display: none; } }
         @media (prefers-reduced-motion: reduce) { .donut .seg, .bar, .bar b { transition: none; } }
+
+        /* =============== Redesigned top of the page =============== */
+        html { font-size: calc(16px * var(--scale, 1)); }
+        html.dyslexic body, html.dyslexic body *:not(i) { font-family: "OpenDyslexic", "Comic Sans MS", sans-serif !important; letter-spacing: .02em; }
+        body { background: linear-gradient(180deg, #E9F1EC 0%, #DCE9E1 55%, var(--bg) 100%) fixed; }
+        [data-theme="dark"] body { background: linear-gradient(180deg, #0E1813 0%, #101C17 100%) fixed; }
+        .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+        nav.topbar { padding: 14px 13%; background: rgba(241,246,243,.78); border-bottom: 1px solid var(--border); }
+        [data-theme="dark"] nav.topbar { background: rgba(14,24,19,.82); }
+        .topbar .logo { font-size: 1.75rem; letter-spacing: -.04em; gap: 12px; }
+        .topbar .logo i { font-size: 1.45rem; }
+        .top-right { display: flex; align-items: center; gap: 1.1rem; }
+        .btn-start { background: var(--accent); color: var(--accent-text); border: 0; border-radius: 999px; padding: .8rem 1.5rem; font-weight: 700; font-size: 1.05rem; cursor: pointer; text-decoration: none; box-shadow: 0 6px 18px rgba(59,98,85,.25); transition: transform .2s; white-space: nowrap; }
+        .btn-start:hover { transform: translateY(-2px); }
+        .me-chip { display: inline-flex; align-items: center; gap: .65rem; }
+        .me-chip .av { width: 2.6rem; height: 2.6rem; border-radius: 50%; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; }
+        .me-chip b { font-size: 1.05rem; }
+        .pill-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: .5rem 1rem; font-weight: 600; font-size: .95rem; cursor: pointer; }
+        .pill-btn:hover { background: var(--card); color: var(--ink); }
+        .lang-pill { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: .45rem .5rem .45rem .95rem; color: var(--ink); }
+        .lang-pill i { color: var(--accent); font-size: 1.15rem; }
+        .lang-pill select { appearance: none; border: 0; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath d='M4 8l8 8 8-8' fill='none' stroke='%233B6255' stroke-width='3'/%3E%3C/svg%3E") no-repeat right .45rem center; font-weight: 800; font-size: 1rem; color: var(--ink); padding: .1rem 1.5rem .1rem .1rem; cursor: pointer; }
+        .lang-pill select option { color: #1F3A30; }
+        .moon-btn { width: 3.4rem; height: 3.4rem; border-radius: 50%; border: 1px solid var(--border); background: var(--card); cursor: pointer; display: grid; place-items: center; font-size: 1.35rem; color: #C9A64E; box-shadow: 0 2px 8px rgba(31,58,48,.08); }
+        [data-theme="dark"] .moon-btn { color: #E9D08A; }
+
+        .hero-wrap { position: relative; overflow: hidden; }
+        .decor { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .circle { position: absolute; border-radius: 50%; }
+        .c1 { width: 46vw; max-width: 720px; aspect-ratio: 1; top: -12vw; right: -9vw; background: rgba(139,164,154,.24); }
+        .c2 { width: 32vw; max-width: 520px; aspect-ratio: 1; bottom: -14vw; left: -10vw; background: rgba(203,222,211,.75); }
+        .c3 { width: 15vw; max-width: 300px; aspect-ratio: 1; top: 58%; left: 61%; background: rgba(210,196,158,.25); }
+        [data-theme="dark"] .c1 { background: rgba(59,98,85,.28); } [data-theme="dark"] .c2 { background: rgba(59,98,85,.18); } [data-theme="dark"] .c3 { background: rgba(210,196,158,.08); }
+        .float { position: absolute; color: var(--accent); opacity: .13; font-size: 2.4rem; animation: drift 7s ease-in-out infinite; }
+        .f1 { top: 16%; left: 6%; } .f2 { top: 24%; right: 9%; animation-delay: -2s; transform: rotate(35deg); } .f3 { top: 52%; left: 3%; animation-delay: -4s; }
+        .f4 { top: 56%; right: 7%; animation-delay: -1s; } .f5 { bottom: 9%; left: 5%; animation-delay: -3s; color: #C9A64E; opacity: .22; } .f6 { bottom: 7%; right: 22%; animation-delay: -5s; }
+        @keyframes drift { 0%, 100% { translate: 0 0; } 50% { translate: 0 -14px; } }
+
+        .hero2 { position: relative; z-index: 1; text-align: center; padding: 7.5rem 8% 4rem; max-width: 1100px; margin: 0 auto; }
+        .hero-badge { display: inline-flex; align-items: center; gap: .6rem; background: rgba(255,255,255,.55); border: 1px solid rgba(59,98,85,.28); color: var(--accent); border-radius: 999px; padding: .5rem 1.2rem .5rem .9rem; font-weight: 700; font-size: 1.05rem; margin-bottom: 2rem; }
+        [data-theme="dark"] .hero-badge { background: rgba(59,98,85,.25); color: var(--ink); }
+        .hero-badge .pulse { width: .55rem; height: .55rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 .35rem rgba(59,98,85,.15); animation: pulse 2s ease-in-out infinite; }
+        .hero-badge i { width: 1.45rem; height: 1.45rem; border-radius: .35rem; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; font-size: .9rem; }
+        @keyframes pulse { 50% { box-shadow: 0 0 0 .6rem rgba(59,98,85,0); } }
+        .brand-title { font-size: clamp(4rem, 11vw, 8.6rem); font-weight: 800; letter-spacing: -.055em; line-height: 1; margin-bottom: 1.6rem; }
+        .brand-title .a { color: #14261F; } .brand-title .b { color: var(--accent); }
+        [data-theme="dark"] .brand-title .a { color: #E6F0EA; }
+        .typing { font-size: clamp(1.35rem, 2.6vw, 2.15rem); font-weight: 500; color: var(--muted); min-height: 1.5em; margin-bottom: 1.9rem; letter-spacing: -.01em; }
+        .caret { display: inline-block; width: 3px; height: 1.05em; background: var(--accent); margin-left: 3px; vertical-align: -.12em; animation: blink 1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .hero2 .lead2 { font-size: 1.32rem; line-height: 1.75; color: var(--muted); max-width: 56rem; margin: 0 auto 3.4rem; }
+        .hero-stats { display: flex; justify-content: center; align-items: flex-start; margin: 0 auto 3.2rem; max-width: 52rem; }
+        .hero-stats > div { flex: 1; padding: 0 1.6rem; }
+        .hero-stats > div + div { border-left: 1px solid var(--border); }
+        .hero-stats b { display: block; font-size: 3rem; font-weight: 800; color: var(--accent); letter-spacing: -.03em; line-height: 1.15; }
+        .hero-stats span { display: block; color: var(--muted); font-size: 1.05rem; line-height: 1.6; max-width: 13rem; margin: .2rem auto 0; }
+        .cta-big { display: inline-flex; align-items: center; gap: .8rem; background: var(--accent); color: var(--accent-text); border: 3px solid rgba(255,255,255,.65); border-radius: 999px; padding: 1.15rem 2.6rem; font-size: 1.45rem; font-weight: 800; cursor: pointer; text-decoration: none; box-shadow: 0 14px 34px rgba(59,98,85,.3); transition: transform .2s, box-shadow .2s; }
+        .cta-big:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(59,98,85,.36); }
+        [data-theme="dark"] .cta-big { border-color: rgba(203,222,211,.25); }
+        .hero-wrap .preview { position: relative; z-index: 1; margin: 4.5rem auto 0; }
+
+        /* ---------- section labels ---------- */
+        .section-pill { display: inline-block; padding: .5rem 1.3rem; border-radius: 999px; font-weight: 800; font-size: .88rem; letter-spacing: .09em; text-transform: uppercase; }
+        .section-pill.light { background: #D3E4D9; color: var(--accent); }
+        [data-theme="dark"] .section-pill.light { background: rgba(139,164,154,.2); color: var(--ink); }
+
+        /* ---------- Impact by the numbers ---------- */
+        .band { position: relative; overflow: hidden; text-align: center; color: #fff; padding: 6.5rem 8% 7rem;
+                background: linear-gradient(120deg, #3B6255 0%, #2F5547 45%, #557A6C 100%); }
+        .band::before { content: ""; position: absolute; width: 38rem; height: 38rem; border-radius: 50%; right: -12rem; bottom: -18rem; background: rgba(210,196,158,.22); }
+        .band::after { content: ""; position: absolute; width: 26rem; height: 26rem; border-radius: 50%; left: -10rem; top: -12rem; background: rgba(203,222,211,.12); }
+        [data-theme="dark"] .band { background: linear-gradient(120deg, #1B3229 0%, #22402F 50%, #2E5246 100%); }
+        .band > * { position: relative; z-index: 1; }
+        .band .section-pill { background: rgba(255,255,255,.18); color: #fff; }
+        .band h2 { font-size: clamp(2.3rem, 4.4vw, 3.6rem); font-weight: 800; letter-spacing: -.035em; line-height: 1.12; margin: 1.5rem 0 1.1rem; color: #fff; }
+        .band .sub { color: rgba(255,255,255,.86); font-size: 1.25rem; line-height: 1.7; max-width: 48rem; margin: 0 auto 3.6rem; }
+        .glass-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.7rem; max-width: 1200px; margin: 0 auto; }
+        .glass { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.26); border-radius: 1.7rem; padding: 2.7rem 1.4rem 2.5rem; backdrop-filter: blur(6px); transition: transform .25s, background .25s, box-shadow .25s; }
+        .glass:hover { transform: translateY(-6px); background: rgba(255,255,255,.18); box-shadow: 0 18px 40px rgba(0,0,0,.18); }
+        .glass .emo { font-size: 2.5rem; line-height: 1; margin-bottom: 1.3rem; }
+        .glass .num { font-size: clamp(2.5rem, 4vw, 3.7rem); font-weight: 800; letter-spacing: -.035em; line-height: 1.1; color: #fff; font-variant-numeric: tabular-nums; }
+        .glass p { color: rgba(255,255,255,.88); font-weight: 600; font-size: 1.05rem; line-height: 1.5; margin-top: .7rem; }
+        .impact { padding-top: 6rem; }
+
+        /* ---------- How it works ---------- */
+        .how { text-align: center; padding: 6.5rem 6% 7rem; background: rgba(250,252,250,.7); border-top: 1px solid var(--border); }
+        [data-theme="dark"] .how { background: rgba(0,0,0,.12); }
+        .how h2 { font-size: clamp(2.3rem, 4.6vw, 3.9rem); font-weight: 800; letter-spacing: -.035em; line-height: 1.1; margin: 1.5rem 0 1.2rem; color: #14261F; }
+        [data-theme="dark"] .how h2 { color: var(--ink); }
+        .how .sub { color: var(--muted); font-size: 1.3rem; line-height: 1.7; max-width: 50rem; margin: 0 auto 4rem; }
+        .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.8rem; max-width: 1400px; margin: 0 auto; }
+        .how-card { background: #FBFCFB; border: 1px solid var(--border); border-radius: 1.9rem; padding: 3rem 1.9rem 2.8rem; transition: transform .25s, box-shadow .25s; }
+        [data-theme="dark"] .how-card { background: var(--card); }
+        .how-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+        .how-card .emo { font-size: 3.2rem; line-height: 1; margin-bottom: 1.6rem; }
+        .how-card h3 { font-size: 1.35rem; font-weight: 800; letter-spacing: -.01em; margin-bottom: .9rem; }
+        .how-card p { color: var(--muted); font-size: 1.05rem; line-height: 1.75; }
+        footer { padding-top: 3rem; }
+
+        /* ---------- accessibility button + panel ---------- */
+        .a11y-btn { position: fixed; left: 2rem; bottom: 2rem; z-index: 110; width: 4.3rem; height: 4.3rem; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-text); font-size: 1.65rem; cursor: pointer; box-shadow: 0 0 0 6px rgba(59,98,85,.15), 0 10px 26px rgba(59,98,85,.35); display: grid; place-items: center; }
+        .a11y-panel { position: fixed; left: 2rem; bottom: 7.4rem; z-index: 120; width: min(21rem, calc(100vw - 2rem)); max-height: calc(100vh - 8.4rem); overflow-y: auto; background: #FFFFFF; color: #14261F; border: 1px solid rgba(31,58,48,.14); border-radius: 1.4rem; box-shadow: 0 24px 60px rgba(31,58,48,.22); padding: 1.6rem 1.5rem 1.2rem; }
+        [data-theme="dark"] .a11y-panel { background: #16241D; color: var(--ink); border-color: rgba(203,222,211,.16); }
+        .a11y-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(31,58,48,.12); }
+        .a11y-head h3 { font-size: 1.35rem; font-weight: 800; display: flex; align-items: center; gap: .5rem; }
+        .a11y-x { width: 2.2rem; height: 2.2rem; border-radius: .6rem; border: 0; background: none; color: #6B7F75; font-size: 1.1rem; cursor: pointer; }
+        .a11y-x:hover { background: rgba(59,98,85,.1); }
+        .a11y-sec { padding: 1rem 0 1.1rem; border-bottom: 1px solid rgba(31,58,48,.12); }
+        .a11y-sec:last-child { border-bottom: 0; }
+        .a11y-k { font-size: .82rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #5E7369; margin-bottom: .7rem; }
+        [data-theme="dark"] .a11y-k { color: var(--muted); }
+        .a11y-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 1.02rem; padding: .35rem 0; cursor: pointer; }
+        .sw { appearance: none; -webkit-appearance: none; width: 3rem; height: 1.7rem; border-radius: 999px; background: #DDE5E0; position: relative; cursor: pointer; flex: none; transition: background .2s; }
+        .sw::after { content: ""; position: absolute; top: .2rem; left: .2rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+        .sw:checked { background: #3B6255; }
+        .sw:checked::after { transform: translateX(1.3rem); }
+        .sw:focus-visible { outline: 3px solid rgba(59,98,85,.45); outline-offset: 2px; }
+        .a11y-wide { width: 100%; margin-top: .6rem; border-radius: .9rem; padding: .75rem; font-weight: 700; font-size: .98rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; }
+        .a11y-wide.read { background: #EEF4F0; border: 1px solid rgba(59,98,85,.25); color: #3B6255; }
+        .a11y-wide.stop { background: #FCF0EE; border: 1px solid #EFC4BD; color: #B03A2E; }
+        [data-theme="dark"] .a11y-wide.read { background: rgba(139,164,154,.12); color: var(--ink); }
+        [data-theme="dark"] .a11y-wide.stop { background: rgba(240,160,142,.1); color: #F2A398; border-color: rgba(240,160,142,.35); }
+        .sz3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+        .sz3 button { padding: .75rem 0; border-radius: .9rem; border: 1px solid rgba(31,58,48,.16); background: #F6F9F7; color: inherit; font-weight: 800; font-size: 1.05rem; cursor: pointer; }
+        [data-theme="dark"] .sz3 button { background: rgba(255,255,255,.04); border-color: rgba(203,222,211,.18); }
+        .sz3 button:disabled { opacity: .4; cursor: default; }
+        [hidden] { display: none !important; }
+
+        /* ---------- high contrast mode ---------- */
+        html.hc { --ink: #000; --muted: #111; --border: rgba(0,0,0,.75); --card: #fff; --accent: #1A3A2E; --accent-text: #fff; --nav: #fff; }
+        html.hc body { background: #fff !important; }
+        html.hc[data-theme="dark"] { --ink: #fff; --muted: #f2f2f2; --border: rgba(255,255,255,.8); --card: #000; --accent: #CFEBDC; --accent-text: #000; --nav: #000; }
+        html.hc[data-theme="dark"] body { background: #000 !important; }
+        html.hc .circle, html.hc .float, html.hc .band::before, html.hc .band::after { display: none; }
+        html.hc .band { background: #1A3A2E; } html.hc[data-theme="dark"] .band { background: #000; border-block: 2px solid #fff; }
+        html.hc .glass { background: transparent; border: 2px solid #fff; }
+        html.hc .brand-title .a, html.hc .how h2 { color: var(--ink); }
+        html.hc .how, html.hc .how-card, html.hc .chart-card, html.hc .preview, html.hc .help, html.hc nav.topbar { background: var(--card); border: 2px solid var(--border); }
+        html.hc a { text-decoration: underline; }
+        html.hc .btn-start, html.hc .cta-big, html.hc .a11y-btn { text-decoration: none; }
+
+        @media (max-width: 1100px) { nav.topbar { padding: 12px 5%; } .glass-grid, .how-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 760px) {
+            .top-right { gap: .5rem; } .me-chip b, .start-long { display: none; } .btn-start { padding: .65rem 1rem; font-size: .9rem; }
+            .moon-btn { width: 2.7rem; height: 2.7rem; font-size: 1.1rem; } .lang-pill { padding: .35rem .35rem .35rem .7rem; }
+            .me-chip .av { width: 2.2rem; height: 2.2rem; } .pill-btn { padding: .4rem .7rem; font-size: .82rem; }
+            .topbar .logo { font-size: 1.35rem; } .topbar .logo span { display: none; }
+            .hero2 { padding-top: 4rem; } .hero-badge { font-size: .88rem; }
+            .hero-stats { flex-direction: column; gap: 1.6rem; } .hero-stats > div + div { border-left: 0; border-top: 1px solid var(--border); padding-top: 1.6rem; }
+            .typing { min-height: 3em; } .hero2 .lead2 { font-size: 1.1rem; } .cta-big { font-size: 1.1rem; padding: 1rem 1.6rem; }
+            .a11y-btn { left: 1rem; bottom: 1rem; width: 3.4rem; height: 3.4rem; } .a11y-panel { left: 1rem; bottom: 5.4rem; max-height: calc(100vh - 6.4rem); }
+            .glass-grid, .how-grid { grid-template-columns: 1fr; } .band, .how { padding: 4.5rem 5%; }
+            .float { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) { .float, .hero-badge .pulse, .caret { animation: none; } }
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-
-    <nav>
-        <a class="logo" href="/"><i class="fa-solid fa-capsules"></i> MedSnap</a>
-        <ul class="nav-links">
-            <li><a href="#features">Features</a></li>
-            <li><a href="#how">How it works</a></li>
-            <li><a href="#impact">Why it matters</a></li>
-        </ul>
-        <div class="nav-controls">
-            <button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle light and dark mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
-            <span class="auth-group" id="authOut">
-                <button type="button" class="btn-ghost" data-auth="signin">Sign in</button>
+    <nav class="topbar">
+        <a class="logo" href="/"><i class="fa-solid fa-capsules"></i> <span>MedSnap</span></a>
+        <div class="top-right">
+            <a href="/app" class="btn-start" id="startBtn" data-auth="signup"><span data-i18n="get_started">Get Started</span></a>
+            <span class="me-chip" id="authIn" hidden>
+                <span class="av" id="meInitial" aria-hidden="true">M</span><b id="hiName"></b>
+                <button type="button" class="pill-btn" id="signOutBtn" data-i18n="sign_out">Sign Out</button>
             </span>
-            <span class="auth-group" id="authIn" hidden>
-                <span class="hi-chip"><i class="fa-solid fa-circle-user"></i> <span id="hiName"></span></span>
-                <button type="button" class="btn-ghost" id="signOutBtn">Sign out</button>
-            </span>
-            <a href="/app" class="btn-launch"><span>Open MedSnap</span> <i class="fa-solid fa-arrow-right"></i></a>
+            <button type="button" class="pill-btn" id="authOut" data-auth="signin" data-i18n="sign_in">Sign In</button>
+            <label class="lang-pill"><i class="fa-solid fa-globe" aria-hidden="true"></i><span class="sr" data-i18n="language">Language</span>
+                <select id="langSel">
+                    <option value="en">EN</option><option value="es">ES</option><option value="fr">FR</option><option value="zh">中文</option>
+                </select></label>
+            <button type="button" class="moon-btn" id="themeBtn" aria-label="Switch to dark mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="badge"><i class="fa-solid fa-leaf"></i> Powered by Groq AI</div>
-        <h1>Never miss a dose. Understand every pill.</h1>
-        <p class="lead">MedSnap keeps your medications organized with spoken reminders, food and timing guides, refill warnings, and optional alerts to a caregiver, in English, Spanish, French, and Mandarin.</p>
-        <div class="cta-group">
-            <a href="/app" class="btn-launch" style="padding: 14px 34px; font-size: 1rem;">Try MedSnap now <i class="fa-solid fa-wand-magic-sparkles"></i></a>
-            <a href="#features" class="btn-secondary">See features</a>
+    <div class="hero-wrap">
+        <div class="decor" aria-hidden="true">
+            <span class="circle c1"></span><span class="circle c2"></span><span class="circle c3"></span>
+            <i class="float f1 fa-solid fa-house-medical"></i><i class="float f2 fa-solid fa-capsules"></i><i class="float f3 fa-solid fa-prescription-bottle-medical"></i>
+            <i class="float f4 fa-solid fa-stethoscope"></i><i class="float f5 fa-solid fa-heart"></i><i class="float f6 fa-solid fa-pills"></i>
         </div>
 
-        <div class="preview" id="how" aria-label="Example of the MedSnap schedule">
-            <div class="preview-head">
-                <div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div>
-                <span class="preview-title">Today's schedule (example)</span>
+        <section class="hero2">
+            <div class="hero-badge"><span class="pulse"></span><i class="fa-solid fa-universal-access" aria-hidden="true"></i><span data-i18n="badge">Accessibility-First Medication Care</span></div>
+            <h1 class="brand-title"><span class="a">Med</span><span class="b">Snap</span></h1>
+            <p class="typing" id="typingLine"><span id="typed" aria-hidden="true"></span><span class="caret" aria-hidden="true"></span><span class="sr" id="typedSr"></span></p>
+            <p class="lead2" data-i18n="lead">Keeping track of medicines can feel overwhelming. MedSnap turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.</p>
+            <div class="hero-stats">
+                <div><b>~50%</b><span data-i18n="st1">of long-term medicines aren't taken as prescribed</span></div>
+                <div><b>43%</b><span data-i18n="st2">of adults 65+ take 5 or more prescription medicines</span></div>
+                <div><b>4</b><span data-i18n="st3">languages supported</span></div>
             </div>
-            <div class="preview-body">
-                <div class="row"><b>🔥 7-Day Health Streak!</b><span class="pill-warn">3 of 4 taken today</span></div>
-                <div class="row">
-                    <div><b>Metformin</b> (500mg) · 8:00 AM<br><span class="tag">🍽️ Take with food</span></div>
-                    <span class="pill-ok">Taken</span>
+            <a href="/app" class="cta-big" id="ctaBig" data-auth="signin"><span data-i18n="cta_out">Get Started — Sign In Free</span> <i class="fa-solid fa-arrow-right"></i></a>
+
+            <div class="preview" id="how" aria-label="Example of the MedSnap schedule">
+                <div class="preview-head">
+                    <div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div>
+                    <span class="preview-title" data-i18n="pv_title">Today's schedule (example)</span>
                 </div>
-                <div class="row">
-                    <div><b>Lisinopril</b> (10mg) · 8:00 PM<br><span class="tag">🌙 Take before bedtime</span></div>
-                    <span class="pill-warn">Refill soon: 4 days left</span>
+                <div class="preview-body">
+                    <div class="row"><b data-i18n="pv_streak">🔥 7-Day Health Streak!</b><span class="pill-warn" data-i18n="pv_taken">3 of 4 taken today</span></div>
+                    <div class="row">
+                        <div><b>Metformin</b> (500mg) · 8:00 AM<br><span class="tag" data-i18n="pv_food">🍽️ Take with food</span></div>
+                        <span class="pill-ok" data-i18n="pv_ok">Taken</span>
+                    </div>
+                    <div class="row">
+                        <div><b>Lisinopril</b> (10mg) · 8:00 PM<br><span class="tag" data-i18n="pv_bed">🌙 Take before bedtime</span></div>
+                        <span class="pill-warn" data-i18n="pv_refill">Refill soon: 4 days left</span>
+                    </div>
                 </div>
             </div>
+        </section>
+    </div>
+
+    <!-- Impact by the numbers -->
+    <section class="band" id="impact-band" aria-labelledby="bandTitle">
+        <span class="section-pill" data-i18n="band_pill">Impact by the numbers</span>
+        <h2 id="bandTitle" data-i18n="band_title">Why Every Dose Matters</h2>
+        <p class="sub" data-i18n="band_sub">Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health.</p>
+        <div class="glass-grid">
+            <div class="glass"><div class="emo" aria-hidden="true">💊</div><div class="num">~<span data-count="50">50</span>%</div><p data-i18n="g1">of long-term medicines aren't taken as prescribed</p></div>
+            <div class="glass"><div class="emo" aria-hidden="true">📋</div><div class="num">20–<span data-count="30">30</span>%</div><p data-i18n="g2">of prescriptions are never filled</p></div>
+            <div class="glass"><div class="emo" aria-hidden="true">❤️</div><div class="num"><span data-count="125000">125,000</span></div><p data-i18n="g3">U.S. deaths a year linked to missed medicines</p></div>
+            <div class="glass"><div class="emo" aria-hidden="true">🏥</div><div class="num">$<span data-count="289">289</span>B</div><p data-i18n="g4">a year in avoidable U.S. health costs</p></div>
         </div>
     </section>
 
-    <section class="impact" id="impact" aria-label="Why staying on track matters">
-        <h2 class="section-title">Why staying on track matters</h2>
-        <p class="impact-sub">Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health. Here's what the research shows.</p>
-
-        <div class="stat-grid">
-            <div class="stat"><div class="stat-icon"><i class="fa-solid fa-pills"></i></div>
-                <div class="stat-num">~<span data-count="50">50</span>%</div>
-                <p>of medicines for long-term conditions are <b>not taken as prescribed</b>.</p></div>
-            <div class="stat"><div class="stat-icon"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-                <div class="stat-num">20–<span data-count="30">30</span>%</div>
-                <p>of prescriptions are <b>never filled</b> at all.</p></div>
-            <div class="stat"><div class="stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-                <div class="stat-num"><span data-count="125000">125,000</span></div>
-                <p><b>deaths a year</b> in the U.S. are linked to not taking medicines as prescribed.</p></div>
-            <div class="stat"><div class="stat-icon"><i class="fa-solid fa-hospital"></i></div>
-                <div class="stat-num">$<span data-count="289">289</span>B</div>
-                <p>a year in avoidable U.S. costs (estimates range from <b>$100 to $289 billion</b>).</p></div>
-        </div>
-
+    <!-- The research (charts) -->
+    <section class="impact" id="impact" aria-labelledby="resTitle">
+        <div style="text-align:center"><span class="section-pill light" data-i18n="res_pill">What the research shows</span></div>
+        <h2 class="section-title" id="resTitle" style="margin-top:1.2rem" data-i18n="res_title">A closer look at the problem</h2>
         <div class="chart-grid">
             <div class="chart-card">
-                <h3>About 1 in 2 doses go off track</h3>
-                <p class="chart-sub">Medicines for long-term (chronic) conditions</p>
+                <h3 data-i18n="c1_t">About 1 in 2 doses go off track</h3>
+                <p class="chart-sub" data-i18n="c1_s">Medicines for long-term (chronic) conditions</p>
                 <div class="donut-wrap">
                     <svg class="donut" viewBox="0 0 42 42" role="img" aria-label="Donut chart: about 50% taken as prescribed, about 50% not taken as prescribed">
                         <circle class="track" cx="21" cy="21" r="15.915" fill="none" stroke-width="6"/>
                         <circle class="seg" cx="21" cy="21" r="15.915" fill="none" stroke-width="6" transform="rotate(-90 21 21)" pathLength="100"/>
-                        <text x="21" y="20.5" text-anchor="middle" font-size="7">1 in 2</text>
-                        <text x="21" y="26.5" text-anchor="middle" font-size="2.6" font-weight="600" style="font-weight:600">not as prescribed</text>
+                        <text x="21" y="20.5" text-anchor="middle" font-size="7" data-i18n="c1_big">1 in 2</text>
+                        <text x="21" y="26.5" text-anchor="middle" font-size="2.6" style="font-weight:600" data-i18n="c1_small">not as prescribed</text>
                     </svg>
                     <div class="legend">
-                        <span><i style="background: var(--accent)"></i> Taken as prescribed (~50%)</span>
-                        <span><i style="background: var(--accent-2)"></i> Not taken as prescribed (~50%)</span>
+                        <span><i style="background: var(--accent)"></i> <span data-i18n="c1_l1">Taken as prescribed (~50%)</span></span>
+                        <span><i style="background: var(--accent-2)"></i> <span data-i18n="c1_l2">Not taken as prescribed (~50%)</span></span>
                     </div>
                 </div>
             </div>
 
             <div class="chart-card">
-                <h3>More people are juggling 5+ medicines</h3>
-                <p class="chart-sub">Share of people in the U.S. who used 5 or more prescription drugs in the past 30 days</p>
+                <h3 data-i18n="c2_t">More people are juggling 5+ medicines</h3>
+                <p class="chart-sub" data-i18n="c2_s">Share of people in the U.S. who used 5 or more prescription drugs in the past 30 days</p>
                 <div class="bars" role="img" aria-label="Bar chart. Ages 18 to 44: 3.3% in 2001 to 2004, 5.1% in 2017 to 2020. All ages: 9.2% then 11.7%. Ages 65 and over: 33.3% then 43.0%.">
                     <div class="axis"><span>50%</span><span>37.5%</span><span>25%</span><span>12.5%</span><span>0%</span></div>
                     <div class="gridlines"></div>
@@ -250,19 +416,19 @@
                     <div class="bar-group"><div class="bar old" data-h="9.2"><b>9.2%</b></div><div class="bar new" data-h="11.7"><b>11.7%</b></div></div>
                     <div class="bar-group"><div class="bar old" data-h="33.3"><b>33.3%</b></div><div class="bar new" data-h="43.0"><b>43.0%</b></div></div>
                 </div>
-                <div class="bar-labels"><span></span><span>Ages 18–44</span><span>All ages</span><span>Ages 65+</span></div>
+                <div class="bar-labels"><span></span><span data-i18n="age1">Ages 18–44</span><span data-i18n="age2">All ages</span><span data-i18n="age3">Ages 65+</span></div>
                 <div class="chart-legend"><span><i style="background: var(--sage)"></i> 2001–2004</span><span><i class="sw-new"></i> 2017–March 2020</span></div>
-                <div class="callout">👵 Among adults 65 and older, <b>more than 2 in 3 (67.7%)</b> take 3 or more prescription drugs.</div>
+                <div class="callout" data-i18n-html="callout">👵 Among adults 65 and older, <b>more than 2 in 3 (67.7%)</b> take 3 or more prescription drugs.</div>
             </div>
         </div>
 
         <div class="helps">
-            <div class="help"><div class="icon"><i class="fa-solid fa-bell"></i></div><div><b>Forgetting a dose</b><span>Reminders, a weekly calendar and read-aloud instructions.</span></div></div>
-            <div class="help"><div class="icon"><i class="fa-solid fa-box-open"></i></div><div><b>Running out</b><span>Pill counts drop as you take them, with a warning before you run low.</span></div></div>
-            <div class="help"><div class="icon"><i class="fa-solid fa-user-nurse"></i></div><div><b>No one checking in</b><span>A caregiver can be alerted right away if a dose is missed.</span></div></div>
+            <div class="help"><div class="icon"><i class="fa-solid fa-bell"></i></div><div><b data-i18n="h1_t">Forgetting a dose</b><span data-i18n="h1">Reminders, a weekly calendar and read-aloud instructions.</span></div></div>
+            <div class="help"><div class="icon"><i class="fa-solid fa-box-open"></i></div><div><b data-i18n="h2_t">Running out</b><span data-i18n="h2">Pill counts drop as you take them, with a warning before you run low.</span></div></div>
+            <div class="help"><div class="icon"><i class="fa-solid fa-user-nurse"></i></div><div><b data-i18n="h3_t">No one checking in</b><span data-i18n="h3">A caregiver can be alerted right away if a dose is missed.</span></div></div>
         </div>
 
-        <p class="sources">
+        <p class="sources" data-i18n-html="sources">
             Sources: adherence figures from an <i>Annals of Internal Medicine</i> review, as reported in
             <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6139792" target="_blank" rel="noopener">Missouri Medicine (2018)</a>.
             Chart data from the CDC National Center for Health Statistics,
@@ -271,36 +437,49 @@
         </p>
     </section>
 
-    <section class="features" id="features">
-        <h2 class="section-title">Everything you need to stay on track</h2>
-        <div class="grid">
-            <div class="feature"><div class="icon"><i class="fa-solid fa-volume-high"></i></div><h3>Read-aloud assistant</h3><p>Hear each medication's name, dosage, and instructions spoken out loud, in your chosen language.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-language"></i></div><h3>Multi-language</h3><p>Switch the whole app between English, Spanish, French, and Mandarin with one tap.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-pills"></i></div><h3>Pill counter and low-stock alerts</h3><p>Counts drop automatically when you mark a dose taken, and you're warned when only a few days remain.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-bell"></i></div><h3>Caregiver alerts</h3><p>Optionally notify a trusted person by email or SMS if a critical dose isn't taken within 60 minutes.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-magnifying-glass"></i></div><h3>Pill visualizer</h3><p>Pick a pill's shape, color, and imprint to double-check it matches the medication you expect.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-utensils"></i></div><h3>Food and timing guide</h3><p>Clear badges like "Take with food" or "Avoid dairy" on every medication card.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-fire"></i></div><h3>Adherence streak</h3><p>Build a daily streak of 100% adherence and stay motivated.</p></div>
-            <div class="feature"><div class="icon"><i class="fa-solid fa-camera"></i></div><h3>Label scanner and AI help</h3><p>Photograph a bottle label to auto-fill details, check interactions, or ask the AI assistant a question.</p></div>
+
+    <!-- How it works: MedSnap's features -->
+    <section class="how" id="how-it-works" aria-labelledby="howTitle">
+        <span class="section-pill light" data-i18n="how_pill">How it works</span>
+        <h2 id="howTitle" data-i18n="how_title">Simple, Smart, and Accessible</h2>
+        <p class="sub" data-i18n="how_sub">MedSnap gives everyone the tools to take the right medicine at the right time, from the first prescription to every refill.</p>
+        <div class="how-grid">
+            <div class="how-card"><div class="emo" aria-hidden="true">📷</div><h3 data-i18n="k1_t"></h3><p data-i18n="k1"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🔊</div><h3 data-i18n="k2_t"></h3><p data-i18n="k2"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">📅</div><h3 data-i18n="k3_t"></h3><p data-i18n="k3"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">💊</div><h3 data-i18n="k4_t"></h3><p data-i18n="k4"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🍽️</div><h3 data-i18n="k5_t"></h3><p data-i18n="k5"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🔍</div><h3 data-i18n="k6_t"></h3><p data-i18n="k6"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🔔</div><h3 data-i18n="k7_t"></h3><p data-i18n="k7"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🔥</div><h3 data-i18n="k8_t"></h3><p data-i18n="k8"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">✨</div><h3 data-i18n="k9_t"></h3><p data-i18n="k9"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🌐</div><h3 data-i18n="k10_t"></h3><p data-i18n="k10"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🚨</div><h3 data-i18n="k11_t"></h3><p data-i18n="k11"></p></div>
+            <div class="how-card"><div class="emo" aria-hidden="true">🔒</div><h3 data-i18n="k12_t"></h3><p data-i18n="k12"></p></div>
         </div>
     </section>
 
-    <footer>
+    <footer data-i18n="footer">
         MedSnap is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.
     </footer>
 
-    <script>
-        function updateIcon() {
-            document.getElementById('theme-icon').className = document.documentElement.getAttribute('data-theme') === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        }
-        function toggleTheme() {
-            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            try { localStorage.setItem('medsnap_theme', next); } catch (e) {}
-            updateIcon();
-        }
-        updateIcon();
-    </script>
+    <!-- Accessibility: these settings apply to the whole MedSnap website, including the app -->
+    <button type="button" class="a11y-btn" id="a11yBtn" aria-expanded="false" aria-controls="a11yPanel" aria-label="Accessibility options"><i class="fa-solid fa-universal-access"></i></button>
+    <div class="a11y-panel" id="a11yPanel" hidden role="dialog" aria-labelledby="a11yTitle">
+        <div class="a11y-head"><h3 id="a11yTitle"><span aria-hidden="true">♿</span> <span data-i18n="a11y">Accessibility</span></h3>
+            <button type="button" class="a11y-x" id="a11yClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+        <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔊</span> <span data-i18n="tts">Text to speech</span></div>
+            <label class="a11y-row"><span data-i18n="auto_read">Auto-read AI responses</span><input type="checkbox" class="sw" id="autoChk"></label>
+            <button type="button" class="a11y-wide read" id="readPage"><i class="fa-solid fa-play"></i> <span data-i18n="read_page">Read this page aloud</span></button>
+            <button type="button" class="a11y-wide stop" id="stopAudio"><i class="fa-solid fa-stop"></i> <span data-i18n="stop">Stop audio</span></button></div>
+        <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔤</span> <span data-i18n="text_size">Text size</span></div>
+            <div class="sz3"><button type="button" data-font="-1" aria-label="Smaller text">A−</button><button type="button" data-font="0" id="fontReset" aria-label="Normal text size">A</button><button type="button" data-font="1" aria-label="Larger text">A+</button></div></div>
+        <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">📖</span> <span data-i18n="readability">Readability</span></div>
+            <label class="a11y-row"><span data-i18n="dyslexia">Dyslexia-friendly font</span><input type="checkbox" class="sw" id="dysChk"></label></div>
+        <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">👁️</span> <span data-i18n="visibility">Visibility</span></div>
+            <label class="a11y-row"><span data-i18n="hc">High contrast mode</span><input type="checkbox" class="sw" id="hcChk"></label>
+            <label class="a11y-row"><span data-i18n="dark">Dark mode</span><input type="checkbox" class="sw" id="darkChk"></label></div>
+    </div>
 
     <!-- Sign in / Sign up window -->
     <dialog class="auth-dlg" id="authDlg" aria-labelledby="authTitle">
@@ -312,42 +491,360 @@
             <h2 id="authTitle">Welcome back</h2>
             <p class="auth-sub" id="authSub">Sign in to see your medicines and routine.</p>
             <div class="auth-tabs" role="tablist">
-                <button type="button" role="tab" id="tabIn" aria-selected="true">Sign in</button>
-                <button type="button" role="tab" id="tabUp" aria-selected="false">Sign up</button>
+                <button type="button" role="tab" id="tabIn" aria-selected="true" data-i18n="sign_in">Sign in</button>
+                <button type="button" role="tab" id="tabUp" aria-selected="false" data-i18n="sign_up">Sign up</button>
             </div>
             <div class="auth-err" id="authErr" role="alert" hidden></div>
             <form id="formIn">
-                <div class="auth-field"><label for="inEmail">Email</label><input class="auth-input" id="inEmail" name="email" type="email" required autocomplete="email"></div>
-                <div class="auth-field"><label for="inPw">Password</label><input class="auth-input" id="inPw" name="password" type="password" required autocomplete="current-password"></div>
-                <button type="submit" class="btn-launch auth-submit">Sign in <i class="fa-solid fa-arrow-right"></i></button>
+                <div class="auth-field"><label for="inEmail" data-i18n="email">Email</label><input class="auth-input" id="inEmail" name="email" type="email" required autocomplete="email"></div>
+                <div class="auth-field"><label for="inPw" data-i18n="password">Password</label><div class="pw-wrap"><input class="auth-input" id="inPw" name="password" type="password" required autocomplete="current-password"><button type="button" class="pw-eye" data-eye="inPw" aria-label="Show password"><i class="fa-solid fa-eye"></i></button></div></div>
+                <button type="submit" class="btn-launch auth-submit"><span data-i18n="sign_in">Sign in</span> <i class="fa-solid fa-arrow-right"></i></button>
             </form>
             <form id="formUp" hidden>
-                <div class="auth-field"><label for="upName">Your name</label><input class="auth-input" id="upName" name="name" required maxlength="60" autocomplete="name"></div>
-                <div class="auth-field"><label for="upEmail">Email</label><input class="auth-input" id="upEmail" name="email" type="email" required autocomplete="email"></div>
-                <div class="auth-field"><label for="upPw">Password</label><input class="auth-input" id="upPw" name="password" type="password" required minlength="8" autocomplete="new-password"><p class="auth-hint">At least 8 characters.</p></div>
+                <div class="auth-field"><label for="upName" data-i18n="your_name">Your name</label><input class="auth-input" id="upName" name="name" required maxlength="60" autocomplete="name"></div>
+                <div class="auth-field"><label for="upEmail" data-i18n="email">Email</label><input class="auth-input" id="upEmail" name="email" type="email" required autocomplete="email"></div>
+                <div class="auth-field"><label for="upPw" data-i18n="password">Password</label><div class="pw-wrap"><input class="auth-input" id="upPw" name="password" type="password" required minlength="8" autocomplete="new-password"><button type="button" class="pw-eye" data-eye="upPw" aria-label="Show password"><i class="fa-solid fa-eye"></i></button></div><p class="auth-hint" data-i18n="pw_hint">At least 8 characters.</p></div>
                 <div class="auth-row">
-                    <div class="auth-field"><label for="upAge">Age</label><input class="auth-input" id="upAge" name="age" inputmode="numeric" maxlength="3" placeholder="Optional"></div>
-                    <div class="auth-field"><label for="upAll">Allergies</label><textarea class="auth-input" id="upAll" name="allergies" maxlength="500" placeholder="Optional, e.g. penicillin"></textarea></div>
+                    <div class="auth-field"><label for="upAge" data-i18n="age">Age</label><input class="auth-input" id="upAge" name="age" inputmode="numeric" maxlength="3" placeholder="Optional" data-i18n-ph="optional"></div>
+                    <div class="auth-field"><label for="upAll" data-i18n="allergies">Allergies</label><textarea class="auth-input" id="upAll" name="allergies" maxlength="500" placeholder="Optional, e.g. penicillin" data-i18n-ph="allergies_ph"></textarea></div>
                 </div>
-                <button type="submit" class="btn-launch auth-submit">Create my account <i class="fa-solid fa-arrow-right"></i></button>
+                <button type="submit" class="btn-launch auth-submit"><span data-i18n="create">Create my account</span> <i class="fa-solid fa-arrow-right"></i></button>
             </form>
-            <p class="auth-private"><i class="fa-solid fa-shield-halved"></i> Your information is private.</p>
+            <p class="auth-private"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="private">Your information is private.</span></p>
         </div>
     </dialog>
 
     <script>
     (function () {
-        /* ---------- Sign in / Sign up ---------- */
+        /* =================== Words on this page, in 4 languages =================== */
+        var SRC = '<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6139792" target="_blank" rel="noopener">Missouri Medicine (2018)</a>';
+        var CDC = '<a href="https://www.cdc.gov/nchs/hus/topics/rx-drug-use.htm" target="_blank" rel="noopener">Health, United States: Prescription Drug Use</a>';
+        var T = {
+        en: {
+            band_pill: 'Impact by the numbers', band_title: 'Why Every Dose Matters', band_sub: 'Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health.',
+            g1: "of long-term medicines aren't taken as prescribed", g2: 'of prescriptions are never filled', g3: 'U.S. deaths a year linked to missed medicines', g4: 'a year in avoidable U.S. health costs',
+            res_pill: 'What the research shows', res_title: 'A closer look at the problem',
+            how_pill: 'How it works', how_title: 'Simple, Smart, and Accessible', how_sub: 'MedSnap gives everyone the tools to take the right medicine at the right time, from the first prescription to every refill.',
+            k1_t: 'Scan Your Prescription', k1: 'Snap a photo of a prescription label or bottle. MedSnap reads it and fills in the medication for you to check and save.',
+            k2_t: 'Hear It Out Loud', k2: "Every medicine's name, dose and instructions read aloud in your language, at the speed you like.",
+            k3_t: 'Your Week at a Glance', k3: 'A weekly calendar shows what to take and when. Mark each dose taken as you go.',
+            k4_t: 'Never Run Out', k4: 'Pill counts drop automatically as you take them, with a heads-up before your supply runs low.',
+            k5_t: 'Food & Timing Guide', k5: 'Clear badges like "Take with food", "Avoid dairy" or "Before bed" on every medication.',
+            k6_t: 'Pill Check', k6: 'Photograph the pill in your hand to compare its shape, color and imprint with your list.',
+            k7_t: 'Caregiver Alerts', k7: 'Someone you trust gets a text or email right away if a dose is missed or your pills run low.',
+            k8_t: 'Streaks That Motivate', k8: 'Build a streak of days with every dose taken and watch your consistency grow.',
+            k9_t: 'Buddy, Your AI Helper', k9: 'Ask Buddy how to use MedSnap or get organized, any time you need a hand.',
+            k10_t: 'Four Languages', k10: 'Use MedSnap in English, Spanish, French or Mandarin with one tap.',
+            k11_t: 'Emergency in One Tap', k11: 'A 911 button is always at the top of the screen, and it can alert your caregiver too.',
+            k12_t: 'Private & Secure', k12: 'Your account keeps your medicines safe and in sync on any device you sign in from.',
+            tts: 'Text to speech', auto_read: 'Auto-read AI responses', read_page: 'Read this page aloud', stop: 'Stop audio', readability: 'Readability', visibility: 'Visibility', hc: 'High contrast mode',
+            smaller: 'Smaller text', larger: 'Larger text', normal_size: 'Normal text size',
+            get_started: 'Get Started', open_app: 'Open MedSnap', sign_in: 'Sign In', sign_out: 'Sign Out', sign_up: 'Sign up', language: 'Language',
+            badge: 'Accessibility-First Medication Care',
+            typing: ['Never miss a dose, one day at a time.', 'Know every pill you take.', 'Reminders that read themselves out loud.', 'Peace of mind for you and your caregiver.'],
+            lead: 'Keeping track of medicines can feel overwhelming. MedSnap turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.',
+            st1: "of long-term medicines aren't taken as prescribed", st2: 'of adults 65+ take 5 or more prescription medicines', st3: 'languages supported',
+            cta_out: 'Get Started — Sign In Free', cta_in: 'Open MedSnap',
+            pv_title: "Today's schedule (example)", pv_streak: '🔥 7-Day Health Streak!', pv_taken: '3 of 4 taken today', pv_food: '🍽️ Take with food', pv_ok: 'Taken', pv_bed: '🌙 Take before bedtime', pv_refill: 'Refill soon: 4 days left',
+            im_title: 'Why staying on track matters', im_sub: "Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health. Here's what the research shows.",
+            s1: 'of medicines for long-term conditions are <b>not taken as prescribed</b>.', s2: 'of prescriptions are <b>never filled</b> at all.',
+            s3: '<b>deaths a year</b> in the U.S. are linked to not taking medicines as prescribed.', s4: 'a year in avoidable U.S. costs (estimates range from <b>$100 to $289 billion</b>).',
+            c1_t: 'About 1 in 2 doses go off track', c1_s: 'Medicines for long-term (chronic) conditions', c1_big: '1 in 2', c1_small: 'not as prescribed', c1_l1: 'Taken as prescribed (~50%)', c1_l2: 'Not taken as prescribed (~50%)',
+            c2_t: 'More people are juggling 5+ medicines', c2_s: 'Share of people in the U.S. who used 5 or more prescription drugs in the past 30 days', age1: 'Ages 18–44', age2: 'All ages', age3: 'Ages 65+',
+            callout: '👵 Among adults 65 and older, <b>more than 2 in 3 (67.7%)</b> take 3 or more prescription drugs.',
+            h1_t: 'Forgetting a dose', h1: 'Reminders, a weekly calendar and read-aloud instructions.', h2_t: 'Running out', h2: 'Pill counts drop as you take them, with a warning before you run low.', h3_t: 'No one checking in', h3: 'A caregiver can be alerted right away if a dose is missed.',
+            sources: 'Sources: adherence figures from an <i>Annals of Internal Medicine</i> review, as reported in ' + SRC + '. Chart data from the CDC National Center for Health Statistics, ' + CDC + ' (NHANES 2001–2004 and 2017–March 2020).',
+            ft_title: 'Everything you need to stay on track',
+            f1_t: 'Read-aloud assistant', f1: "Hear each medication's name, dosage, and instructions spoken out loud, in your chosen language.",
+            f2_t: 'Multi-language', f2: 'Switch the whole app between English, Spanish, French, and Mandarin with one tap.',
+            f3_t: 'Pill counter and low-stock alerts', f3: "Counts drop automatically when you mark a dose taken, and you're warned when only a few days remain.",
+            f4_t: 'Caregiver alerts', f4: 'Optionally let a trusted person know by email or text if a dose is missed or your pills are running low.',
+            f5_t: 'Scan a label', f5: 'Photograph a prescription or bottle and MedSnap fills in the medication for you to check and save.',
+            f6_t: 'Food and timing guide', f6: 'Clear badges like "Take with food" or "Avoid dairy" on every medication card.',
+            f7_t: 'Adherence streak', f7: 'Build a daily streak of 100% adherence and stay motivated.',
+            f8_t: 'Pill check and AI Buddy', f8: 'Photograph a pill to compare it with your list, or ask Buddy for help using MedSnap.',
+            footer: "MedSnap is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.",
+            a11y: 'Accessibility', text_size: 'Text size', dyslexia: 'Dyslexia-friendly font', dark: 'Dark mode', a11y_btn: 'Accessibility options', to_dark: 'Switch to dark mode', to_light: 'Switch to light mode',
+            email: 'Email', password: 'Password', your_name: 'Your name', pw_hint: 'At least 8 characters.', age: 'Age', optional: 'Optional', allergies: 'Allergies', allergies_ph: 'Optional, e.g. penicillin',
+            create: 'Create my account', private: 'Your information is private.', close: 'Close',
+            in_title: 'Welcome back', in_sub: 'Sign in to see your medicines and routine.', up_title: "Let's get you set up", up_sub: 'Your account keeps your medicines safe on any device. Age and allergies are optional.',
+            offline: "MedSnap can't reach its server. In the VS Code terminal run: python app.py", error: 'Something went wrong. Please try again.',
+            make_acc: 'Create an account with this email →', show_pw: 'Show password', hide_pw: 'Hide password'
+        },
+        es: {
+            band_pill: 'El impacto en cifras', band_title: 'Por qué cada dosis importa', band_sub: 'Las dosis olvidadas o confundidas son uno de los problemas de salud más comunes y más fáciles de prevenir.',
+            g1: 'de los medicamentos de largo plazo no se toman como se recetan', g2: 'de las recetas nunca se surten', g3: 'muertes al año en EE. UU. ligadas a medicamentos no tomados', g4: 'al año en costos de salud evitables en EE. UU.',
+            res_pill: 'Lo que muestra la investigación', res_title: 'Una mirada más de cerca al problema',
+            how_pill: 'Cómo funciona', how_title: 'Simple, inteligente y accesible', how_sub: 'MedSnap le da a todos las herramientas para tomar el medicamento correcto a la hora correcta, desde la primera receta hasta cada recarga.',
+            k1_t: 'Escanea tu receta', k1: 'Toma una foto de la etiqueta o del frasco. MedSnap la lee y completa el medicamento para que lo revises y guardes.',
+            k2_t: 'Escúchalo en voz alta', k2: 'El nombre, la dosis y las instrucciones de cada medicamento en voz alta, en tu idioma y a tu ritmo.',
+            k3_t: 'Tu semana de un vistazo', k3: 'Un calendario semanal muestra qué tomar y cuándo. Marca cada dosis a medida que avanzas.',
+            k4_t: 'Que nunca se acaben', k4: 'El conteo de pastillas baja al tomarlas y te avisa antes de que se terminen.',
+            k5_t: 'Guía de comidas y horarios', k5: 'Insignias claras como "Tomar con comida", "Evitar lácteos" o "Antes de dormir" en cada medicamento.',
+            k6_t: 'Verificar pastilla', k6: 'Fotografía la pastilla que tienes en la mano para comparar su forma, color y grabado con tu lista.',
+            k7_t: 'Avisos al cuidador', k7: 'Una persona de confianza recibe un texto o correo de inmediato si olvidas una dosis o se acaban tus pastillas.',
+            k8_t: 'Rachas que motivan', k8: 'Suma días seguidos tomando todas tus dosis y mira crecer tu constancia.',
+            k9_t: 'Buddy, tu ayudante IA', k9: 'Pregúntale a Buddy cómo usar MedSnap u organizarte, siempre que necesites ayuda.',
+            k10_t: 'Cuatro idiomas', k10: 'Usa MedSnap en inglés, español, francés o mandarín con un toque.',
+            k11_t: 'Emergencia en un toque', k11: 'Un botón de 911 siempre está arriba en la pantalla y también puede avisar a tu cuidador.',
+            k12_t: 'Privado y seguro', k12: 'Tu cuenta guarda tus medicamentos y los mantiene al día en cualquier dispositivo donde inicies sesión.',
+            tts: 'Texto a voz', auto_read: 'Leer en voz alta las respuestas de la IA', read_page: 'Leer esta página en voz alta', stop: 'Detener audio', readability: 'Legibilidad', visibility: 'Visibilidad', hc: 'Modo de alto contraste',
+            smaller: 'Texto más pequeño', larger: 'Texto más grande', normal_size: 'Tamaño normal',
+            get_started: 'Comenzar', open_app: 'Abrir MedSnap', sign_in: 'Iniciar sesión', sign_out: 'Cerrar sesión', sign_up: 'Registrarse', language: 'Idioma',
+            badge: 'Cuidado de medicamentos accesible para todos',
+            typing: ['Nunca olvides una dosis, un día a la vez.', 'Conoce cada pastilla que tomas.', 'Recordatorios que se leen en voz alta.', 'Tranquilidad para ti y tu cuidador.'],
+            lead: 'Llevar el control de los medicamentos puede ser abrumador. MedSnap convierte tus recetas en una rutina diaria sencilla, con recordatorios hablados, conteo de pastillas, escaneo de etiquetas y avisos al cuidador, para que tú, tu familia y tus cuidadores sigan el plan con confianza.',
+            st1: 'de los medicamentos de largo plazo no se toman como se recetan', st2: 'de los adultos de 65+ toman 5 o más medicamentos recetados', st3: 'idiomas disponibles',
+            cta_out: 'Comenzar — Inicia sesión gratis', cta_in: 'Abrir MedSnap',
+            pv_title: 'Horario de hoy (ejemplo)', pv_streak: '🔥 ¡Racha de salud de 7 días!', pv_taken: '3 de 4 tomadas hoy', pv_food: '🍽️ Tomar con comida', pv_ok: 'Tomada', pv_bed: '🌙 Tomar antes de dormir', pv_refill: 'Reabastecer: quedan 4 días',
+            im_title: 'Por qué importa seguir el plan', im_sub: 'Las dosis olvidadas o confundidas son uno de los problemas de salud más comunes y más fáciles de prevenir. Esto es lo que muestra la investigación.',
+            s1: 'de los medicamentos para afecciones de largo plazo <b>no se toman como se recetan</b>.', s2: 'de las recetas <b>nunca se surten</b>.',
+            s3: '<b>muertes al año</b> en EE. UU. se relacionan con no tomar los medicamentos como se recetan.', s4: 'al año en costos evitables en EE. UU. (las estimaciones van de <b>$100 a $289 mil millones</b>).',
+            c1_t: 'Cerca de 1 de cada 2 dosis se desvía', c1_s: 'Medicamentos para afecciones de largo plazo (crónicas)', c1_big: '1 de 2', c1_small: 'no como se receta', c1_l1: 'Tomados como se recetan (~50%)', c1_l2: 'No tomados como se recetan (~50%)',
+            c2_t: 'Más personas toman 5 o más medicamentos', c2_s: 'Porcentaje de personas en EE. UU. que usaron 5 o más medicamentos recetados en los últimos 30 días', age1: '18–44 años', age2: 'Todas las edades', age3: '65+ años',
+            callout: '👵 Entre los adultos de 65 años o más, <b>más de 2 de cada 3 (67.7%)</b> toman 3 o más medicamentos recetados.',
+            h1_t: 'Olvidar una dosis', h1: 'Recordatorios, un calendario semanal e instrucciones leídas en voz alta.', h2_t: 'Quedarse sin pastillas', h2: 'El conteo baja al tomarlas y te avisa antes de que se acaben.', h3_t: 'Nadie está pendiente', h3: 'Un cuidador puede recibir un aviso de inmediato si se olvida una dosis.',
+            sources: 'Fuentes: cifras de adherencia de una revisión de <i>Annals of Internal Medicine</i>, citada en ' + SRC + '. Datos del gráfico del Centro Nacional de Estadísticas de Salud de los CDC, ' + CDC + ' (NHANES 2001–2004 y 2017–marzo 2020).',
+            ft_title: 'Todo lo que necesitas para seguir el plan',
+            f1_t: 'Asistente de lectura en voz alta', f1: 'Escucha el nombre, la dosis y las instrucciones de cada medicamento en tu idioma.',
+            f2_t: 'Varios idiomas', f2: 'Cambia toda la app entre inglés, español, francés y mandarín con un toque.',
+            f3_t: 'Conteo de pastillas y avisos de existencias', f3: 'El conteo baja al marcar una dosis como tomada y te avisa cuando quedan pocos días.',
+            f4_t: 'Avisos al cuidador', f4: 'Si quieres, avisa a una persona de confianza por correo o texto si olvidas una dosis o se acaban tus pastillas.',
+            f5_t: 'Escanear una etiqueta', f5: 'Fotografía una receta o un frasco y MedSnap completa el medicamento para que lo revises y guardes.',
+            f6_t: 'Guía de comidas y horarios', f6: 'Insignias claras como "Tomar con comida" o "Evitar lácteos" en cada medicamento.',
+            f7_t: 'Racha de constancia', f7: 'Construye una racha diaria de 100% y mantente motivado.',
+            f8_t: 'Verificar pastilla y Buddy IA', f8: 'Fotografía una pastilla para compararla con tu lista, o pide ayuda a Buddy para usar MedSnap.',
+            footer: 'MedSnap es una herramienta de recordatorios y no da consejos médicos. La IA puede equivocarse; sigue siempre las indicaciones de tu médico y farmacéutico.',
+            a11y: 'Accesibilidad', text_size: 'Tamaño del texto', dyslexia: 'Fuente para dislexia', dark: 'Modo oscuro', a11y_btn: 'Opciones de accesibilidad', to_dark: 'Cambiar a modo oscuro', to_light: 'Cambiar a modo claro',
+            email: 'Correo', password: 'Contraseña', your_name: 'Tu nombre', pw_hint: 'Al menos 8 caracteres.', age: 'Edad', optional: 'Opcional', allergies: 'Alergias', allergies_ph: 'Opcional, ej. penicilina',
+            create: 'Crear mi cuenta', private: 'Tu información es privada.', close: 'Cerrar',
+            in_title: 'Hola de nuevo', in_sub: 'Inicia sesión para ver tus medicamentos y tu rutina.', up_title: 'Vamos a prepararte', up_sub: 'Tu cuenta guarda tus medicamentos en cualquier dispositivo. La edad y las alergias son opcionales.',
+            offline: 'MedSnap no puede conectar con su servidor. En la terminal de VS Code ejecuta: python app.py', error: 'Algo salió mal. Inténtalo de nuevo.',
+            make_acc: 'Crear una cuenta con este correo →', show_pw: 'Mostrar contraseña', hide_pw: 'Ocultar contraseña'
+        },
+        fr: {
+            band_pill: "L'impact en chiffres", band_title: 'Pourquoi chaque dose compte', band_sub: 'Les doses oubliées ou confondues font partie des problèmes de santé les plus courants, et les plus évitables.',
+            g1: 'des médicaments au long cours ne sont pas pris comme prescrit', g2: 'des ordonnances ne sont jamais délivrées', g3: 'décès par an aux États-Unis liés aux médicaments non pris', g4: 'par an de dépenses de santé évitables aux États-Unis',
+            res_pill: 'Ce que montre la recherche', res_title: 'Le problème de plus près',
+            how_pill: 'Comment ça marche', how_title: 'Simple, malin et accessible', how_sub: "MedSnap donne à chacun les outils pour prendre le bon médicament au bon moment, de la première ordonnance à chaque renouvellement.",
+            k1_t: 'Scannez votre ordonnance', k1: "Prenez en photo l'étiquette ou le flacon. MedSnap la lit et remplit le médicament : vous vérifiez et enregistrez.",
+            k2_t: 'Écoutez à voix haute', k2: 'Le nom, la dose et les instructions de chaque médicament lus à voix haute, dans votre langue et à votre rythme.',
+            k3_t: "Votre semaine d'un coup d'œil", k3: 'Un calendrier montre quoi prendre et quand. Notez chaque prise au fur et à mesure.',
+            k4_t: 'Jamais à court', k4: "Le décompte baisse automatiquement à chaque prise, avec une alerte avant d'être à court.",
+            k5_t: 'Repas et horaires', k5: 'Des badges clairs comme « Prendre en mangeant », « Éviter les laitages » ou « Au coucher » sur chaque médicament.',
+            k6_t: 'Vérifier un comprimé', k6: 'Photographiez le comprimé dans votre main pour comparer sa forme, sa couleur et son inscription à votre liste.',
+            k7_t: "Alertes à l'aidant", k7: 'Une personne de confiance reçoit un SMS ou un e-mail tout de suite si une dose est oubliée ou si le stock baisse.',
+            k8_t: 'Des séries motivantes', k8: 'Enchaînez les jours où chaque dose est prise et regardez votre régularité grandir.',
+            k9_t: 'Buddy, votre assistant IA', k9: "Demandez à Buddy comment utiliser MedSnap ou vous organiser, dès que vous avez besoin d'aide.",
+            k10_t: 'Quatre langues', k10: "Utilisez MedSnap en anglais, espagnol, français ou mandarin d'un seul geste.",
+            k11_t: 'Urgence en un geste', k11: "Un bouton 911 est toujours en haut de l'écran, et il peut aussi prévenir votre aidant.",
+            k12_t: 'Privé et sécurisé', k12: 'Votre compte garde vos médicaments en sécurité et à jour sur tous les appareils où vous vous connectez.',
+            tts: 'Synthèse vocale', auto_read: "Lire à voix haute les réponses de l'IA", read_page: 'Lire cette page à voix haute', stop: "Arrêter l'audio", readability: 'Lisibilité', visibility: 'Visibilité', hc: 'Mode contraste élevé',
+            smaller: 'Texte plus petit', larger: 'Texte plus grand', normal_size: 'Taille normale',
+            get_started: 'Commencer', open_app: 'Ouvrir MedSnap', sign_in: 'Se connecter', sign_out: 'Se déconnecter', sign_up: "S'inscrire", language: 'Langue',
+            badge: 'Des médicaments accessibles à tous',
+            typing: ['Ne manquez plus une dose, jour après jour.', 'Connaissez chaque comprimé que vous prenez.', 'Des rappels qui se lisent à voix haute.', 'La tranquillité pour vous et votre aidant.'],
+            lead: "Suivre ses médicaments peut vite devenir compliqué. MedSnap transforme vos ordonnances en une routine quotidienne simple, avec des rappels parlés, le décompte des comprimés, le scan des étiquettes et des alertes à l'aidant, pour que vous, votre famille et vos aidants restiez sur la bonne voie en toute confiance.",
+            st1: 'des médicaments au long cours ne sont pas pris comme prescrit', st2: 'des adultes de 65+ ans prennent 5 médicaments ou plus', st3: 'langues disponibles',
+            cta_out: 'Commencer — Connexion gratuite', cta_in: 'Ouvrir MedSnap',
+            pv_title: "Programme du jour (exemple)", pv_streak: '🔥 Série santé de 7 jours !', pv_taken: "3 sur 4 prises aujourd'hui", pv_food: '🍽️ Prendre en mangeant', pv_ok: 'Pris', pv_bed: '🌙 Prendre au coucher', pv_refill: 'À renouveler : 4 jours restants',
+            im_title: 'Pourquoi rester sur la bonne voie compte', im_sub: "Les doses oubliées ou confondues font partie des problèmes de santé les plus courants, et les plus évitables. Voici ce que montre la recherche.",
+            s1: 'des médicaments pour maladies chroniques <b>ne sont pas pris comme prescrit</b>.', s2: 'des ordonnances <b>ne sont jamais délivrées</b>.',
+            s3: "<b>décès par an</b> aux États-Unis sont liés au fait de ne pas prendre ses médicaments comme prescrit.", s4: 'par an de coûts évitables aux États-Unis (estimations de <b>100 à 289 milliards de dollars</b>).',
+            c1_t: 'Environ 1 dose sur 2 déraille', c1_s: 'Médicaments pour maladies au long cours (chroniques)', c1_big: '1 sur 2', c1_small: 'pas comme prescrit', c1_l1: 'Pris comme prescrit (~50%)', c1_l2: 'Pas pris comme prescrit (~50%)',
+            c2_t: 'De plus en plus de personnes prennent 5+ médicaments', c2_s: 'Part des personnes aux États-Unis ayant pris 5 médicaments ou plus au cours des 30 derniers jours', age1: '18–44 ans', age2: 'Tous âges', age3: '65 ans et +',
+            callout: '👵 Chez les adultes de 65 ans et plus, <b>plus de 2 sur 3 (67,7 %)</b> prennent 3 médicaments ou plus.',
+            h1_t: 'Oublier une dose', h1: 'Rappels, calendrier de la semaine et instructions lues à voix haute.', h2_t: 'Tomber à court', h2: 'Le décompte baisse à chaque prise, avec une alerte avant la rupture.', h3_t: 'Personne pour vérifier', h3: "Un aidant peut être prévenu tout de suite si une dose est oubliée.",
+            sources: "Sources : chiffres d'observance issus d'une revue des <i>Annals of Internal Medicine</i>, rapportés dans " + SRC + '. Données du graphique : CDC National Center for Health Statistics, ' + CDC + ' (NHANES 2001–2004 et 2017–mars 2020).',
+            ft_title: 'Tout ce qu\'il faut pour rester sur la bonne voie',
+            f1_t: 'Lecture à voix haute', f1: 'Écoutez le nom, la dose et les instructions de chaque médicament, dans votre langue.',
+            f2_t: 'Plusieurs langues', f2: "Passez toute l'application en anglais, espagnol, français ou mandarin d'un seul geste.",
+            f3_t: 'Décompte et alertes de stock', f3: 'Le décompte baisse à chaque prise notée, et vous êtes prévenu quand il reste peu de jours.',
+            f4_t: "Alertes à l'aidant", f4: 'Si vous le souhaitez, prévenez une personne de confiance par e-mail ou SMS en cas de dose oubliée ou de stock bas.',
+            f5_t: 'Scanner une étiquette', f5: "Photographiez une ordonnance ou un flacon : MedSnap remplit le médicament, vous vérifiez et enregistrez.",
+            f6_t: 'Guide repas et horaires', f6: 'Des badges clairs comme « Prendre en mangeant » ou « Éviter les laitages » sur chaque médicament.',
+            f7_t: "Série d'observance", f7: 'Construisez une série quotidienne à 100 % et restez motivé.',
+            f8_t: 'Vérification et Buddy IA', f8: "Photographiez un comprimé pour le comparer à votre liste, ou demandez de l'aide à Buddy.",
+            footer: "MedSnap est un outil de rappel et ne donne pas d'avis médical. L'IA peut se tromper : suivez toujours les instructions de votre médecin et de votre pharmacien.",
+            a11y: 'Accessibilité', text_size: 'Taille du texte', dyslexia: 'Police pour la dyslexie', dark: 'Mode sombre', a11y_btn: "Options d'accessibilité", to_dark: 'Passer en mode sombre', to_light: 'Passer en mode clair',
+            email: 'E-mail', password: 'Mot de passe', your_name: 'Votre nom', pw_hint: 'Au moins 8 caractères.', age: 'Âge', optional: 'Facultatif', allergies: 'Allergies', allergies_ph: 'Facultatif, ex. pénicilline',
+            create: 'Créer mon compte', private: 'Vos informations sont privées.', close: 'Fermer',
+            in_title: 'Bon retour', in_sub: 'Connectez-vous pour voir vos médicaments et votre routine.', up_title: 'Créons votre compte', up_sub: "Votre compte garde vos médicaments sur tous vos appareils. L'âge et les allergies sont facultatifs.",
+            offline: 'MedSnap ne joint pas son serveur. Dans le terminal VS Code, lancez : python app.py', error: "Une erreur s'est produite. Réessayez.",
+            make_acc: 'Créer un compte avec cet e-mail →', show_pw: 'Afficher le mot de passe', hide_pw: 'Masquer le mot de passe'
+        },
+        zh: {
+            band_pill: '用数字说话', band_title: '为什么每一次服药都重要', band_sub: '漏服和服错是日常健康中最常见、也最容易预防的问题之一。',
+            g1: '的长期用药没有按医嘱服用', g2: '的处方从未取药', g3: '美国每年与漏服药物相关的死亡人数', g4: '美国每年可避免的医疗花费',
+            res_pill: '研究显示', res_title: '深入了解这个问题',
+            how_pill: '使用方法', how_title: '简单、智能、无障碍', how_sub: 'MedSnap 帮助每个人在正确的时间服用正确的药物，从第一张处方到每一次补药。',
+            k1_t: '扫描处方', k1: '拍下处方标签或药瓶，MedSnap 读取后自动填写药物信息，由您检查并保存。',
+            k2_t: '大声朗读', k2: '用您的语言、按您喜欢的速度朗读每种药物的名称、剂量和说明。',
+            k3_t: '一周安排一目了然', k3: '每周日历显示何时服什么药，服用后逐一标记。',
+            k4_t: '不再断药', k4: '每次服药自动减少数量，药快用完前会提醒您。',
+            k5_t: '饮食与时间指南', k5: '每种药物都有“随餐服用”“避免乳制品”“睡前服用”等清晰标记。',
+            k6_t: '药片核对', k6: '拍下手中的药片，将形状、颜色和刻印与您的清单比对。',
+            k7_t: '照护人提醒', k7: '漏服或药量不足时，您信任的人会立即收到短信或邮件。',
+            k8_t: '激励连续记录', k8: '每天按时服完所有药物，看着坚持的天数不断增加。',
+            k9_t: 'AI 助手 Buddy', k9: '随时询问 Buddy 如何使用 MedSnap 或如何安排生活。',
+            k10_t: '四种语言', k10: '一键切换英语、西班牙语、法语或中文。',
+            k11_t: '一键紧急求助', k11: '屏幕顶部始终有 911 按钮，也可以同时通知您的照护人。',
+            k12_t: '私密安全', k12: '您的账户会安全保存药物信息，并在您登录的任何设备上同步。',
+            tts: '语音朗读', auto_read: '自动朗读 AI 回复', read_page: '朗读本页内容', stop: '停止朗读', readability: '易读性', visibility: '可视性', hc: '高对比度模式',
+            smaller: '缩小文字', larger: '放大文字', normal_size: '正常大小',
+            get_started: '开始使用', open_app: '打开 MedSnap', sign_in: '登录', sign_out: '退出', sign_up: '注册', language: '语言',
+            badge: '无障碍优先的用药助手',
+            typing: ['一天一天，不再漏服。', '清楚每一粒药。', '会自己朗读的提醒。', '让您和照护人都安心。'],
+            lead: '管理药物常常让人手忙脚乱。MedSnap 把您的处方变成简单的每日安排，提供语音提醒、药片计数、标签扫描和照护人提醒，让您、家人和照护人都能安心按计划服药。',
+            st1: '的长期用药没有按医嘱服用', st2: '的 65 岁以上老人同时服用 5 种或更多处方药', st3: '种语言',
+            cta_out: '开始使用 — 免费登录', cta_in: '打开 MedSnap',
+            pv_title: '今日安排（示例）', pv_streak: '🔥 连续健康 7 天！', pv_taken: '今天已服 3/4', pv_food: '🍽️ 随餐服用', pv_ok: '已服用', pv_bed: '🌙 睡前服用', pv_refill: '请补药：剩 4 天',
+            im_title: '为什么按时服药很重要', im_sub: '漏服和服错是日常健康中最常见、也最容易预防的问题之一。以下是研究结果。',
+            s1: '的慢性病用药<b>没有按医嘱服用</b>。', s2: '的处方<b>从未取药</b>。',
+            s3: '美国每年<b>有这么多人死亡</b>与未按医嘱服药有关。', s4: '美国每年可避免的花费（估计在 <b>1000 亿至 2890 亿美元</b>之间）。',
+            c1_t: '大约每 2 次服药就有 1 次出偏差', c1_s: '慢性病用药', c1_big: '1/2', c1_small: '未按医嘱', c1_l1: '按医嘱服用（约 50%）', c1_l2: '未按医嘱服用（约 50%）',
+            c2_t: '越来越多的人同时服用 5 种以上药物', c2_s: '过去 30 天内使用 5 种或更多处方药的美国人比例', age1: '18–44 岁', age2: '所有年龄', age3: '65 岁以上',
+            callout: '👵 65 岁及以上的成年人中，<b>超过三分之二（67.7%）</b>服用 3 种或更多处方药。',
+            h1_t: '忘记服药', h1: '提醒、每周日历和朗读说明。', h2_t: '药吃完了', h2: '每次服药自动减少数量，快用完前提醒您。', h3_t: '没人留意', h3: '漏服时可立即通知照护人。',
+            sources: '来源：依从性数据来自《Annals of Internal Medicine》的综述，引自 ' + SRC + '。图表数据来自美国 CDC 国家卫生统计中心，' + CDC + '（NHANES 2001–2004 与 2017–2020 年 3 月）。',
+            ft_title: '按时服药所需的一切',
+            f1_t: '朗读助手', f1: '用您选择的语言朗读每种药物的名称、剂量和说明。',
+            f2_t: '多语言', f2: '一键在英语、西班牙语、法语和中文之间切换整个应用。',
+            f3_t: '药片计数与库存提醒', f3: '每次标记已服用时自动减少数量，剩余天数不多时提醒您。',
+            f4_t: '照护人提醒', f4: '可选择在漏服或药量不足时，通过邮件或短信通知您信任的人。',
+            f5_t: '扫描标签', f5: '拍下处方或药瓶，MedSnap 自动填写药物信息，由您检查后保存。',
+            f6_t: '饮食与时间指南', f6: '每种药物上都有“随餐服用”“避免乳制品”等清晰标记。',
+            f7_t: '连续服药记录', f7: '保持每天 100% 按时服药，持续获得动力。',
+            f8_t: '药片核对与 AI 助手 Buddy', f8: '拍下药片与清单比对，或请 Buddy 帮您使用 MedSnap。',
+            footer: 'MedSnap 是提醒工具，不提供医疗建议。AI 结果可能有误，请始终遵循医生和药剂师的指导。',
+            a11y: '无障碍', text_size: '文字大小', dyslexia: '阅读障碍友好字体', dark: '深色模式', a11y_btn: '无障碍选项', to_dark: '切换到深色模式', to_light: '切换到浅色模式',
+            email: '邮箱', password: '密码', your_name: '您的姓名', pw_hint: '至少 8 个字符。', age: '年龄', optional: '可选', allergies: '过敏', allergies_ph: '可选，例如青霉素',
+            create: '创建我的账户', private: '您的信息是私密的。', close: '关闭',
+            in_title: '欢迎回来', in_sub: '登录查看您的药物和日常安排。', up_title: '开始设置', up_sub: '账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。',
+            offline: 'MedSnap 无法连接服务器。请在 VS Code 终端运行：python app.py', error: '出了点问题，请重试。',
+            make_acc: '用这个邮箱创建账户 →', show_pw: '显示密码', hide_pw: '隐藏密码'
+        }};
+        var $ = function (id) { return document.getElementById(id); };
+        var lang = 'en';
+        try { lang = localStorage.getItem('medsnap_lang') || (navigator.language || 'en').slice(0, 2); } catch (e) {}
+        if (!T[lang]) lang = 'en';
+        function t(k) { return (T[lang] && T[lang][k] !== undefined) ? T[lang][k] : T.en[k]; }
+        var signedIn = false, authMode = false;
+
+        function applyLang() {
+            document.documentElement.lang = lang;
+            $('langSel').value = lang;
+            document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+            document.querySelectorAll('[data-i18n-html]').forEach(function (el) { el.innerHTML = t(el.dataset.i18nHtml); });
+            document.querySelectorAll('[data-i18n-ph]').forEach(function (el) { el.placeholder = t(el.dataset.i18nPh); });
+            $('a11yBtn').setAttribute('aria-label', t('a11y_btn'));
+            $('a11yClose').setAttribute('aria-label', t('close'));
+            var fb = document.querySelectorAll('[data-font]'); fb[0].setAttribute('aria-label', t('smaller')); fb[1].setAttribute('aria-label', t('normal_size')); fb[2].setAttribute('aria-label', t('larger'));
+            $('authClose').setAttribute('aria-label', t('close'));
+            document.querySelectorAll('[data-eye]').forEach(function (b) { b.setAttribute('aria-label', $(b.dataset.eye).type === 'password' ? t('show_pw') : t('hide_pw')); });
+            updateIcon(); updateAuthButtons(); setMode(authMode); startTyping();
+        }
+        $('langSel').addEventListener('change', function () {
+            lang = this.value;
+            try { localStorage.setItem('medsnap_lang', lang); } catch (e) {}   // the app opens in this language too
+            applyLang();
+        });
+
+        /* =================== Typing effect =================== */
+        var typeTimer = null;
+        var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        function startTyping() {
+            clearTimeout(typeTimer);
+            var phrases = t('typing'), el = $('typed'), i = 0, n = 0, deleting = false;
+            $('typedSr').textContent = phrases.join(' ');
+            if (reduce) { el.textContent = phrases[0]; return; }
+            (function tick() {
+                var full = phrases[i];
+                if (!deleting) {
+                    n++; el.textContent = full.slice(0, n);
+                    if (n >= full.length) { deleting = true; typeTimer = setTimeout(tick, 1900); return; }
+                    typeTimer = setTimeout(tick, lang === 'zh' ? 140 : 55);
+                } else {
+                    n--; el.textContent = full.slice(0, n);
+                    if (n <= 0) { deleting = false; i = (i + 1) % phrases.length; typeTimer = setTimeout(tick, 380); return; }
+                    typeTimer = setTimeout(tick, 26);
+                }
+            })();
+        }
+
+        /* =================== Theme + accessibility =================== */
+        function isDark() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+        function updateIcon() {
+            $('theme-icon').className = isDark() ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            $('themeBtn').setAttribute('aria-label', isDark() ? t('to_light') : t('to_dark'));
+            $('darkChk').checked = isDark();
+        }
+        function setTheme(dark) {
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+            try { localStorage.setItem('medsnap_theme', dark ? 'dark' : 'light'); } catch (e) {}
+            updateIcon();
+        }
+        window.toggleTheme = function () { setTheme(!isDark()); };
+        $('themeBtn').onclick = window.toggleTheme;
+        $('darkChk').onchange = function () { setTheme(this.checked); };
+
+        // These settings are shared with the MedSnap app (same saved keys), so they change the whole website.
+        function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+        function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+        var SCALES = [0.85, 0.92, 1, 1.1, 1.2, 1.32, 1.45, 1.6];
+        function getScale() { return parseFloat(read('medsnap_scale')) || 1; }
+        function setScale(v) { document.documentElement.style.setProperty('--scale', v); store('medsnap_scale', String(v)); $('fontReset').disabled = Math.abs(v - 1) < 0.01; }
+        setScale(getScale());
+        document.querySelectorAll('[data-font]').forEach(function (b) {
+            b.onclick = function () {
+                var dir = Number(b.dataset.font);
+                if (dir === 0) { setScale(1); return; }
+                var i = SCALES.findIndex(function (s) { return Math.abs(s - getScale()) < 0.01; }); if (i < 0) i = 2;
+                setScale(SCALES[Math.max(0, Math.min(SCALES.length - 1, i + dir))]);
+            };
+        });
+        function setDys(on) { document.documentElement.classList.toggle('dyslexic', on); store('medsnap_dyslexia', on ? '1' : '0'); $('dysChk').checked = on; }
+        function setHc(on) { document.documentElement.classList.toggle('hc', on); store('medsnap_contrast', on ? '1' : '0'); $('hcChk').checked = on; }
+        setDys(read('medsnap_dyslexia') === '1'); setHc(read('medsnap_contrast') === '1');
+        $('dysChk').onchange = function () { setDys(this.checked); };
+        $('hcChk').onchange = function () { setHc(this.checked); };
+        $('autoChk').checked = read('medsnap_autoread') === '1';
+        $('autoChk').onchange = function () { store('medsnap_autoread', this.checked ? '1' : '0'); };
+
+        // Read the page out loud in the chosen language.
+        var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
+        function speak(text) {
+            if (!('speechSynthesis' in window)) return;
+            speechSynthesis.cancel();
+            var u = new SpeechSynthesisUtterance(text); u.lang = LOCALES[lang]; u.rate = 0.92;
+            var v = speechSynthesis.getVoices().find(function (x) { return x.lang && x.lang.toLowerCase().indexOf(lang) === 0; });
+            if (v) u.voice = v;
+            speechSynthesis.speak(u);
+        }
+        $('readPage').onclick = function () {
+            var parts = ['MedSnap.', t('typing')[0], t('lead'), t('band_title') + '.', t('band_sub'), t('how_title') + '.', t('how_sub')];
+            for (var i = 1; i <= 12; i++) parts.push(t('k' + i + '_t') + '. ' + t('k' + i));
+            speak(parts.join(' '));
+        };
+        $('stopAudio').onclick = function () { if ('speechSynthesis' in window) speechSynthesis.cancel(); };
+
+        function closePanel() { $('a11yPanel').hidden = true; $('a11yBtn').setAttribute('aria-expanded', 'false'); }
+        $('a11yBtn').onclick = function () {
+            var p = $('a11yPanel'); p.hidden = !p.hidden; this.setAttribute('aria-expanded', String(!p.hidden));
+        };
+        $('a11yClose').onclick = function () { closePanel(); $('a11yBtn').focus(); };
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePanel(); });
+        document.addEventListener('click', function (e) { if (!$('a11yPanel').hidden && !e.target.closest('#a11yPanel, #a11yBtn')) closePanel(); });
+
+        /* =================== Sign in / Sign up =================== */
         // Opened by Flask -> same server. Opened by VS Code Live Server or as a file -> Flask on this computer.
         var notFlask = location.protocol === 'file:' || location.pathname.slice(-5) === '.html';
         var API = notFlask ? 'http://127.0.0.1:5000' : '';
         var APP_URL = notFlask ? 'index.html' : '/app';
-        var $ = function (id) { return document.getElementById(id); };
         function token() { try { return localStorage.getItem('medsnap_token') || ''; } catch (e) { return ''; } }
         function setToken(v) { try { v ? localStorage.setItem('medsnap_token', v) : localStorage.removeItem('medsnap_token'); } catch (e) {} }
         function clientId() { try { return localStorage.getItem('medsnap_client_id') || ''; } catch (e) { return ''; } }
         function tz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } }
-        var offlineMsg = "MedSnap can't reach its server. In the VS Code terminal run: python app.py";
 
         async function call(path, body) {
             var res, data = null;
@@ -357,84 +854,125 @@
                     headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token(), 'X-Client-Id': clientId(), 'X-Timezone': tz() },
                     body: body ? JSON.stringify(body) : undefined
                 });
-            } catch (e) { throw new Error(offlineMsg); }
+            } catch (e) { throw new Error(t('offline')); }
             try { data = await res.json(); } catch (e) {}
-            if (!data) throw new Error(offlineMsg);
-            if (!res.ok || data.success === false) throw new Error(data.error || 'Something went wrong. Please try again.');
+            if (!data) throw new Error(t('offline'));
+            if (!res.ok || data.success === false) {
+                var err = new Error(data.error || t('error'));
+                err.status = res.status;
+                err.noAccount = !!data.no_account;
+                throw err;
+            }
             return data;
         }
 
         var dlg = $('authDlg');
         function showError(msg) { var e = $('authErr'); e.textContent = msg || ''; e.hidden = !msg; }
         function setMode(up) {
+            authMode = up;
             $('tabIn').setAttribute('aria-selected', !up); $('tabUp').setAttribute('aria-selected', up);
             $('formIn').hidden = up; $('formUp').hidden = !up;
-            $('authTitle').textContent = up ? "Let's get you set up" : 'Welcome back';
-            $('authSub').textContent = up ? 'Your account keeps your medicines safe on any device. Age and allergies are optional.' : 'Sign in to see your medicines and routine.';
-            showError('');
+            $('authTitle').textContent = up ? t('up_title') : t('in_title');
+            $('authSub').textContent = up ? t('up_sub') : t('in_sub');
         }
         function open(up) {
-            setMode(up);
+            setMode(up); showError('');
             if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
             var first = (up ? $('formUp') : $('formIn')).querySelector('input'); if (first) first.focus();
         }
-        document.querySelectorAll('[data-auth]').forEach(function (b) { b.addEventListener('click', function () { open(b.dataset.auth === 'signup'); }); });
-        $('tabIn').onclick = function () { setMode(false); };
-        $('tabUp').onclick = function () { setMode(true); };
+        // Signed out: buttons open the sign-in window. Signed in: they go straight into MedSnap.
+        document.querySelectorAll('[data-auth]').forEach(function (b) {
+            b.addEventListener('click', function (e) {
+                if (signedIn && b.tagName === 'A') return;
+                e.preventDefault(); open(b.dataset.auth === 'signup');
+            });
+        });
+        $('tabIn').onclick = function () { setMode(false); showError(''); };
+        $('tabUp').onclick = function () { setMode(true); showError(''); };
+        document.querySelectorAll('[data-eye]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var input = $(btn.dataset.eye), show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.innerHTML = show ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
+                btn.setAttribute('aria-label', show ? t('hide_pw') : t('show_pw'));
+                input.focus();
+            });
+        });
         $('authClose').onclick = function () { dlg.close(); };
         dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });  // click outside to close
 
         async function submit(form, path) {
             var btn = form.querySelector('button[type=submit]'); btn.disabled = true; showError('');
-            var body = {}; new FormData(form).forEach(function (v, k) { body[k] = v; });
+            var body = { language: lang }; new FormData(form).forEach(function (v, k) { body[k] = v; });
             try {
                 var d = await call(path, body);
                 setToken(d.token);
                 location.href = APP_URL;
-            } catch (e) { showError(e.message); btn.disabled = false; }
+            } catch (e) {
+                showError(e.message); btn.disabled = false;
+                if (e.noAccount) {
+                    var b = document.createElement('button'); b.type = 'button'; b.textContent = t('make_acc');
+                    b.onclick = function () { var em = $('inEmail').value; setMode(true); showError(''); $('upEmail').value = em; $('upName').focus(); };
+                    $('authErr').appendChild(b);
+                }
+            }
         }
         $('formIn').onsubmit = function (e) { e.preventDefault(); submit(this, '/api/auth/login'); };
         $('formUp').onsubmit = function (e) { e.preventDefault(); submit(this, '/api/auth/signup'); };
 
-        function showSignedIn(name) {
-            $('authOut').hidden = true; $('authIn').hidden = false;
-            $('hiName').textContent = 'Hi, ' + (name || '').split(' ')[0];
+        var myName = '';
+        function updateAuthButtons() {
+            $('authOut').hidden = signedIn; $('authIn').hidden = !signedIn;
+            $('startBtn').querySelector('span').textContent = signedIn ? t('open_app') : t('get_started');
+            $('ctaBig').querySelector('span').textContent = signedIn ? t('cta_in') : t('cta_out');
+            $('hiName').textContent = (myName || '').split(' ')[0];
+            $('meInitial').textContent = ((myName || 'M').trim()[0] || 'M').toUpperCase();
         }
-        function showSignedOut() { $('authOut').hidden = false; $('authIn').hidden = true; }
+        function showSignedIn(name) { signedIn = true; myName = name || ''; updateAuthButtons(); }
+        function showSignedOut() { signedIn = false; updateAuthButtons(); }
         $('signOutBtn').onclick = async function () {
             try { await call('/api/auth/logout', {}); } catch (e) {}
             setToken(''); showSignedOut();
         };
-        if (token()) call('/api/auth/me').then(function (d) { showSignedIn(d.name); }).catch(function () { setToken(''); showSignedOut(); });
-        if (location.hash === '#signup' || location.hash === '#signin') open(location.hash === '#signup');
+        // Check whether you're already signed in (saved token or remember-me cookie).
+        // Only forget the sign-in if the server says it's no longer valid, never because the server is slow or waking up.
+        var meTries = 0;
+        function checkMe() {
+            call('/api/auth/me').then(function (d) { showSignedIn(d.name); }).catch(function (e) {
+                if (e.status === 401) { setToken(''); showSignedOut(); return; }
+                showSignedOut();
+                if (++meTries < 30) setTimeout(checkMe, 4000);
+            });
+        }
         document.querySelectorAll('a[href="/app"]').forEach(function (a) { a.href = APP_URL; });
+        applyLang();
+        checkMe();
+        if (location.hash === '#signup' || location.hash === '#signin') open(location.hash === '#signup');
 
-        /* ---------- Charts: animate when they scroll into view ---------- */
-        var impact = $('impact');
-        var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        /* =================== Animate numbers and charts when they scroll into view =================== */
         function countUp(el) {
-            var target = Number(el.dataset.count), start = null, dur = reduce ? 0 : 1400;
+            var target = Number(el.dataset.count), start = null, dur = reduce ? 0 : 1500;
             function step(ts) {
                 if (start === null) start = ts;
                 var p = dur ? Math.min(1, (ts - start) / dur) : 1;
-                var eased = 1 - Math.pow(1 - p, 3);
-                el.textContent = Math.round(target * eased).toLocaleString('en-US');
+                el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US');
                 if (p < 1) requestAnimationFrame(step);
             }
             requestAnimationFrame(step);
         }
-        function play() {
-            if (impact.classList.contains('in')) return;
+        function onView(el, fn) {
+            if (!('IntersectionObserver' in window)) { fn(); return; }
+            new IntersectionObserver(function (entries, obs) {
+                entries.forEach(function (en) { if (en.isIntersecting) { fn(); obs.disconnect(); } });
+            }, { threshold: 0.25 }).observe(el);
+        }
+        var band = $('impact-band'), impact = $('impact');
+        if ('IntersectionObserver' in window) band.querySelectorAll('[data-count]').forEach(function (el) { el.textContent = '0'; });
+        onView(band, function () { band.querySelectorAll('[data-count]').forEach(countUp); });
+        onView(impact, function () {
             impact.classList.add('in');
             impact.querySelectorAll('.bar').forEach(function (b) { b.style.height = (Number(b.dataset.h) / 50 * 100) + '%'; });
-            impact.querySelectorAll('[data-count]').forEach(countUp);
-        }
-        if ('IntersectionObserver' in window) {
-            impact.querySelectorAll('[data-count]').forEach(function (el) { el.textContent = '0'; });
-            new IntersectionObserver(function (entries, obs) {
-                entries.forEach(function (en) { if (en.isIntersecting) { play(); obs.disconnect(); } });
-            }, { threshold: 0.2 }).observe(impact);
-        } else { play(); }
+        });
     })();
     </script>
 </body>
