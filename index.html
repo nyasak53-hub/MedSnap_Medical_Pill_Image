@@ -324,6 +324,14 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 .boxes input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--brand) 45%, transparent); }
 .days-boxes span { min-width: 4.2rem; justify-content: center; }
 .preview-row { display: flex; gap: 1rem; align-items: center; }
+.pc-tabs { margin-bottom: 1.6rem; padding: .3rem; }
+.pc-tabs button { padding: .7rem 1.3rem; font-size: .92rem; }
+.pc-scan .scan-area { margin-top: .4rem; }
+.steps { list-style: none; display: flex; flex-direction: column; gap: .9rem; margin-bottom: 1.2rem; }
+.steps li { display: flex; gap: .9rem; align-items: flex-start; }
+.steps li > span { width: 2rem; height: 2rem; border-radius: 50%; background: var(--brand); color: var(--brand-ink); display: grid; place-items: center; font-weight: 700; font-size: .85rem; flex: none; }
+.steps b { display: block; font-size: .92rem; font-weight: 600; }
+.steps p { font-size: .8rem; color: var(--ink-2); line-height: 1.55; }
 .scan-box { border: 1px dashed var(--line-2); background: var(--card-2); border-radius: 1.1rem; padding: 1rem 1.1rem; margin-bottom: 1.6rem; }
 .scan-head { display: flex; align-items: center; gap: .9rem; }
 .scan-head b { display: block; font-size: .9rem; font-weight: 600; }
@@ -345,6 +353,8 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 .scan-card { display: flex; gap: 1rem; align-items: center; padding: 1.2rem 1.3rem; margin-top: 1rem; }
 .scan-card b { display: block; font-size: .9rem; font-weight: 600; }
 .scan-card small { display: block; font-size: .76rem; color: var(--ink-2); line-height: 1.5; }
+.scan-card { flex-wrap: wrap; }
+.scan-card > div { flex: 1 1 13rem; min-width: 0; }
 .scan-card .btn { margin-left: auto; flex: none; }
 .head-btns { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 2.2rem; }
 .head-btns .btn { margin-top: 0 !important; }
@@ -501,6 +511,7 @@ const I18N = {
 en: {
   g_signin:'Sign in', g_signup:'Create account', g_in_title:'Welcome back', g_in_sub:'Sign in to see your medicines and routine.', g_up_title:"Let's get you set up", g_up_sub:'Your account keeps your medicines safe on any device. Age and allergies are optional.', g_password:'Password', g_pw_hint:'At least 8 characters.', g_signin_btn:'Sign in', g_signup_btn:'Create my account',
   sc_btn:'Scan label', sc_hide:'Close scanner', sc_title:'Scan a prescription or bottle', sc_sub:'Take a photo of the label and MedSnap fills in this form for you. Add up to 3 photos, like the prescription and the bottle.', sc_hint:'Hold the label flat, close up and in good light.', sc_take_more:'Take another photo', sc_read:'Read label', sc_reading:'Reading the label…', sc_photos:'{n} of 3 photos', sc_photo_n:'Photo {n}', sc_remove:'Remove photo', sc_max:'That is the 3-photo limit. Press Read label.', sc_need:'Take or upload a photo first.', sc_done_t:'Filled in from the label:', sc_done:'{f}. The filled boxes are outlined.', sc_times:'The label says {n} times a day. MedSnap keeps one dose time per medication, so after saving, add it again for each other time of day.', sc_check:'Please check every detail against your label before saving, and fill in anything it didn’t show, like which days to take it.', sc_pc_t:'New prescription?', sc_pc_s:'Scan the label or bottle to add it to your medications, inventory and calendar.',
+  pc_main_title:'Scan it in. Check it twice.', pc_main_sub:'Scan a prescription or bottle to add a medication, or compare a pill in your hand with your list.', pc_mode_scan:'Scan a label', pc_mode_check:'Check a pill', sc_main_t:'Scan label to fill this in', sc_main_s:'Photograph your prescription label or medicine bottle. MedSnap reads it and fills in a new medication for you to check and save.', how_k:'How it works', how_t:'Add a medicine in three steps', how1_t:'Take up to 3 photos', how1:'The prescription and the bottle together give MedSnap the most to read.', how2_t:'MedSnap reads the label', how2:'Name, dose, directions, how many pills came in the bottle, and food or timing notes.', how3_t:'Check it and save', how3:'It then shows up on your Medications, Inventory and Calendar pages.', sc_safe_t:'You check before anything is saved', sc_safe_p:'MedSnap only fills in what is printed on the label. Nothing is added until you look it over and press Save.', sc_to_check_t:'Have a pill in your hand?', sc_to_check:'Compare its shape, color and imprint with the medicines you have saved.',
   your_space:'Your space', your_details:'Your details', n_today:'Today', n_calendar:'Calendar', n_streaks:'Streaks', n_meds:'Medications',
   n_inventory:'Inventory', n_pillcheck:'Pill check', n_caregiver:'Caregiver', n_profile:'Profile & preferences',
   need_hand:'Need a hand?', need_hand_sub:'Your routine, one step at a time.', your_care:'Your care', personal_account:'Personal account', sign_out:'Sign out', menu:'Menu',
@@ -572,6 +583,7 @@ en: {
 es: {
   g_signin:'Iniciar sesión', g_signup:'Crear cuenta', g_in_title:'Hola de nuevo', g_in_sub:'Inicia sesión para ver tus medicamentos y tu rutina.', g_up_title:'Vamos a prepararte', g_up_sub:'Tu cuenta guarda tus medicamentos en cualquier dispositivo. La edad y las alergias son opcionales.', g_password:'Contraseña', g_pw_hint:'Al menos 8 caracteres.', g_signin_btn:'Iniciar sesión', g_signup_btn:'Crear mi cuenta',
   sc_btn:'Escanear etiqueta', sc_hide:'Cerrar escáner', sc_title:'Escanea una receta o un frasco', sc_sub:'Toma una foto de la etiqueta y MedSnap completará este formulario. Hasta 3 fotos, por ejemplo la receta y el frasco.', sc_hint:'Sostén la etiqueta plana, de cerca y con buena luz.', sc_take_more:'Tomar otra foto', sc_read:'Leer etiqueta', sc_reading:'Leyendo la etiqueta…', sc_photos:'{n} de 3 fotos', sc_photo_n:'Foto {n}', sc_remove:'Quitar foto', sc_max:'Ese es el límite de 3 fotos. Pulsa Leer etiqueta.', sc_need:'Primero toma o sube una foto.', sc_done_t:'Completado desde la etiqueta:', sc_done:'{f}. Los campos completados están resaltados.', sc_times:'La etiqueta dice {n} veces al día. MedSnap guarda una hora por medicamento, así que después de guardar, agrégalo otra vez para cada hora.', sc_check:'Revisa cada dato con tu etiqueta antes de guardar y completa lo que no aparezca, como los días.', sc_pc_t:'¿Receta nueva?', sc_pc_s:'Escanea la etiqueta o el frasco para agregarlo a tus medicamentos, inventario y calendario.',
+  pc_main_title:'Escanéalo. Revísalo dos veces.', pc_main_sub:'Escanea una receta o un frasco para agregar un medicamento, o compara una pastilla con tu lista.', pc_mode_scan:'Escanear etiqueta', pc_mode_check:'Verificar pastilla', sc_main_t:'Escanea la etiqueta para completarlo', sc_main_s:'Fotografía la etiqueta de tu receta o el frasco. MedSnap la lee y completa un nuevo medicamento para que lo revises y guardes.', how_k:'Cómo funciona', how_t:'Agrega un medicamento en tres pasos', how1_t:'Toma hasta 3 fotos', how1:'La receta y el frasco juntos le dan a MedSnap más información.', how2_t:'MedSnap lee la etiqueta', how2:'Nombre, dosis, indicaciones, cuántas pastillas trae el frasco y notas de comidas u horarios.', how3_t:'Revísalo y guárdalo', how3:'Luego aparece en tus páginas de Medicamentos, Inventario y Calendario.', sc_safe_t:'Tú revisas antes de guardar', sc_safe_p:'MedSnap solo completa lo que está impreso en la etiqueta. Nada se agrega hasta que lo revises y pulses Guardar.', sc_to_check_t:'¿Tienes una pastilla en la mano?', sc_to_check:'Compara su forma, color y grabado con tus medicamentos guardados.',
   your_space:'Tu espacio', your_details:'Tus datos', n_today:'Hoy', n_calendar:'Calendario', n_streaks:'Rachas', n_meds:'Medicamentos',
   n_inventory:'Inventario', n_pillcheck:'Verificar pastilla', n_caregiver:'Cuidador', n_profile:'Perfil y preferencias',
   need_hand:'¿Necesitas ayuda?', need_hand_sub:'Tu rutina, paso a paso.', your_care:'Tu cuidado', personal_account:'Cuenta personal', sign_out:'Salir', menu:'Menú',
@@ -643,6 +655,7 @@ es: {
 fr: {
   g_signin:'Se connecter', g_signup:'Créer un compte', g_in_title:'Bon retour', g_in_sub:'Connectez-vous pour voir vos médicaments et votre routine.', g_up_title:'Créons votre compte', g_up_sub:"Votre compte garde vos médicaments sur tous vos appareils. L'âge et les allergies sont facultatifs.", g_password:'Mot de passe', g_pw_hint:'Au moins 8 caractères.', g_signin_btn:'Se connecter', g_signup_btn:'Créer mon compte',
   sc_btn:"Scanner l'étiquette", sc_hide:'Fermer le scanner', sc_title:'Scanner une ordonnance ou un flacon', sc_sub:"Prenez l'étiquette en photo et MedSnap remplit ce formulaire. Jusqu'à 3 photos, par exemple l'ordonnance et le flacon.", sc_hint:"Tenez l'étiquette à plat, de près et bien éclairée.", sc_take_more:'Prendre une autre photo', sc_read:"Lire l'étiquette", sc_reading:"Lecture de l'étiquette…", sc_photos:'{n} photo(s) sur 3', sc_photo_n:'Photo {n}', sc_remove:'Retirer la photo', sc_max:"Limite de 3 photos atteinte. Appuyez sur Lire l'étiquette.", sc_need:"Prenez ou importez d'abord une photo.", sc_done_t:"Rempli depuis l'étiquette :", sc_done:'{f}. Les champs remplis sont entourés.', sc_times:"L'étiquette indique {n} fois par jour. MedSnap garde une heure par médicament : après l'enregistrement, ajoutez-le pour chaque autre heure.", sc_check:"Vérifiez chaque détail avec l'étiquette avant d'enregistrer, et complétez ce qui manque, comme les jours.", sc_pc_t:'Nouvelle ordonnance ?', sc_pc_s:"Scannez l'étiquette ou le flacon pour l'ajouter à vos médicaments, votre stock et votre calendrier.",
+  pc_main_title:'Scannez-le. Vérifiez-le deux fois.', pc_main_sub:'Scannez une ordonnance ou un flacon pour ajouter un médicament, ou comparez un comprimé avec votre liste.', pc_mode_scan:"Scanner l'étiquette", pc_mode_check:'Vérifier un comprimé', sc_main_t:"Scanner l'étiquette pour remplir", sc_main_s:"Photographiez l'étiquette de l'ordonnance ou le flacon. MedSnap la lit et remplit un nouveau médicament à vérifier et enregistrer.", how_k:'Comment ça marche', how_t:'Ajoutez un médicament en trois étapes', how1_t:"Prenez jusqu'à 3 photos", how1:"L'ordonnance et le flacon ensemble donnent le plus d'informations.", how2_t:"MedSnap lit l'étiquette", how2:'Nom, dose, posologie, nombre de comprimés dans le flacon et conseils de repas ou d\'horaire.', how3_t:'Vérifiez et enregistrez', how3:'Il apparaît ensuite dans Médicaments, Stock et Calendrier.', sc_safe_t:'Vous vérifiez avant tout enregistrement', sc_safe_p:"MedSnap ne remplit que ce qui est imprimé. Rien n'est ajouté avant que vous vérifiiez et appuyiez sur Enregistrer.", sc_to_check_t:'Un comprimé dans la main ?', sc_to_check:'Comparez sa forme, sa couleur et son inscription avec vos médicaments enregistrés.',
   your_space:'Votre espace', your_details:'Vos informations', n_today:"Aujourd'hui", n_calendar:'Calendrier', n_streaks:'Séries', n_meds:'Médicaments',
   n_inventory:'Stock', n_pillcheck:'Vérifier un comprimé', n_caregiver:'Aidant', n_profile:'Profil et préférences',
   need_hand:"Besoin d'aide ?", need_hand_sub:'Votre routine, pas à pas.', your_care:'Vos soins', personal_account:'Compte personnel', sign_out:'Quitter', menu:'Menu',
@@ -714,6 +727,7 @@ fr: {
 zh: {
   g_signin:'登录', g_signup:'创建账户', g_in_title:'欢迎回来', g_in_sub:'登录查看您的药物和日常安排。', g_up_title:'开始设置', g_up_sub:'账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。', g_password:'密码', g_pw_hint:'至少 8 个字符。', g_signin_btn:'登录', g_signup_btn:'创建我的账户',
   sc_btn:'扫描标签', sc_hide:'关闭扫描', sc_title:'扫描处方或药瓶', sc_sub:'拍下标签，MedSnap 会帮您填写此表。最多 3 张照片，例如处方和药瓶。', sc_hint:'将标签放平，靠近拍摄，光线要充足。', sc_take_more:'再拍一张', sc_read:'读取标签', sc_reading:'正在读取标签…', sc_photos:'已拍 {n}/3 张', sc_photo_n:'照片 {n}', sc_remove:'删除照片', sc_max:'已达 3 张上限，请点“读取标签”。', sc_need:'请先拍照或上传照片。', sc_done_t:'已根据标签填写：', sc_done:'{f}。已填写的项目带有边框。', sc_times:'标签写着每天 {n} 次。MedSnap 每种药只记录一个时间，保存后请为其他时间再添加一次。', sc_check:'保存前请对照标签检查每一项，并补充标签上没有的信息，例如服药日期。', sc_pc_t:'有新处方？', sc_pc_s:'扫描标签或药瓶，即可添加到药物、库存和日历中。',
+  pc_main_title:'扫一扫，再核对。', pc_main_sub:'扫描处方或药瓶来添加药物，或将手中的药片与您的清单比对。', pc_mode_scan:'扫描标签', pc_mode_check:'核对药片', sc_main_t:'扫描标签自动填写', sc_main_s:'拍下处方标签或药瓶，MedSnap 会读取并填写新药物，供您检查后保存。', how_k:'使用方法', how_t:'三步添加药物', how1_t:'最多拍 3 张照片', how1:'同时拍处方和药瓶，MedSnap 能读到的信息最多。', how2_t:'MedSnap 读取标签', how2:'名称、剂量、用法、瓶中药片数量，以及饮食或时间提示。', how3_t:'检查并保存', how3:'之后会出现在药物、库存和日历页面。', sc_safe_t:'保存前由您确认', sc_safe_p:'MedSnap 只填写标签上印的内容。您检查并点“保存”之前，不会添加任何东西。', sc_to_check_t:'手里有一粒药？', sc_to_check:'将它的形状、颜色和刻印与已保存的药物比对。',
   your_space:'我的空间', your_details:'我的信息', n_today:'今天', n_calendar:'日历', n_streaks:'连续记录', n_meds:'药物',
   n_inventory:'库存', n_pillcheck:'药片核对', n_caregiver:'照护人', n_profile:'个人资料与偏好',
   need_hand:'需要帮助吗？', need_hand_sub:'您的日常，一步一步来。', your_care:'我的照护', personal_account:'个人账户', sign_out:'退出', menu:'菜单',
@@ -933,7 +947,7 @@ let route = ROUTES.includes(location.hash.slice(1)) ? location.hash.slice(1) : '
 window.addEventListener('hashchange', () => {
   const r = location.hash.slice(1);
   route = ROUTES.includes(r) ? r : 'today';
-  if (route !== 'pillcheck') stopCamera();
+  if (route !== 'pillcheck') { stopCamera(); if (scanHost === 'page') resetScan(); }
   document.body.classList.remove('nav-open');
   render(true);
   window.scrollTo(0, 0);
@@ -1151,6 +1165,7 @@ function openMedForm(med, opts) {
   opts = opts || {};
   editingId = med ? med.id : null;
   resetScan();
+  scanHost = 'dialog';
   const m = med || { name: '', dosage: '', instructions: '', food_guide: '', badges: [], days: [0, 1, 2, 3, 4, 5, 6], scheduled_time: '08:00', stock: 30, daily_dose: 1, pill: { shape: '', color: '', imprint: '' }, critical: false };
   const dlg = $('#medDlg');
   dlg.innerHTML = `<form data-form="med">
@@ -1159,9 +1174,9 @@ function openMedForm(med, opts) {
     <div class="dlg-body">
       ${med ? '' : `<div class="scan-box">
         <div class="scan-head"><span class="tile">${ic('camera', 22, 1.6)}</span><div><b>${esc(t('sc_title'))}</b><small>${esc(t('sc_sub'))}</small></div>
-          <button type="button" class="btn btn-light btn-sm" data-act="scan-toggle" id="scanToggle">${ic('camera', 16, 1.8)}${esc(t('sc_btn'))}</button></div>
-        <div class="scan-area" id="scanArea" hidden></div>
-        <div id="scanMsg"></div>
+          <button type="button" class="btn btn-light btn-sm scan-toggle" data-act="scan-toggle">${ic('camera', 16, 1.8)}${esc(t('sc_btn'))}</button></div>
+        <div class="scan-area" hidden></div>
+        <div class="scan-msg-box"></div>
       </div>`}
       <div class="field"><label for="fName">${esc(t('f_name'))}</label><input class="input" id="fName" name="name" required maxlength="120" value="${esc(m.name)}" placeholder="${esc(t('f_name_ph'))}" autocomplete="off"></div>
       <div class="field"><label for="fDose">${esc(t('f_dose'))}</label><input class="input" id="fDose" name="dosage" maxlength="60" value="${esc(m.dosage)}" placeholder="${esc(t('f_dose_ph'))}"></div>
@@ -1187,21 +1202,24 @@ function openMedForm(med, opts) {
     <div class="dlg-foot"><button type="button" class="btn btn-light" data-act="dlg-close">${esc(t('cancel'))}</button><button type="submit" class="btn">${esc(t('save_med'))}${ic('arrow', 18, 1.8)}</button></div>
   </form>`;
   dlg.showModal();
-  if (opts.scan && !med) openScan(); else $('#fName').focus();
+  if (opts.prefill) fillFromScan(opts.prefill);
+  else if (opts.scan && !med) openScan(); else $('#fName').focus();
 }
 /* ---------- label / bottle scanner (inside the Add medication window) ---------- */
+let scanHost = 'dialog';
+function sq(sel) { const r = scanHost === 'page' ? $('#view') : $('#medDlg'); return r ? r.querySelector(sel) : null; }
 let scanOpen = false, scanStream = null, scanFacing = 'environment', scanShots = [], scanBusy = false, scanCamMsg = '';
 function resetScan() { stopScan(); scanShots.forEach(x => URL.revokeObjectURL(x.url)); scanShots = []; scanOpen = false; scanBusy = false; scanCamMsg = ''; }
 function stopScan() { if (scanStream) scanStream.getTracks().forEach(tr => tr.stop()); scanStream = null; }
-function openScan() { scanOpen = true; const a = $('#scanArea'); if (a) a.hidden = false; renderScan(); startScan(); }
+function openScan() { scanOpen = true; const a = sq('.scan-area'); if (a) a.hidden = false; renderScan(); startScan(); }
 function renderScan() {
-  const area = $('#scanArea'); if (!area) return;
-  const tg = $('#scanToggle'); if (tg) tg.innerHTML = scanOpen ? `${ic('x', 16, 1.8)}${esc(t('sc_hide'))}` : `${ic('camera', 16, 1.8)}${esc(t('sc_btn'))}`;
+  const area = sq('.scan-area'); if (!area) return;
+  const tg = sq('.scan-toggle'); if (tg) tg.innerHTML = scanOpen ? `${ic('x', 16, 1.8)}${esc(t('sc_hide'))}` : `${ic('camera', 16, 1.8)}${esc(t('sc_btn'))}`;
   area.hidden = !scanOpen;
   if (!scanOpen) return;
   const full = scanShots.length >= 3;
   const screen = scanStream && !full
-    ? `<video id="scanVideo" autoplay playsinline muted class="${scanFacing === 'user' ? 'mirror' : ''}"></video><span class="guide"></span>`
+    ? `<video class="scan-video" autoplay playsinline muted class="${scanFacing === 'user' ? 'mirror' : ''}"></video><span class="guide"></span>`
     : `<div class="placeholder">${ic('camera', 36, 1.4)}${esc(full ? t('sc_max') : (scanCamMsg || t('sc_hint')))}</div>`;
   area.innerHTML = `
     <div class="cam-row"><div class="seg" role="group">
@@ -1216,7 +1234,7 @@ function renderScan() {
       ${!full ? `<label class="btn btn-light btn-sm" style="cursor:pointer">${ic('upload', 16, 1.8)}${esc(t('cam_upload'))}<input type="file" accept="image/*" multiple data-change="scan-file" hidden></label>` : ''}
       <button type="button" class="btn btn-sm" data-act="scan-read" ${scanShots.length && !scanBusy ? '' : 'disabled'} style="margin-left:auto">${esc(scanBusy ? t('sc_reading') : t('sc_read'))}${scanBusy ? '' : ic('arrow', 16, 1.8)}</button>
     </div>`;
-  const v = $('#scanVideo');
+  const v = sq('.scan-video');
   if (v && scanStream) { v.srcObject = scanStream; v.play().catch(() => {}); }
 }
 async function startScan() {
@@ -1233,7 +1251,8 @@ async function startScan() {
     scanStream = null;
     scanCamMsg = e.name === 'NotAllowedError' ? t('cam_denied') : e.name === 'NotFoundError' ? t('cam_none') : t('cam_err', { e: e.message || e.name });
   }
-  if (!$('#medDlg').open || !scanOpen) { stopScan(); return; }
+  const hostGone = scanHost === 'dialog' ? !$('#medDlg').open : (route !== 'pillcheck' || pcMode !== 'scan');
+  if (hostGone || !scanOpen) { stopScan(); return; }
   renderScan();
 }
 function addShot(blob) {
@@ -1242,12 +1261,12 @@ function addShot(blob) {
   if (scanShots.length >= 3) stopScan();
 }
 function snapScan() {
-  const v = $('#scanVideo'); if (!v || !v.videoWidth) return;
+  const v = sq('.scan-video'); if (!v || !v.videoWidth) return;
   const c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
   c.getContext('2d').drawImage(v, 0, 0);
   c.toBlob(b => { if (b) { addShot(b); renderScan(); } }, 'image/jpeg', 0.92);
 }
-function setScanMsg(kind, html) { const m = $('#scanMsg'); if (m) m.innerHTML = html ? `<div class="scan-msg ${kind}" role="status">${html}</div>` : ''; }
+function setScanMsg(kind, html) { const m = sq('.scan-msg-box'); if (m) m.innerHTML = html ? `<div class="scan-msg ${kind}" role="status">${html}</div>` : ''; }
 async function readScan() {
   if (!scanShots.length) { showToast(t('sc_need'), 'error'); return; }
   scanBusy = true; renderScan(); setScanMsg('', '');
@@ -1255,6 +1274,12 @@ async function readScan() {
   scanShots.forEach((x, i) => fd.append('file', x.blob, `label-${i + 1}.jpg`));
   try {
     const d = await api('/api/analyze', { method: 'POST', body: fd });
+    if (scanHost === 'page') {
+      // From the Pill check page: open a new medication, already filled in, to check and save.
+      scanBusy = false;
+      openMedForm(null, { prefill: d.parsed || {} });
+      return;
+    }
     fillFromScan(d.parsed || {});
     scanOpen = false; stopScan();
   } catch (e) {
@@ -1296,7 +1321,7 @@ function fillFromScan(p) {
   setScanMsg(p.times_per_day > 1 ? 'warn' : 'ok', html);
   $('#fName').focus();
 }
-$('#medDlg').addEventListener('close', resetScan);
+$('#medDlg').addEventListener('close', () => { resetScan(); if (route === 'pillcheck') renderPage(true); });
 
 function updateFormPreview() {
   const p = $('#fPreview'); if (!p) return;
@@ -1341,13 +1366,38 @@ function openStock(id) {
 
 /* ---------- Pill check (camera) ---------- */
 let camStream = null, camFacing = 'environment', camShot = null, camShotUrl = null, pcResult = null, pcBusy = false, camMsg = '';
+let pcMode = 'scan';
 function viewPillcheck() {
+  const tabs = `<div class="seg pc-tabs" role="tablist" aria-label="${esc(t('pc_eyebrow'))}">
+      <button role="tab" data-act="pc-mode" data-v="scan" aria-pressed="${pcMode === 'scan'}" aria-selected="${pcMode === 'scan'}">${ic('camera', 17, 1.8)}${esc(t('pc_mode_scan'))}</button>
+      <button role="tab" data-act="pc-mode" data-v="check" aria-pressed="${pcMode === 'check'}" aria-selected="${pcMode === 'check'}">${ic('search', 17, 1.8)}${esc(t('pc_mode_check'))}</button>
+    </div>`;
+  const head = `<p class="eyebrow">${esc(t('pc_eyebrow'))}</p><h1 class="title">${esc(t('pc_main_title'))}</h1><p class="lede" style="margin-bottom:1.6rem">${esc(t('pc_main_sub'))}</p>${tabs}`;
+  if (pcMode === 'scan') return head + `
+  <div class="pc">
+    <div class="card pad pc-scan">
+      <div class="card-head" style="border:0;margin-bottom:.4rem;padding-bottom:.6rem"><span class="tile">${ic('camera', 22, 1.6)}</span><div><h2>${esc(t('sc_main_t'))}</h2><p style="line-height:1.6">${esc(t('sc_main_s'))}</p></div></div>
+      <div class="scan-area"></div>
+      <div class="scan-msg-box"></div>
+    </div>
+    <div>
+      <div class="side-k">${esc(t('how_k').toUpperCase())}</div><div class="side-t">${esc(t('how_t'))}</div>
+      <ol class="steps">
+        <li><span>1</span><div><b>${esc(t('how1_t'))}</b><p>${esc(t('how1'))}</p></div></li>
+        <li><span>2</span><div><b>${esc(t('how2_t'))}</b><p>${esc(t('how2'))}</p></div></li>
+        <li><span>3</span><div><b>${esc(t('how3_t'))}</b><p>${esc(t('how3'))}</p></div></li>
+      </ol>
+      <div class="ref">${ic('shield', 22, 1.6)}<div><b>${esc(t('sc_safe_t'))}</b><p>${esc(t('sc_safe_p'))}</p></div></div>
+      <div class="card scan-card"><span class="tile">${ic('search', 22, 1.6)}</span><div><b>${esc(t('sc_to_check_t'))}</b><small>${esc(t('sc_to_check'))}</small></div>
+        <button class="btn btn-light btn-sm" data-act="pc-mode" data-v="check">${esc(t('pc_mode_check'))}${ic('arrow', 16, 1.8)}</button></div>
+    </div>
+  </div>`;
   const live = !!camStream;
   let screen;
   if (camShotUrl) screen = `<img src="${camShotUrl}" alt="">`;
   else if (live) screen = `<video id="camVideo" autoplay playsinline muted class="${camFacing === 'user' ? 'mirror' : ''}"></video><span class="guide"></span>`;
   else screen = `<div class="placeholder">${ic('camera', 40, 1.4)}${esc(camMsg || t('cam_hint'))}</div>`;
-  return `<p class="eyebrow">${esc(t('pc_eyebrow'))}</p><h1 class="title">${esc(t('pc_title'))}</h1><p class="lede">${esc(t('pc_sub'))}</p>
+  return head + `
   <div class="pc">
     <div class="card pad">
       <div class="card-head" style="border:0;margin-bottom:.4rem;padding-bottom:.6rem"><span class="tile">${ic('search', 22, 1.6)}</span><div><h2>${esc(t('pc_title'))}</h2><p style="line-height:1.6">${esc(t('pc_sub'))}</p></div></div>
@@ -1370,7 +1420,7 @@ function viewPillcheck() {
       <div class="side-k">${esc(t('helpful').toUpperCase())}</div><div class="side-t">${esc(t('match_title'))}</div>
       <div class="ref">${ic('shield', 22, 1.6)}<div><b>${esc(t('ref_title'))}</b><p>${esc(t('ref_text'))}</p></div></div>
       <div class="card scan-card"><span class="tile">${ic('camera', 22, 1.6)}</span><div><b>${esc(t('sc_pc_t'))}</b><small>${esc(t('sc_pc_s'))}</small></div>
-        <button class="btn btn-sm" data-act="med-scan">${esc(t('sc_btn'))}${ic('arrow', 16, 1.8)}</button></div>
+        <button class="btn btn-sm" data-act="pc-mode" data-v="scan">${esc(t('sc_btn'))}${ic('arrow', 16, 1.8)}</button></div>
       <div class="result">${pcResultHtml()}</div>
       <p class="note" style="margin-left:0">${ic('help', 18, 1.6)}${esc(t('pc_sub'))}</p>
     </div>
@@ -1615,7 +1665,7 @@ async function signOut() {
 const VIEWS = { today: viewToday, calendar: viewCalendar, streaks: viewStreaks, medications: viewMeds, inventory: viewInventory, pillcheck: viewPillcheck, caregiver: viewCaregiver, profile: viewProfile };
 function renderPage(force) {
   // Don't wipe the live camera or a half-filled form when data refreshes in the background.
-  if (!force && route === 'pillcheck' && camStream) return;
+  if (!force && route === 'pillcheck' && (camStream || (scanHost === 'page' && (scanStream || scanShots.length || scanBusy)))) return;
   const a = document.activeElement;
   if (!force && a && $('#view').contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
   let html = '';
@@ -1626,6 +1676,7 @@ function renderPage(force) {
   const banner = offline ? `<div class="banner" role="alert">${ic('alert', 20, 1.7)}<span><b>${esc(t('off_banner_t'))}</b> ${esc(t('off_banner'))}</span><a href="#" data-act="retry">${esc(t('retry'))}${ic('arrow', 16, 1.8)}</a></div>` : '';
   $('#view').innerHTML = banner + html;
   if (route === 'pillcheck' && camStream) { const v = $('#camVideo'); if (v) { v.srcObject = camStream; v.play().catch(() => {}); } }
+  if (route === 'pillcheck' && pcMode === 'scan' && loaded && !$('#medDlg').open) { scanHost = 'page'; scanOpen = true; renderScan(); }
 }
 function render(force) {
   document.documentElement.lang = lang;
@@ -1655,13 +1706,20 @@ document.addEventListener('click', async e => {
     }
     case 'week': weekOffset = el.dataset.dir === '0' ? 0 : weekOffset + Number(el.dataset.dir); renderPage(true); break;
     case 'med-new': openMedForm(null); break;
-    case 'med-scan': if (route === 'pillcheck') { stopCamera(); renderPage(true); } openMedForm(null, { scan: true }); break;
+    case 'med-scan': openMedForm(null, { scan: true }); break;
     case 'scan-toggle': if (scanOpen) { scanOpen = false; stopScan(); renderScan(); } else openScan(); break;
     case 'scan-face': scanFacing = el.dataset.v; if (scanStream) await startScan(); else renderScan(); break;
     case 'scan-start': await startScan(); break;
     case 'scan-snap': snapScan(); break;
     case 'scan-del': { const x = scanShots.splice(Number(el.dataset.i), 1)[0]; if (x) URL.revokeObjectURL(x.url); if (!scanStream && scanShots.length < 3) startScan(); else renderScan(); break; }
     case 'scan-read': readScan(); break;
+    case 'pc-mode':
+      if (pcMode !== el.dataset.v) {
+        pcMode = el.dataset.v;
+        if (pcMode === 'scan') stopCamera(); else if (scanHost === 'page') resetScan();
+        renderPage(true);
+      }
+      break;
     case 'med-edit': openMedForm(S.meds.find(m => m.id === id)); break;
     case 'med-delete': {
       const m = S.meds.find(x => x.id === id);
