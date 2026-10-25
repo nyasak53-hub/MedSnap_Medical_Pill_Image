@@ -85,8 +85,12 @@ SMS_CONFIGURED = bool(TWILIO_SID and TWILIO_TOKEN and TWILIO_FROM)
 
 VALID_SLOTS = ("Morning", "Afternoon", "Evening")
 SLOT_DEFAULT_TIME = {"Morning": "08:00", "Afternoon": "13:00", "Evening": "20:00"}
-VALID_BADGES = {"with_food", "empty_stomach", "avoid_dairy", "avoid_alcohol",
-                "avoid_grapefruit", "before_bed", "with_water"}
+VALID_BADGES = {"with_food", "empty_stomach", "avoid_dairy", "avoid_alcohol", "avoid_sugar",
+                "before_bed", "with_water", "before_lunch", "before_breakfast", "before_dinner",
+                "avoid_grapefruit"}  # avoid_grapefruit kept so older saved medications still load
+ALL_DAYS = [0, 1, 2, 3, 4, 5, 6]  # Monday = 0 ... Sunday = 6
+# A dose counts as missed (and the caregiver is alerted) this many minutes after its time.
+MISSED_GRACE_MINUTES = int(os.environ.get("MISSED_DOSE_GRACE_MINUTES", "30"))
 VALID_SHAPES = {"", "round", "oval", "capsule", "oblong", "square", "diamond", "triangle", "hexagon"}
 VALID_COLORS = {"", "white", "yellow", "orange", "pink", "red", "brown", "green", "blue", "purple", "gray"}
 LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Simplified Chinese"}
@@ -188,6 +192,10 @@ def new_state():
                       "name": "", "email": "", "phone": ""},
         "tz": "UTC",
         "best_streak": 0,
+        "profile": {"name": "", "age": "", "language": "en", "allergies": "",
+                    "timezone": "", "low_stock_days": 7},
+        "low_alerted": [],
+        "low_tries": {},
     }
 
 
@@ -203,8 +211,10 @@ def migrate_state(raw):
     else:
         return new_state()
     base = new_state()
-    for key in ("history", "caregiver", "tz", "best_streak"):
+    for key in ("history", "caregiver", "tz", "best_streak", "profile", "low_alerted", "low_tries"):
         state.setdefault(key, base[key])
+    for key, value in base["profile"].items():
+        state["profile"].setdefault(key, value)
     state.setdefault("meds", [])
     for med in state["meds"]:
         med.pop("taken", None)
@@ -215,6 +225,9 @@ def migrate_state(raw):
         med.setdefault("food_guide", "Take as directed by your physician.")
         med.setdefault("daily_dose", 1)
         med.setdefault("stock", 0)
+        med.setdefault("days", list(ALL_DAYS))
+        med.setdefault("instructions", "")
+        med.setdefault("created", date.today().isoformat())
     return state
 
 
@@ -272,16 +285,28 @@ def require_client(fn):
 # ==========================================================================
 # Daily records, adherence streak
 # ==========================================================================
-def ensure_today(state, today):
+def scheduled_on(med, day):
+    """True if this medication is taken on that date (its weekday is ticked and it existed then)."""
+    return day.weekday() in (med.get("days") or ALL_DAYS) and day.isoformat() >= str(med.get("created", ""))
+
+
+def get_record(state, day):
     hist = state["history"]
-    key = today.isoformat()
+    key = day.isoformat()
     rec = hist.get(key)
     if rec is None:
-        rec = hist[key] = {"due": [], "taken": [], "alerted": [], "tries": {}, "used": {}}
+        rec = hist[key] = {"due": [m["id"] for m in state["meds"] if scheduled_on(m, day)],
+                           "taken": [], "alerted": [], "tries": {}, "used": {}}
     for field, default in (("due", []), ("taken", []), ("alerted", []), ("tries", {}), ("used", {})):
         rec.setdefault(field, deepcopy(default))
+    return rec
+
+
+def ensure_today(state, today):
+    hist = state["history"]
+    rec = get_record(state, today)
     for med in state["meds"]:
-        if med["id"] not in rec["due"]:
+        if med["id"] not in rec["due"] and scheduled_on(med, today):
             rec["due"].append(med["id"])
     if len(hist) > 400:  # keep roughly the last year
         for old in sorted(hist.keys())[:-400]:
@@ -289,25 +314,91 @@ def ensure_today(state, today):
     return rec
 
 
-def day_complete(state, day):
+def day_info(state, day, today):
+    """(due ids, taken ids) for any date. Past days without a record use the schedule."""
+    ids = {m["id"] for m in state["meds"]}
     rec = state["history"].get(day.isoformat())
-    return bool(rec) and bool(rec["due"]) and set(rec["due"]) <= set(rec["taken"])
+    if rec and day <= today:
+        due = [i for i in rec.get("due", []) if i in ids]
+        taken = [i for i in rec.get("taken", []) if i in due]
+    else:
+        due = [m["id"] for m in state["meds"] if scheduled_on(m, day)]
+        taken = []
+    return due, taken
+
+
+def earliest_day(state, today):
+    days = []
+    for m in state["meds"]:
+        try:
+            days.append(date.fromisoformat(str(m.get("created"))))
+        except ValueError:
+            pass
+    return max(min(days, default=today), today - timedelta(days=400))
 
 
 def compute_streak(state, today):
-    day = today if day_complete(state, today) else today - timedelta(days=1)
-    streak = 0
-    while day_complete(state, day):
-        streak += 1
+    """Consecutive days where every scheduled dose was taken. Days with nothing scheduled are skipped."""
+    streak, day, first = 0, today, earliest_day(state, today)
+    while day >= first:
+        due, taken = day_info(state, day, today)
+        if due:
+            if set(due) <= set(taken):
+                streak += 1
+            elif day != today:  # today still in progress doesn't break the streak
+                break
         day -= timedelta(days=1)
     return streak
+
+
+def avg_daily_use(med):
+    return max(1, int(med.get("daily_dose", 1))) * len(med.get("days") or ALL_DAYS) / 7
+
+
+def days_left(med):
+    return med["stock"] / avg_daily_use(med)
+
+
+def low_stock_days(state):
+    return clamp_int(state["profile"].get("low_stock_days"), 7, 1, 30)
+
+
+def is_low(state, med):
+    return days_left(med) < low_stock_days(state)
+
+
+def week_view(state, start, today):
+    meds = {m["id"]: m for m in state["meds"]}
+    out = []
+    for i in range(7):
+        day = start + timedelta(days=i)
+        due, taken = day_info(state, day, today)
+        items = sorted(({"id": mid, "name": meds[mid]["name"], "dosage": meds[mid]["dosage"],
+                         "time": meds[mid]["scheduled_time"], "pills": meds[mid]["daily_dose"],
+                         "taken": mid in taken, "pill": meds[mid]["pill"]} for mid in due),
+                       key=lambda x: x["time"])
+        if not due:
+            status = "none"
+        elif day > today:
+            status = "planned"
+        elif set(due) <= set(taken):
+            status = "complete"
+        elif day == today:
+            status = "today"
+        else:
+            status = "missed"
+        out.append({"date": day.isoformat(), "items": items, "taken": len(taken),
+                    "total": len(due), "status": status})
+    return out
 
 
 def build_view(state, today, extra=None):
     rec = ensure_today(state, today)
     taken = set(rec["taken"])
     alerted = set(rec["alerted"])
-    meds = [dict(m, taken=m["id"] in taken, alerted=m["id"] in alerted) for m in state["meds"]]
+    due_today = set(rec["due"])
+    meds = [dict(m, taken=m["id"] in taken, alerted=m["id"] in alerted, due_today=m["id"] in due_today,
+                 days_left=round(days_left(m), 1), low=is_low(state, m)) for m in state["meds"]]
     streak = compute_streak(state, today)
     state["best_streak"] = max(state.get("best_streak", 0), streak)
     view = {
@@ -318,6 +409,10 @@ def build_view(state, today, extra=None):
         "caregiver": state["caregiver"],
         "alerts_available": {"email": EMAIL_CONFIGURED, "sms": SMS_CONFIGURED},
         "ai_enabled": client is not None,
+        "profile": state["profile"],
+        "missed_grace_minutes": MISSED_GRACE_MINUTES,
+        "today": today.isoformat(),
+        "week": week_view(state, today - timedelta(days=today.weekday()), today),
     }
     if extra:
         view.update(extra)
@@ -326,10 +421,12 @@ def build_view(state, today, extra=None):
 
 def api_op(client_id, op):
     """Run op(state, today) inside a saved transaction and return the fresh view."""
-    tzname = request_tz()
-    today = datetime.now(ZoneInfo(tzname)).date()
-
     def wrapped(state):
+        # The time zone saved in Profile wins; otherwise use the browser's.
+        if not valid_tz(state["profile"].get("timezone")):
+            state["profile"]["timezone"] = request_tz()
+        tzname = valid_tz(state["profile"]["timezone"]) or "UTC"
+        today = datetime.now(ZoneInfo(tzname)).date()
         state["tz"] = tzname
         ensure_today(state, today)
         extra = op(state, today)
@@ -392,33 +489,84 @@ def get_state(cid):
     return api_op(cid, lambda state, today: None)
 
 
+def parse_medication(data):
+    """Validate the Add/Edit medication form."""
+    name = clean_text(data.get("name"))
+    if not name:
+        raise ApiError("Medication name is required.")
+    sched = str(data.get("scheduled_time") or "")
+    if not TIME_RE.match(sched):
+        raise ApiError("Please choose a dose time.")
+    hour = int(sched[:2])
+    slot = "Morning" if hour < 12 else "Afternoon" if hour < 17 else "Evening"
+    days = sorted({int(d) for d in (data.get("days") or []) if str(d).isdigit() and 0 <= int(d) <= 6})
+    if not days:
+        raise ApiError("Please tick at least one day of the week.")
+    badges = [b for b in (data.get("badges") or []) if b in VALID_BADGES]
+    return {
+        "name": name,
+        "dosage": clean_text(data.get("dosage"), "", 60),
+        "slot": slot,
+        "stock": clamp_int(data.get("stock"), 30, 0, 10000),
+        "daily_dose": clamp_int(data.get("daily_dose"), 1, 1, 20),
+        "instructions": clean_text(data.get("instructions"), "", 300),
+        "food_guide": clean_text(data.get("food_guide"), "", 200),
+        "badges": list(dict.fromkeys(badges)),
+        "days": days,
+        "scheduled_time": sched,
+        "critical": bool(data.get("critical")),
+        "pill": clean_pill(data.get("pill")),
+    }
+
+
+@app.route("/api/week", methods=["GET"])
+@require_client
+def get_week(cid):
+    """Calendar: any week (start = the Monday, YYYY-MM-DD)."""
+    try:
+        start = date.fromisoformat(request.args.get("start", ""))
+    except ValueError:
+        raise ApiError("Use a date like 2026-10-19.")
+
+    def op(state, today):
+        monday = start - timedelta(days=start.weekday())
+        return {"week_start": monday.isoformat(), "week_days": week_view(state, monday, today)}
+
+    return api_op(cid, op)
+
+
 @app.route("/api/medications", methods=["POST"])
 @require_client
 def add_medication(cid):
     data = request.get_json(silent=True) or {}
 
     def op(state, today):
-        name = clean_text(data.get("name"))
-        if not name:
-            raise ApiError("Medication name is required.")
         if len(state["meds"]) >= 100:
             raise ApiError("Medication limit reached.")
-        slot = normalize_slot(data.get("slot"))
-        sched = str(data.get("scheduled_time") or "")
-        badges = [b for b in (data.get("badges") or []) if b in VALID_BADGES]
-        state["meds"].append({
-            "id": max([m["id"] for m in state["meds"]], default=0) + 1,
-            "name": name,
-            "dosage": clean_text(data.get("dosage"), "1 pill", 60),
-            "slot": slot,
-            "stock": clamp_int(data.get("stock"), 30, 0, 10000),
-            "daily_dose": clamp_int(data.get("daily_dose"), 1, 1, 20),
-            "food_guide": clean_text(data.get("food_guide"), "", 200),
-            "badges": list(dict.fromkeys(badges)),
-            "scheduled_time": sched if TIME_RE.match(sched) else SLOT_DEFAULT_TIME[slot],
-            "critical": bool(data.get("critical")),
-            "pill": clean_pill(data.get("pill")),
-        })
+        med = parse_medication(data)
+        med["id"] = max([m["id"] for m in state["meds"]], default=0) + 1
+        med["created"] = today.isoformat()
+        state["meds"].append(med)
+        ensure_today(state, today)
+        return None
+
+    return api_op(cid, op)
+
+
+@app.route("/api/medications/<int:med_id>", methods=["PUT"])
+@require_client
+def edit_medication(cid, med_id):
+    data = request.get_json(silent=True) or {}
+
+    def op(state, today):
+        med = find_med(state, med_id)
+        med.update(parse_medication(data))
+        rec = state["history"][today.isoformat()]
+        if scheduled_on(med, today):
+            if med_id not in rec["due"]:
+                rec["due"].append(med_id)
+        elif med_id not in rec["taken"]:
+            rec["due"] = [i for i in rec["due"] if i != med_id]
         return None
 
     return api_op(cid, op)
@@ -441,9 +589,25 @@ def delete_medication(cid, med_id):
 @app.route("/api/medications/<int:med_id>/take", methods=["POST"])
 @require_client
 def take_medication(cid, med_id):
+    data = request.get_json(silent=True) or {}
+
     def op(state, today):
         med = find_med(state, med_id)
-        rec = state["history"][today.isoformat()]
+        day = today
+        if data.get("date"):
+            try:
+                day = date.fromisoformat(str(data["date"]))
+            except ValueError:
+                raise ApiError("Invalid date.")
+        if day > today:
+            raise ApiError("You can't mark a future dose as taken.")
+        if (today - day).days > 60:
+            raise ApiError("That day is too far back to change.")
+        rec = get_record(state, day)
+        if med_id not in rec["due"]:
+            if not scheduled_on(med, day):
+                raise ApiError("This medication isn't scheduled on that day.")
+            rec["due"].append(med_id)
         if med_id in rec["taken"]:  # undo: give back exactly what was removed
             rec["taken"].remove(med_id)
             med["stock"] += int(rec["used"].pop(str(med_id), 0))
@@ -464,10 +628,41 @@ def refill_medication(cid, med_id):
 
     def op(state, today):
         med = find_med(state, med_id)
+        if data.get("set") is not None and str(data.get("set")).strip() != "":
+            med["stock"] = clamp_int(data.get("set"), med["stock"], 0, 10000)
+            return None
         amount = clamp_int(data.get("amount"), 0, 0, 10000)
         if amount <= 0:
             raise ApiError("Enter how many pills you added.")
         med["stock"] = min(10000, med["stock"] + amount)
+        return None
+
+    return api_op(cid, op)
+
+
+@app.route("/api/profile", methods=["PUT"])
+@require_client
+def save_profile(cid):
+    data = request.get_json(silent=True) or {}
+
+    def op(state, today):
+        age = str(data.get("age") or "").strip()
+        if age and not (age.isdigit() and 1 <= int(age) <= 120):
+            raise ApiError("Age should be a number between 1 and 120.")
+        tz = str(data.get("timezone") or "").strip()
+        if tz and not valid_tz(tz):
+            raise ApiError("That time zone isn't recognised. Try something like America/New_York.")
+        lang = data.get("language") if data.get("language") in LANGUAGE_NAMES else "en"
+        state["profile"] = {
+            "name": clean_text(data.get("name"), "", 60),
+            "age": age,
+            "language": lang,
+            "allergies": clean_text(data.get("allergies"), "", 500),
+            "timezone": tz or state["profile"].get("timezone") or "UTC",
+            "low_stock_days": clamp_int(data.get("low_stock_days"), 7, 1, 30),
+        }
+        if state["profile"]["name"]:
+            state["caregiver"]["patient_name"] = state["profile"]["name"]
         return None
 
     return api_op(cid, op)
@@ -567,17 +762,54 @@ def save_caregiver(cid):
                 raise ApiError("Add a caregiver email or phone number.")
             if not data.get("consent"):
                 raise ApiError("Please confirm your caregiver agreed to receive alerts.")
+        before = state["caregiver"]
         state["caregiver"] = {
             "enabled": enabled,
             "consent": bool(data.get("consent")),
-            "patient_name": clean_text(data.get("patient_name"), "", 60),
+            "patient_name": clean_text(data.get("patient_name"), "", 60) or state["profile"].get("name", ""),
             "name": clean_text(data.get("name"), "", 60),
             "email": email,
             "phone": phone,
         }
-        return None
+        cg = state["caregiver"]
+        newly_connected = enabled and (not before.get("enabled") or before.get("email") != email
+                                       or before.get("phone") != phone)
+        if newly_connected and (EMAIL_CONFIGURED or SMS_CONFIGURED):
+            # Let the caregiver know right away that they'll get alerts (sent in the background).
+            threading.Thread(target=send_welcome, args=(dict(cg),), daemon=True).start()
+            return {"delivery": "sending"}
+        return {"delivery": "connected" if (EMAIL_CONFIGURED or SMS_CONFIGURED) else "not_configured"}
 
     return api_op(cid, op)
+
+
+def send_welcome(caregiver):
+    if not global_send_allowed():
+        return
+    who = caregiver.get("patient_name") or "A MedSnap user"
+    greet = f"Hi {caregiver['name']}, " if caregiver.get("name") else "Hi, "
+    body = (f"{greet}{who} added you as their caregiver in MedSnap. You'll get a message right away "
+            f"if they miss a dose or their pills are running low. No action is needed now.")
+    deliver_alert(caregiver, "You're now a MedSnap caregiver", body)
+
+
+@app.route("/api/caregiver/emergency", methods=["POST"])
+@require_client
+def emergency_caregiver(cid):
+    if not (EMAIL_CONFIGURED or SMS_CONFIGURED):
+        return jsonify({"success": False, "error": "Email/SMS sending isn't configured on this server yet."}), 503
+    caregiver = mutate(cid, lambda state: dict(state["caregiver"], patient_name=state["caregiver"].get("patient_name") or state["profile"].get("name")))
+    if not (caregiver.get("enabled") and caregiver.get("consent") and (caregiver.get("email") or caregiver.get("phone"))):
+        return jsonify({"success": False, "error": "Turn on caregiver alerts and save their contact first."}), 400
+    if not global_send_allowed():
+        return jsonify({"success": False, "error": "Server message limit reached. Call them directly."}), 429
+    who = caregiver.get("patient_name") or "A MedSnap user"
+    body = (f"EMERGENCY: {who} pressed the Emergency button in MedSnap. Please contact them right away. "
+            f"If you can't reach them, call 911.")
+    delivered = deliver_alert(caregiver, f"EMERGENCY: {who} needs help", body)
+    if not delivered:
+        return jsonify({"success": False, "error": "The message could not be sent. Check the server logs."}), 502
+    return jsonify({"success": True, "delivered": delivered})
 
 
 @app.route("/api/caregiver/test", methods=["POST"])
@@ -607,6 +839,7 @@ ALERT_WINDOW_HOURS = 3  # still alert if the server only wakes up within 3h afte
 
 
 def check_missed_doses():
+    """Every minute: alert the caregiver about missed doses and low stock (each only once)."""
     pending = []
     with DATA_LOCK:
         store = _read_store()
@@ -614,24 +847,45 @@ def check_missed_doses():
         for cid, raw in store.items():
             state = migrate_state(raw)
             cg = state["caregiver"]
-            if not (cg.get("enabled") and cg.get("consent")):
+            if not (cg.get("enabled") and cg.get("consent") and (cg.get("email") or cg.get("phone"))):
                 continue
-            tzname = valid_tz(state.get("tz")) or "UTC"
+            tzname = valid_tz(state["profile"].get("timezone")) or valid_tz(state.get("tz")) or "UTC"
             now = datetime.now(ZoneInfo(tzname))
             rec = ensure_today(state, now.date())
+            who = cg.get("patient_name") or state["profile"].get("name") or "A MedSnap user"
+            greet = f"Hi {cg['name']}, " if cg.get("name") else ""
+
             for med in state["meds"]:
-                if not med.get("critical"):
-                    continue
-                if med["id"] in rec["taken"] or med["id"] in rec["alerted"]:
+                if med["id"] not in rec["due"] or med["id"] in rec["taken"] or med["id"] in rec["alerted"]:
                     continue
                 if int(rec["tries"].get(str(med["id"]), 0)) >= 3:
                     continue
                 hh, mm = (int(x) for x in med["scheduled_time"].split(":"))
                 due_at = datetime.combine(now.date(), dtime(hh, mm), tzinfo=ZoneInfo(tzname))
-                deadline = due_at + timedelta(minutes=60)
+                deadline = due_at + timedelta(minutes=MISSED_GRACE_MINUTES)
                 if deadline <= now < deadline + timedelta(hours=ALERT_WINDOW_HOURS):
-                    pending.append((cid, med["id"], med["name"], med["dosage"],
-                                    med["scheduled_time"], dict(cg), now.date().isoformat()))
+                    important = " This is marked as an important medication." if med.get("critical") else ""
+                    body = (f"{greet}{who} has not marked {med['name']} ({med['dosage'] or str(med['daily_dose']) + ' pill(s)'}) "
+                            f"as taken. It was scheduled for {med['scheduled_time']}.{important} Please check in with them. "
+                            f"(Sent by MedSnap because you were listed as a caregiver.)")
+                    pending.append(("dose", cid, med["id"], now.date().isoformat(), dict(cg),
+                                    f"MedSnap: missed dose of {med['name']}", body))
+
+            for med in state["meds"]:
+                key = str(med["id"])
+                if is_low(state, med):
+                    if med["id"] in state["low_alerted"] or int(state["low_tries"].get(key, 0)) >= 3:
+                        continue
+                    left = days_left(med)
+                    body = (f"{greet}{who} is running low on {med['name']}: {med['stock']} pill(s) left, "
+                            f"about {left:.0f} day(s) of doses. Please help them arrange a refill. "
+                            f"(Sent by MedSnap because you were listed as a caregiver.)")
+                    pending.append(("low", cid, med["id"], None, dict(cg),
+                                    f"MedSnap: {med['name']} is running low", body))
+                else:  # refilled: allow a new alert next time it runs low
+                    if med["id"] in state["low_alerted"]:
+                        state["low_alerted"].remove(med["id"])
+                    state["low_tries"].pop(key, None)
             store[cid] = state
             changed = True
         if changed:
@@ -640,16 +894,19 @@ def check_missed_doses():
             except Exception as exc:
                 print(f"[warn] Could not save data: {exc}")
 
-    for cid, med_id, name, dosage, sched, caregiver, day_key in pending:
+    for kind, cid, med_id, day_key, caregiver, subject, body in pending:
         if not (EMAIL_CONFIGURED or SMS_CONFIGURED) or not global_send_allowed():
             continue
-        who = caregiver.get("patient_name") or "A MedSnap user"
-        greet = f"Hi {caregiver['name']}, " if caregiver.get("name") else ""
-        body = (f"{greet}{who} has not marked {name} ({dosage}) as taken. It was scheduled for "
-                f"{sched}. Please check in with them. (Sent by MedSnap because you were listed as a caregiver.)")
-        delivered = deliver_alert(caregiver, f"MedSnap: missed dose of {name}", body)
+        delivered = deliver_alert(caregiver, subject, body)
 
-        def record(state, _cid=cid, _id=med_id, _day=day_key, _ok=bool(delivered)):
+        def record(state, _kind=kind, _id=med_id, _day=day_key, _ok=bool(delivered)):
+            if _kind == "low":
+                if _ok:
+                    if _id not in state["low_alerted"]:
+                        state["low_alerted"].append(_id)
+                else:
+                    state["low_tries"][str(_id)] = int(state["low_tries"].get(str(_id), 0)) + 1
+                return
             rec = state["history"].get(_day)
             if rec is None:
                 return
@@ -701,6 +958,75 @@ def identify_pill():
         and (not imprint or imprint in re.sub(r"[\s-]", "", p["imprint"]))
     ]
     return jsonify({"success": True, "matches": matches})
+
+
+@app.route("/api/pill-photo", methods=["POST"])
+@require_client
+def pill_photo(cid):
+    """Pill check: read shape/color/imprint from a camera photo and compare with the user's list."""
+    upload = request.files.get("file")
+    if not upload:
+        return jsonify({"success": False, "error": "No photo received."}), 400
+    if not client:
+        return jsonify({"success": False, "error": "Pill check needs the AI key (GROQ_API_KEY) on the server."}), 503
+    try:
+        image_url = encode_image(Image.open(io.BytesIO(upload.read())))
+    except Exception:
+        return jsonify({"success": False, "error": "That photo could not be read."}), 400
+    prompt = (
+        "Look at the pill or tablet in this photo. Reply with ONLY a JSON object with keys: "
+        '"shape" (one of round, oval, oblong, square, diamond, triangle, hexagon, capsule, or "" if unsure), '
+        '"color" (one of white, yellow, pink, red, purple, green, blue, brown, orange, gray, or ""), '
+        '"imprint" (letters/numbers printed on it, or ""), "description" (one short sentence). '
+        'If there is no pill in the photo, return all empty strings and description "No pill found".'
+    )
+    reading = None
+    for model in VISION_MODELS:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": image_url}}]}],
+                temperature=0.1, max_tokens=300)
+            reading = extract_json(response.choices[0].message.content or "")
+            if reading is not None:
+                break
+        except Exception as exc:
+            print(f"[error] pill photo model {model} failed: {exc}")
+    if reading is None:
+        return jsonify({"success": False, "error": "The AI couldn't read the photo. Try again with better light."}), 502
+    pill = clean_pill(reading)
+    pill["description"] = clean_text(reading.get("description"), "", 160)
+
+    norm = lambda v: re.sub(r"[\s-]", "", str(v or "").upper())
+    meds = mutate(cid, lambda state: deepcopy(state["meds"]))
+    matches = []
+    for m in meds:
+        p = m.get("pill") or {}
+        if not (p.get("shape") or p.get("color") or p.get("imprint")):
+            continue
+        score, total, hits = 0, 0, []
+        for field, weight in (("shape", 30), ("color", 30)):
+            if pill[field] and p.get(field):
+                total += weight
+                if pill[field] == p[field]:
+                    score += weight
+                    hits.append(field)
+        if pill["imprint"] and p.get("imprint"):
+            total += 40
+            a, b = norm(pill["imprint"]), norm(p["imprint"])
+            if a == b:
+                score += 40
+                hits.append("imprint")
+            elif a and b and (a in b or b in a):
+                score += 20
+                hits.append("imprint")
+        pct = round(100 * score / total) if total else 0
+        matches.append({"id": m["id"], "name": m["name"], "dosage": m["dosage"], "pill": p,
+                        "score": pct, "hits": hits})
+    matches.sort(key=lambda x: -x["score"])
+    return jsonify({"success": True, "reading": pill, "matches": matches[:5]})
 
 
 def language_instruction(lang):
