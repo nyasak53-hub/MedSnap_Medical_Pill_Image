@@ -260,7 +260,7 @@ _db_lock = threading.Lock()
 def _db_connect():
     global _db_conn
     _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=15)
-    _db_conn.execute("CREATE TABLE IF NOT EXISTS veradose_kv ("
+    _db_conn.execute("CREATE TABLE IF NOT EXISTS medsnap_kv ("
                      "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
 
 
@@ -291,7 +291,7 @@ def _db_key(path):
 
 
 def _db_load(path):
-    row = _db("SELECT v FROM veradose_kv WHERE k = %s", (_db_key(path),))
+    row = _db("SELECT v FROM medsnap_kv WHERE k = %s", (_db_key(path),))
     if row:
         return json.loads(row[0])
     # First run with a database: bring over anything already saved in the local file.
@@ -309,7 +309,7 @@ def _db_load(path):
 
 
 def _db_save(path, data):
-    _db("INSERT INTO veradose_kv (k, v, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
+    _db("INSERT INTO medsnap_kv (k, v, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
         "ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v, updated_at = CURRENT_TIMESTAMP",
         (_db_key(path), json.dumps(data)))
 
@@ -465,7 +465,7 @@ def account_for_token(token):
         return data["users"].get(entry["email"])
 
 
-AUTH_COOKIE = "veradose_token"
+AUTH_COOKIE = "medsnap_token"
 REMEMBER_SECONDS = 400 * 24 * 3600  # stay signed in (browsers cap cookies at about 400 days)
 
 
@@ -713,7 +713,7 @@ def main_app():
 # Installable app (PWA): manifest, icons, service worker, install helper
 # Everything is generated here, so no extra files or folders are needed.
 # ==========================================================================
-PWA_VERSION = "veradose-v1"
+PWA_VERSION = "veradose-v2"
 BRAND = (59, 98, 85)          # #3B6255, the VeraDose green
 BRAND_LIGHT = (203, 222, 211)  # #CBDED3
 
@@ -896,13 +896,13 @@ PWA_JS = r"""
     es: { btn: 'Instalar app', title: 'Instalar VeraDose', sub: 'Añade VeraDose a tu pantalla de inicio. Se abre como una app normal, gratis.',
           ios: ['Toca el botón <b>Compartir</b> (el cuadrado con una flecha) en Safari.', 'Desliza hacia abajo y toca <b>Agregar a inicio</b>.', 'Toca <b>Agregar</b>. VeraDose ya está en tu pantalla de inicio.'],
           iosOther: 'En iPhone y iPad, primero abre esta página en <b>Safari</b> y luego sigue estos pasos.',
-          android: ['Toca el menú <b>⋮</b> arriba a la derecha del navegador.', 'Toca <b>Instalar aplicación</ b> o < b > Agregar a la pantalla principal </ b > .', 'Toca < b > Instalar </ b > . VeraDose ya está en tu pantalla de inicio.'],
-          desktop: ['En < b > Chrome </ b > o < b > Edge </ b > , haz clic en el icono de instalar al final de la barra de direcciones, o abre el menú < b > ⋮ </ b > y elige < b > Instalar VeraDose </ b > .', 'En < b > Safari </ b > en Mac, elige < b > Archivo → Añadir al Dock </ b > .', 'Firefox en computadora no puede instalar apps. Usa Chrome, Edge o Safari.']
+          android: ['Toca el menú <b>⋮</b> arriba a la derecha del navegador.', 'Toca <b>Instalar aplicación</b> o <b>Agregar a la pantalla principal</b>.', 'Toca <b>Instalar</b>. VeraDose ya está en tu pantalla de inicio.'],
+          desktop: ['En <b>Chrome</b> o <b>Edge</b>, haz clic en el icono de instalar al final de la barra de direcciones, o abre el menú <b>⋮</b> y elige <b>Instalar VeraDose</b>.', 'En <b>Safari</b> en Mac, elige <b>Archivo → Añadir al Dock</b>.', 'Firefox en computadora no puede instalar apps. Usa Chrome, Edge o Safari.'],
           ok: 'Entendido', done: '¡VeraDose está instalada! Búscala en tu pantalla de inicio.' },
     fr: { btn: "Installer l'app", title: 'Installer VeraDose', sub: "Ajoutez VeraDose à votre écran d'accueil. Elle s'ouvre comme une vraie app, gratuitement.",
           ios: ['Touchez le bouton <b>Partager</b> (le carré avec une flèche) dans Safari.', "Faites défiler et touchez <b>Sur l'écran d'accueil</b>.", "Touchez <b>Ajouter</b>. VeraDose est sur votre écran d'accueil."],
           iosOther: "Sur iPhone et iPad, ouvrez d'abord cette page dans <b>Safari</b>, puis suivez ces étapes.",
-          android: ['Touchez le menu <b>⋮</b> en haut à droite du navigateur.', "Touchez <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</ b>.", "Touchez < b > Installer </ b > . VeraDose est sur votre écran d'accueil."],
+          android: ['Touchez le menu <b>⋮</b> en haut à droite du navigateur.', "Touchez <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</b>.", "Touchez <b>Installer</b>. VeraDose est sur votre écran d'accueil."],
           desktop: ["Dans <b>Chrome</b> ou <b>Edge</b>, cliquez sur l'icône d'installation au bout de la barre d'adresse, ou ouvrez le menu <b>⋮</b> et choisissez <b>Installer VeraDose</b>.", 'Dans <b>Safari</b> sur Mac, choisissez <b>Fichier → Ajouter au Dock</b>.', 'Firefox sur ordinateur ne peut pas installer d’apps. Utilisez Chrome, Edge ou Safari.'],
           ok: "J'ai compris", done: "VeraDose est installée ! Cherchez-la sur votre écran d'accueil." },
     zh: { btn: '安装应用', title: '安装 VeraDose', sub: '把 VeraDose 添加到主屏幕，像普通应用一样打开，完全免费。',
@@ -912,7 +912,7 @@ PWA_JS = r"""
           desktop: ['在 <b>Chrome</b> 或 <b>Edge</b> 中，点击地址栏右侧的安装图标，或打开 <b>⋮</b> 菜单选择<b>安装 VeraDose</b>。', '在 Mac 的 <b>Safari</b> 中，选择<b>文件 → 添加到程序坞</b>。', '电脑上的 Firefox 无法安装应用，请使用 Chrome、Edge 或 Safari。'],
           ok: '知道了', done: 'VeraDose 已安装！请在主屏幕上找到它。' }
   };
-  function L() { var l = 'en'; try { l = localStorage.getItem('veradose_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
+  function L() { var l = 'en'; try { l = localStorage.getItem('medsnap_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
   var root = document.documentElement;
   var deferred = null;
   var ua = navigator.userAgent || '';

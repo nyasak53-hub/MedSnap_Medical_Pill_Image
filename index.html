@@ -15,10 +15,10 @@
 <script src="/pwa.js" defer></script>
 <script>
   try {
-    document.documentElement.setAttribute('data-theme', localStorage.getItem('veradose_theme') || 'light');
-    document.documentElement.style.setProperty('--scale', localStorage.getItem('veradose_scale') || '1');
-    if (localStorage.getItem('veradose_dyslexia') === '1') document.documentElement.classList.add('dyslexic');
-    if (localStorage.getItem('veradose_contrast') === '1') document.documentElement.classList.add('hc');
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light');
+    document.documentElement.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1');
+    if (localStorage.getItem('medsnap_dyslexia') === '1') document.documentElement.classList.add('dyslexic');
+    if (localStorage.getItem('medsnap_contrast') === '1') document.documentElement.classList.add('hc');
   } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -888,7 +888,7 @@ const COLOR_KEYS = ['white', 'yellow', 'pink', 'red', 'purple', 'green', 'blue',
 const COLOR_HEX = { white: '#F4F3EE', yellow: '#F2D35E', pink: '#F2A9C2', red: '#D65A50', purple: '#9C80CF', green: '#79B98A', blue: '#5F92D6', brown: '#A27A55', orange: '#EE9F52', gray: '#A9B0AC' };
 
 let lang = 'en';
-try { lang = localStorage.getItem('VeraDose_lang') || 'en'; } catch (e) {}
+try { lang = localStorage.getItem('medsnap_lang') || 'en'; } catch (e) {}
 if (!I18N[lang]) lang = 'en';
 function t(key, vars) {
   let s = (I18N[lang] && I18N[lang][key]);
@@ -904,11 +904,11 @@ function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, c =>
 const esc = escapeHtml;
 function getClientId() {
   try {
-    let id = localStorage.getItem('VeraDose_client_id');
+    let id = localStorage.getItem('medsnap_client_id');
     if (!id) {
       const raw = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + Math.random().toString(36).slice(2));
       id = String(raw).replace(/[^A-Za-z0-9_-]/g, '');
-      localStorage.setItem('VeraDose_client_id', id);
+      localStorage.setItem('medsnap_client_id', id);
     }
     return id;
   } catch (e) {
@@ -916,8 +916,8 @@ function getClientId() {
     return window.__fallbackId;
   }
 }
-function getToken() { try { return localStorage.getItem('VeraDose_token') || ''; } catch (e) { return ''; } }
-function setToken(v) { try { if (v) localStorage.setItem('VeraDose_token', v); else localStorage.removeItem('VeraDose_token'); } catch (e) {} }
+function getToken() { try { return localStorage.getItem('medsnap_token') || ''; } catch (e) { return ''; } }
+function setToken(v) { try { if (v) localStorage.setItem('medsnap_token', v); else localStorage.removeItem('medsnap_token'); } catch (e) {} }
 function getTimezone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } }
 /* Where app.py is. Normally the same server that sent this page. If the page was opened another way
    (VS Code Live Server, double-clicking index.html), fall back to Flask on this computer. */
@@ -1059,7 +1059,7 @@ function setLanguage(code, save = true) {
   if (!I18N[code]) code = 'en';
   lang = code;
   document.documentElement.lang = code;
-  try { localStorage.setItem('VeraDose_lang', code); } catch (e) {}
+  try { localStorage.setItem('medsnap_lang', code); } catch (e) {}
   if (save) {
     langChosenHere = true;
     if (loaded) api('/api/profile', jsonOptions('PUT', Object.assign({}, S.profile, { language: code }))).then(applyState).catch(() => {});
@@ -1073,7 +1073,7 @@ function renderSidebar() {
   const pending = S.meds.some(m => m.due_today && !m.taken);
   const link = (r, icon, key) => `<a href="#${r}" class="${route === r ? 'active' : ''}" ${route === r ? 'aria-current="page"' : ''}>${ic(icon, 21, 1.6)}<span>${esc(t(key))}</span>${r === 'today' && pending ? '<i class="dot" aria-hidden="true"></i>' : ''}</a>`;
   $('#sidebar').innerHTML = `
-    <a class="logo" href="#today"><span class="logo-mark">${ic('leaf', 22, 2)}</span><span class="logo-word">med<span>snap</span></span></a>
+    <a class="logo" href="#today"><span class="logo-mark">${ic('leaf', 22, 2)}</span><span class="logo-word">vera<span>dose</span></span></a>
     <div class="nav-label">${esc(t('your_space'))}</div>
     <nav class="nav">${link('today', 'home', 'n_today')}${link('calendar', 'calendar', 'n_calendar')}${link('streaks', 'flame', 'n_streaks')}${link('medications', 'pill', 'n_meds')}${link('inventory', 'box', 'n_inventory')}${link('pillcheck', 'search', 'n_pillcheck')}</nav>
     <div class="nav-label">${esc(t('your_details'))}</div>
@@ -1702,7 +1702,7 @@ function renderA11y() {
     <div class="a11y-head"><h2 id="a11yTitle"><span aria-hidden="true">♿</span> ${esc(t('a11y'))}</h2>
       <button class="icon-btn" data-act="a11y-close" aria-label="${esc(t('close'))}">${ic('x', 18, 1.9)}</button></div>
     <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔊</span> ${esc(t('tts'))}</div>
-      <label class="a11y-row"><span>${esc(t('auto_read'))}</span>${sw('a11y-auto', getSetting('VeraDose_autoread') === '1')}</label>
+      <label class="a11y-row"><span>${esc(t('auto_read'))}</span>${sw('a11y-auto', getSetting('medsnap_autoread') === '1')}</label>
       <button class="a11y-wide read" data-act="a11y-read">${ic('volume', 17, 1.8)}${esc(t('read_page'))}</button>
       <button class="a11y-wide stop" data-act="a11y-stop">■ ${esc(t('stop_audio'))}</button></div>
     <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔤</span> ${esc(t('text_size'))}</div>
@@ -1719,7 +1719,7 @@ function stepFont(dir) {
   let i = SCALES.findIndex(s => Math.abs(s - cur) < 0.01); if (i < 0) i = 2;
   const next = SCALES[Math.max(0, Math.min(SCALES.length - 1, i + dir))];
   document.documentElement.style.setProperty('--scale', next);
-  try { localStorage.setItem('VeraDose_scale', String(next)); } catch (e) {}
+  try { localStorage.setItem('medsnap_scale', String(next)); } catch (e) {}
 }
 
 /* ---------- read aloud ---------- */
@@ -1797,7 +1797,7 @@ async function sendChat(text) {
     const msgs = chatHistory.filter(m => !m.error).map(m => ({ role: m.role, content: m.content }));
     const data = await api('/api/chat', jsonOptions('POST', { messages: msgs, language: lang, medications: S.meds.map(m => m.name) }));
     chatHistory.push({ role: 'assistant', content: data.answer });
-    if (getSetting('VeraDose_autoread') === '1') speak(data.answer);
+    if (getSetting('medsnap_autoread') === '1') speak(data.answer);
   } catch (e) {
     chatHistory.push({ role: 'assistant', content: '⚠️ ' + e.message, error: true });
   }
@@ -1825,7 +1825,7 @@ function showGate(mode) {
   const g = $('#gate'); g.hidden = false;
   const up = gateMode === 'signup';
   g.innerHTML = `<div class="card gate-card">
-    <div class="logo"><span class="logo-mark">${ic('leaf', 22, 2)}</span><span class="logo-word">med<span>snap</span></span></div>
+    <div class="logo"><span class="logo-mark">${ic('leaf', 22, 2)}</span><span class="logo-word">vera<span>dose</span></span></div>
     <h1>${esc(up ? t('g_up_title') : t('g_in_title'))}</h1><p class="lede">${esc(up ? t('g_up_sub') : t('g_in_sub'))}</p>
     <div class="tabs" role="tablist">
       <button type="button" role="tab" aria-selected="${!up}" data-act="gate-mode" data-v="signin">${esc(t('g_signin'))}</button>
@@ -1881,7 +1881,7 @@ async function deleteAccount(form) {
   try {
     await api('/api/auth/delete', jsonOptions('POST', { password: new FormData(form).get('password') }));
     setToken('');
-    try { localStorage.removeItem('VeraDose_client_id'); } catch (e) {}
+    try { localStorage.removeItem('medsnap_client_id'); } catch (e) {}
     location.href = API_BASE ? 'landing.html' : '/';
   } catch (e) {
     $('#delErr').innerHTML = `<div class="scan-msg err" role="alert">${esc(e.message)}</div>`;
@@ -1988,7 +1988,7 @@ document.addEventListener('click', async e => {
       el.disabled = false; break;
     }
     case 'font': stepFont(Number(el.dataset.dir)); renderA11y(); break;
-    case 'font-reset': document.documentElement.style.setProperty('--scale', 1); putSetting('VeraDose_scale', '1'); renderA11y(); break;
+    case 'font-reset': document.documentElement.style.setProperty('--scale', 1); putSetting('medsnap_scale', '1'); renderA11y(); break;
     case 'a11y-toggle': a11yOpen = !a11yOpen; renderA11y(); break;
     case 'a11y-close': a11yOpen = false; renderA11y(); $('#a11yBtn').focus(); break;
     case 'a11y-read': speak(($('#view').innerText || '').replace(/\s+/g, ' ').slice(0, 4000)); break;
@@ -2013,12 +2013,12 @@ document.addEventListener('change', e => {
     const wrap = $('#pAllOtherWrap'); if (wrap) wrap.hidden = !e.target.checked;
     if (e.target.checked) $('#pAllOther').focus();
   }
-  if (c === 'theme') { document.documentElement.setAttribute('data-theme', e.target.value); try { localStorage.setItem('VeraDose_theme', e.target.value); } catch (err) {} }
-  if (c === 'a11y-auto') putSetting('VeraDose_autoread', e.target.checked ? '1' : '0');
-  if (c === 'a11y-dys') { document.documentElement.classList.toggle('dyslexic', e.target.checked); putSetting('VeraDose_dyslexia', e.target.checked ? '1' : '0'); if (route === 'profile') renderPage(true); }
-  if (c === 'a11y-hc') { document.documentElement.classList.toggle('hc', e.target.checked); putSetting('VeraDose_contrast', e.target.checked ? '1' : '0'); }
-  if (c === 'a11y-dark') { document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light'); putSetting('VeraDose_theme', e.target.checked ? 'dark' : 'light'); if (route === 'profile') renderPage(true); }
-  if (c === 'dyslexia') { document.documentElement.classList.toggle('dyslexic', e.target.checked); try { localStorage.setItem('VeraDose_dyslexia', e.target.checked ? '1' : '0'); } catch (err) {} }
+  if (c === 'theme') { document.documentElement.setAttribute('data-theme', e.target.value); try { localStorage.setItem('medsnap_theme', e.target.value); } catch (err) {} }
+  if (c === 'a11y-auto') putSetting('medsnap_autoread', e.target.checked ? '1' : '0');
+  if (c === 'a11y-dys') { document.documentElement.classList.toggle('dyslexic', e.target.checked); putSetting('medsnap_dyslexia', e.target.checked ? '1' : '0'); if (route === 'profile') renderPage(true); }
+  if (c === 'a11y-hc') { document.documentElement.classList.toggle('hc', e.target.checked); putSetting('medsnap_contrast', e.target.checked ? '1' : '0'); }
+  if (c === 'a11y-dark') { document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light'); putSetting('medsnap_theme', e.target.checked ? 'dark' : 'light'); if (route === 'profile') renderPage(true); }
+  if (c === 'dyslexia') { document.documentElement.classList.toggle('dyslexic', e.target.checked); try { localStorage.setItem('medsnap_dyslexia', e.target.checked ? '1' : '0'); } catch (err) {} }
   if (c === 'scan-file') { [...e.target.files].slice(0, 3 - scanShots.length).forEach(addShot); e.target.value = ''; renderScan(); }
   if (c === 'cam-file') { const f = e.target.files[0]; if (f) { stopCamera(); setShot(f); renderPage(true); } }
 });
