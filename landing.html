@@ -112,6 +112,7 @@
         .auth-err button { display: block; margin-top: 8px; background: none; border: 0; padding: 0; color: inherit; font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; }
         .auth-err { background: rgba(159,58,40,.12); color: #9F3A28; border: 1px solid rgba(159,58,40,.35); border-radius: 12px; padding: 10px 13px; font-size: .86rem; font-weight: 700; margin-bottom: 13px; }
         [data-theme="dark"] .auth-err { color: #F0A08E; }
+        .auth-err.info, [data-theme="dark"] .auth-err.info { background: rgba(59,98,85,.1); color: var(--ink); border-color: rgba(59,98,85,.3); font-weight: 600; }
         .auth-submit { width: 100%; justify-content: center; border: 0; cursor: pointer; margin-top: 4px; padding: 13px 22px; font-size: 1rem; }
         .auth-submit[disabled] { opacity: .6; cursor: wait; }
         .auth-private { text-align: center; font-size: .8rem; color: var(--muted); margin-top: 14px; }
@@ -582,7 +583,7 @@
             footer: "VeraDose is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.",
             a11y: 'Accessibility', text_size: 'Text size', dyslexia: 'Dyslexia-friendly font', dark: 'Dark mode', a11y_btn: 'Accessibility options', to_dark: 'Switch to dark mode', to_light: 'Switch to light mode',
             email: 'Email', password: 'Password', your_name: 'Your name', pw_hint: 'At least 8 characters.', age: 'Age', optional: 'Optional', allergies: 'Allergies', allergies_ph: 'Optional, e.g. penicillin',
-            create: 'Create my account', private: 'Your information is private.', close: 'Close',
+            create: 'Create my account', server_down: "VeraDose's server didn't answer. If it was asleep, wait a minute and try again.", working: "Please wait…", waking: "The server is waking up. This can take up to a minute the first time. Please keep this window open.", too_slow: "The server took too long to answer. Please try again in a minute.", private: 'Your information is private.', close: 'Close',
             in_title: 'Welcome back', in_sub: 'Sign in to see your medicines and routine.', up_title: "Let's get you set up", up_sub: 'Your account keeps your medicines safe on any device. Age and allergies are optional.',
             offline: "VeraDose can't reach its server. In the VS Code terminal run: python app.py", error: 'Something went wrong. Please try again.',
             make_acc: 'Create an account with this email →', show_pw: 'Show password', hide_pw: 'Hide password'
@@ -633,7 +634,7 @@
             footer: 'VeraDose es una herramienta de recordatorios y no da consejos médicos. La IA puede equivocarse; sigue siempre las indicaciones de tu médico y farmacéutico.',
             a11y: 'Accesibilidad', text_size: 'Tamaño del texto', dyslexia: 'Fuente para dislexia', dark: 'Modo oscuro', a11y_btn: 'Opciones de accesibilidad', to_dark: 'Cambiar a modo oscuro', to_light: 'Cambiar a modo claro',
             email: 'Correo', password: 'Contraseña', your_name: 'Tu nombre', pw_hint: 'Al menos 8 caracteres.', age: 'Edad', optional: 'Opcional', allergies: 'Alergias', allergies_ph: 'Opcional, ej. penicilina',
-            create: 'Crear mi cuenta', private: 'Tu información es privada.', close: 'Cerrar',
+            create: 'Crear mi cuenta', server_down: "El servidor de VeraDose no respondió. Si estaba dormido, espera un minuto e inténtalo de nuevo.", working: "Un momento…", waking: "El servidor se está despertando. La primera vez puede tardar hasta un minuto. Mantén esta ventana abierta.", too_slow: "El servidor tardó demasiado en responder. Inténtalo de nuevo en un minuto.", private: 'Tu información es privada.', close: 'Cerrar',
             in_title: 'Hola de nuevo', in_sub: 'Inicia sesión para ver tus medicamentos y tu rutina.', up_title: 'Vamos a prepararte', up_sub: 'Tu cuenta guarda tus medicamentos en cualquier dispositivo. La edad y las alergias son opcionales.',
             offline: 'VeraDose no puede conectar con su servidor. En la terminal de VS Code ejecuta: python app.py', error: 'Algo salió mal. Inténtalo de nuevo.',
             make_acc: 'Crear una cuenta con este correo →', show_pw: 'Mostrar contraseña', hide_pw: 'Ocultar contraseña'
@@ -684,7 +685,7 @@
             footer: "VeraDose est un outil de rappel et ne donne pas d'avis médical. L'IA peut se tromper : suivez toujours les instructions de votre médecin et de votre pharmacien.",
             a11y: 'Accessibilité', text_size: 'Taille du texte', dyslexia: 'Police pour la dyslexie', dark: 'Mode sombre', a11y_btn: "Options d'accessibilité", to_dark: 'Passer en mode sombre', to_light: 'Passer en mode clair',
             email: 'E-mail', password: 'Mot de passe', your_name: 'Votre nom', pw_hint: 'Au moins 8 caractères.', age: 'Âge', optional: 'Facultatif', allergies: 'Allergies', allergies_ph: 'Facultatif, ex. pénicilline',
-            create: 'Créer mon compte', private: 'Vos informations sont privées.', close: 'Fermer',
+            create: 'Créer mon compte', server_down: "Le serveur de VeraDose n'a pas répondu. S'il était en veille, attendez une minute et réessayez.", working: "Un instant…", waking: "Le serveur se réveille. La première fois, cela peut prendre jusqu'à une minute. Gardez cette fenêtre ouverte.", too_slow: "Le serveur a mis trop de temps à répondre. Réessayez dans une minute.", private: 'Vos informations sont privées.', close: 'Fermer',
             in_title: 'Bon retour', in_sub: 'Connectez-vous pour voir vos médicaments et votre routine.', up_title: 'Créons votre compte', up_sub: "Votre compte garde vos médicaments sur tous vos appareils. L'âge et les allergies sont facultatifs.",
             offline: 'VeraDose ne joint pas son serveur. Dans le terminal VS Code, lancez : python app.py', error: "Une erreur s'est produite. Réessayez.",
             make_acc: 'Créer un compte avec cet e-mail →', show_pw: 'Afficher le mot de passe', hide_pw: 'Masquer le mot de passe'
@@ -735,7 +736,7 @@
             footer: 'VeraDose 是提醒工具，不提供医疗建议。AI 结果可能有误，请始终遵循医生和药剂师的指导。',
             a11y: '无障碍', text_size: '文字大小', dyslexia: '阅读障碍友好字体', dark: '深色模式', a11y_btn: '无障碍选项', to_dark: '切换到深色模式', to_light: '切换到浅色模式',
             email: '邮箱', password: '密码', your_name: '您的姓名', pw_hint: '至少 8 个字符。', age: '年龄', optional: '可选', allergies: '过敏', allergies_ph: '可选，例如青霉素',
-            create: '创建我的账户', private: '您的信息是私密的。', close: '关闭',
+            create: '创建我的账户', server_down: "VeraDose 服务器没有响应。如果它在休眠，请等一分钟再试。", working: "请稍候…", waking: "服务器正在启动，第一次可能需要一分钟。请保持此窗口打开。", too_slow: "服务器响应时间太长。请一分钟后再试。", private: '您的信息是私密的。', close: '关闭',
             in_title: '欢迎回来', in_sub: '登录查看您的药物和日常安排。', up_title: '开始设置', up_sub: '账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。',
             offline: 'VeraDose 无法连接服务器。请在 VS Code 终端运行：python app.py', error: '出了点问题，请重试。',
             make_acc: '用这个邮箱创建账户 →', show_pw: '显示密码', hide_pw: '隐藏密码'
@@ -866,14 +867,18 @@
         async function call(path, body) {
             var res, data = null;
             try {
+                var ctrl = window.AbortController ? new AbortController() : null;
+                var limit = ctrl ? setTimeout(function () { ctrl.abort(); }, 75000) : null;  // never wait forever
                 res = await fetch(API + path, {
                     method: body ? 'POST' : 'GET',
                     headers: { 'Content-Type': 'application/json', 'X-Auth-Token': token(), 'X-Client-Id': clientId(), 'X-Timezone': tz() },
-                    body: body ? JSON.stringify(body) : undefined
+                    body: body ? JSON.stringify(body) : undefined,
+                    signal: ctrl ? ctrl.signal : undefined
                 });
-            } catch (e) { throw new Error(t('offline')); }
+                if (limit) clearTimeout(limit);
+            } catch (e) { throw new Error(e && e.name === 'AbortError' ? t('too_slow') : notFlask ? t('offline') : t('server_down')); }
             try { data = await res.json(); } catch (e) {}
-            if (!data) throw new Error(t('offline'));
+            if (!data) throw new Error((notFlask ? t('offline') : t('server_down')) + (res && res.status ? ' (' + res.status + ')' : ''));
             if (!res.ok || data.success === false) {
                 var err = new Error(data.error || t('error'));
                 err.status = res.status;
@@ -884,7 +889,8 @@
         }
 
         var dlg = $('authDlg');
-        function showError(msg) { var e = $('authErr'); e.textContent = msg || ''; e.hidden = !msg; }
+        function showError(msg) { var e = $('authErr'); e.textContent = msg || ''; e.hidden = !msg; e.classList.remove('info'); }
+        function showInfo(msg) { var e = $('authErr'); e.textContent = msg || ''; e.hidden = !msg; e.classList.toggle('info', !!msg); }
         function setMode(up) {
             authMode = up;
             $('tabIn').setAttribute('aria-selected', !up); $('tabUp').setAttribute('aria-selected', up);
@@ -920,13 +926,18 @@
 
         async function submit(form, path) {
             var btn = form.querySelector('button[type=submit]'); btn.disabled = true; showError('');
+            var label = btn.querySelector('span'), oldText = label.textContent;
+            label.textContent = t('working');
+            var slowNote = setTimeout(function () { showInfo(t('waking')); }, 5000);
+            function done() { clearTimeout(slowNote); showInfo(''); label.textContent = oldText; btn.disabled = false; }
             var body = { language: lang }; new FormData(form).forEach(function (v, k) { body[k] = v; });
             try {
                 var d = await call(path, body);
+                clearTimeout(slowNote);
                 setToken(d.token);
                 location.href = APP_URL;
             } catch (e) {
-                showError(e.message); btn.disabled = false;
+                done(); showError(e.message);
                 if (e.noAccount) {
                     var b = document.createElement('button'); b.type = 'button'; b.textContent = t('make_acc');
                     b.onclick = function () { var em = $('inEmail').value; setMode(true); showError(''); $('upEmail').value = em; $('upName').focus(); };

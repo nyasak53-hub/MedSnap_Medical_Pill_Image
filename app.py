@@ -278,7 +278,10 @@ _db_lock = threading.Lock()
 
 def _db_connect():
     global _db_conn
-    _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=15)
+    # keepalives + tcp_user_timeout: a dropped connection fails in seconds instead of hanging the site
+    _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=8,
+                           keepalives=1, keepalives_idle=20, keepalives_interval=5, keepalives_count=3,
+                           tcp_user_timeout=10000)
     _db_conn.execute("CREATE TABLE IF NOT EXISTS medsnap_kv ("
                      "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
 
@@ -286,16 +289,19 @@ def _db_connect():
 def _db(sql, params=()):
     """Run one query on a shared connection. Reconnects once if the database closed it
     (free databases go to sleep when idle and drop old connections)."""
-    global _db_conn
-    with _db_lock:
+    global _db_conn, DATABASE_STATUS
+    # Never let requests pile up behind a stuck database call.
+    if not _db_lock.acquire(timeout=25):
+        raise StorageBusy("database busy")
+    try:
         for attempt in (1, 2):
             try:
                 if _db_conn is None or getattr(_db_conn, "closed", False):
                     _db_connect()
                 cur = _db_conn.execute(sql, params)
+                DATABASE_STATUS = "connected"
                 return cur.fetchone() if cur.description else None
             except _pg.Error as exc:
-                global DATABASE_STATUS
                 DATABASE_STATUS = "error: " + _db_hint(exc)
                 print(f"[warn] Database problem ({_db_hint(exc)}); reconnecting.")
                 try:
@@ -305,6 +311,8 @@ def _db(sql, params=()):
                 _db_conn = None
                 if attempt == 2:
                     raise StorageBusy(str(exc))
+    finally:
+        _db_lock.release()
 
 
 def _db_hint(exc):
@@ -1972,6 +1980,9 @@ def analyze(cid):
 # ==========================================================================
 @app.errorhandler(StorageBusy)
 def handle_storage_busy(_err):
+    if DATABASE_URL:
+        return jsonify({"success": False, "error": "VeraDose can't reach its database right now. Nothing was lost. "
+                                                   "Please try again in a minute."}), 503
     return jsonify({"success": False, "error": "VeraDose couldn't open its saved data for a moment. "
                                                "Nothing was lost. Please try again."}), 503
 
