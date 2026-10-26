@@ -202,7 +202,6 @@ def new_state():
                     "timezone": "", "low_stock_days": 7},
         "low_alerted": [],
         "low_tries": {},
-        "chat": [],          # Buddy conversation, saved with the account
     }
 
 
@@ -218,7 +217,7 @@ def migrate_state(raw):
     else:
         return new_state()
     base = new_state()
-    for key in ("history", "caregiver", "tz", "best_streak", "profile", "low_alerted", "low_tries", "chat"):
+    for key in ("history", "caregiver", "tz", "best_streak", "profile", "low_alerted", "low_tries"):
         state.setdefault(key, base[key])
     for key, value in base["profile"].items():
         state["profile"].setdefault(key, value)
@@ -1534,65 +1533,6 @@ def save_profile(cid):
 
 
 # ==========================================================================
-# Read-aloud backup voice: many computers and iPhones have no Telugu (or Hindi) voice built in.
-# When the device has no voice for the language, the page asks the server for an MP3 instead.
-# Uses the free gTTS library (Google's text-to-speech). The text is sent to Google to make the audio.
-# ==========================================================================
-TTS_LANGS = {"en": "en", "es": "es", "fr": "fr", "zh": "zh-CN", "hi": "hi", "te": "te"}
-_tts_cache = {}            # (lang, text) -> mp3 bytes, small and recent only
-_tts_cache_order = deque()
-TTS_LOG = {}
-
-
-def tts_allowed(ip, limit=120):
-    now = time.time()
-    with RATE_LOCK:
-        stamps = [t for t in TTS_LOG.get(ip, []) if now - t < 3600]
-        if len(stamps) >= limit:
-            TTS_LOG[ip] = stamps
-            return False
-        stamps.append(now)
-        TTS_LOG[ip] = stamps
-        return True
-
-
-@app.route("/api/tts", methods=["POST"])
-def text_to_speech():
-    data = request.get_json(silent=True) or {}
-    lang = TTS_LANGS.get(str(data.get("lang") or "en"))
-    text = re.sub(r"\s+", " ", str(data.get("text") or "")).strip()[:3000]
-    if not lang or not text:
-        return jsonify({"success": False, "error": "Nothing to read."}), 400
-    ip = (request.headers.get("X-Forwarded-For") or request.remote_addr or "?").split(",")[0].strip()
-    key = (lang, text)
-    audio = _tts_cache.get(key)
-    if audio is None:
-        if not tts_allowed(ip):
-            return jsonify({"success": False, "error": "Too many read-aloud requests. Please wait a few minutes."}), 429
-        try:
-            from gtts import gTTS
-        except ImportError:
-            return jsonify({"success": False, "error": "The backup voice isn't installed on the server. Add gTTS to requirements.txt and push again."}), 503
-        try:
-            buf = io.BytesIO()
-            try:
-                gTTS(text=text, lang=lang, timeout=20).write_to_fp(buf)
-            except TypeError:          # older gTTS without the timeout option
-                gTTS(text=text, lang=lang).write_to_fp(buf)
-            audio = buf.getvalue()
-        except Exception as exc:
-            print(f"[warn] Backup voice failed: {exc}")
-            return jsonify({"success": False, "error": "The voice service didn't answer. Please try again in a moment."}), 502
-        _tts_cache[key] = audio
-        _tts_cache_order.append(key)
-        while len(_tts_cache_order) > 60:
-            _tts_cache.pop(_tts_cache_order.popleft(), None)
-    resp = Response(audio, mimetype="audio/mpeg")
-    resp.headers["Cache-Control"] = "private, max-age=86400"
-    return resp
-
-
-# ==========================================================================
 # Caregiver alerts
 # ==========================================================================
 SEND_LOG = deque()
@@ -2036,48 +1976,20 @@ def check_interactions():
         return jsonify({"success": False, "error": ai_error_message(exc)}), 502
 
 
-CHAT_KEEP = 60   # messages kept per account (30 questions and answers)
-
-
-def _chat_messages(state):
-    return [m for m in (state.get("chat") or []) if isinstance(m, dict) and m.get("role") in ("user", "assistant")]
-
-
-@app.route("/api/chat/history", methods=["GET", "DELETE"])
-@require_client
-def chat_history(cid):
-    """Buddy's saved conversation for this account (DELETE clears it)."""
-    if request.method == "DELETE":
-        def clear(state):
-            state["chat"] = []
-        mutate(cid, clear)
-        return jsonify({"success": True, "messages": []})
-    with DATA_LOCK:
-        state = migrate_state(_read_store().get(cid))
-    return jsonify({"success": True, "messages": [{"role": m["role"], "content": m.get("content", "")}
-                                                  for m in _chat_messages(state)]})
-
-
 @app.route("/api/chat", methods=["POST"])
-@require_client
-def chat(cid):
+def chat():
     data = request.get_json(silent=True) or {}
     lang = data.get("language", "en")
     meds = [clean_text(m, "", 80) for m in (data.get("medications") or [])][:30]
 
-    # Context = the saved conversation + the new question (so Buddy remembers earlier chats).
-    question = ""
-    for m in reversed(data.get("messages") or []):
-        if isinstance(m, dict) and m.get("role") == "user":
-            question = clean_text(m.get("content"), "", 1000)
-            break
-    if not question:
+    messages = []
+    for m in (data.get("messages") or [])[-12:]:
+        if isinstance(m, dict) and m.get("role") in ("user", "assistant"):
+            content = clean_text(m.get("content"), "", 1000)
+            if content:
+                messages.append({"role": m["role"], "content": content})
+    if not messages or messages[-1]["role"] != "user":
         return jsonify({"success": False, "error": "No question provided."}), 400
-    with DATA_LOCK:
-        saved = _chat_messages(migrate_state(_read_store().get(cid)))
-    messages = [{"role": m["role"], "content": clean_text(m.get("content"), "", 1000)} for m in saved[-12:]
-                if m.get("content")]
-    messages.append({"role": "user", "content": question})
     if not client:
         return jsonify({"success": False, "error": "The AI assistant isn't configured on this server (missing GROQ_API_KEY)."}), 503
 
@@ -2098,15 +2010,6 @@ def chat(cid):
     )
     try:
         answer = ai_complete([{"role": "system", "content": system_prompt}] + messages, temperature=0.3, max_tokens=1000)
-        now = datetime.now().isoformat(timespec="seconds")
-
-        def remember(state):
-            state["chat"] = (_chat_messages(state) + [{"role": "user", "content": question, "at": now},
-                                                     {"role": "assistant", "content": answer, "at": now}])[-CHAT_KEEP:]
-        try:
-            mutate(cid, remember)
-        except Exception as exc:          # the answer still shows even if saving fails
-            print(f"[warn] Could not save the chat: {exc}")
         return jsonify({"success": True, "answer": answer})
     except Exception as exc:
         print(f"[error] chat: {exc}")

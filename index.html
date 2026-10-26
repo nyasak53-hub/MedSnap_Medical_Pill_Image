@@ -559,8 +559,6 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
 }
 /* Hindi and Telugu: spaced-out letters would break joined characters apart */
 html:lang(hi) *, html:lang(te) * { letter-spacing: 0 !important; }
-.bd-clear { margin-left: auto; font-size: .78rem; color: var(--ink-2); }
-.bd-head .bd-clear + .icon-btn { margin-left: .2rem; }
 </style>
 </head>
 <body>
@@ -1292,18 +1290,6 @@ I18N.te = {
   ring_marked:"వేసుకున్నట్లు గుర్తించబడింది. శభాష్!", ring_snoozed:"సరే, {n} నిమిషాల తర్వాత మళ్ళీ మోగుతాను.", notif_body:"{names}. VeraDose తెరవడానికి నొక్కండి.",
   left_hm:"{h} గం {m} నిమి", left_m:"{m} నిమి", test_med:"పరీక్ష మందు",
 };
-I18N.en.bd_clear = "Clear chat"; I18N.en.bd_clear_q = "Delete this whole conversation with Buddy?";
-I18N.es.bd_clear = "Borrar chat"; I18N.es.bd_clear_q = "¿Borrar toda esta conversación con Buddy?";
-I18N.fr.bd_clear = "Effacer la discussion"; I18N.fr.bd_clear_q = "Effacer toute cette conversation avec Buddy ?";
-I18N.zh.bd_clear = "清除聊天"; I18N.zh.bd_clear_q = "要删除与 Buddy 的全部对话吗？";
-I18N.hi.bd_clear = "चैट मिटाएँ"; I18N.hi.bd_clear_q = "Buddy के साथ पूरी बातचीत मिटा दें?";
-I18N.te.bd_clear = "చాట్ తొలగించండి"; I18N.te.bd_clear_q = "Buddy తో ఈ మొత్తం సంభాషణను తొలగించాలా?";
-I18N.en.tts_loading = "Getting the voice ready…"; I18N.en.tts_server_fail = "Couldn't play the voice right now. Please try again.";
-I18N.es.tts_loading = "Preparando la voz…"; I18N.es.tts_server_fail = "No se pudo reproducir la voz ahora. Inténtalo de nuevo.";
-I18N.fr.tts_loading = "Préparation de la voix…"; I18N.fr.tts_server_fail = "Impossible de lire la voix pour le moment. Réessayez.";
-I18N.zh.tts_loading = "正在准备语音…"; I18N.zh.tts_server_fail = "暂时无法播放语音，请重试。";
-I18N.hi.tts_loading = "आवाज़ तैयार हो रही है…"; I18N.hi.tts_server_fail = "अभी आवाज़ नहीं चल सकी। कृपया फिर कोशिश करें।";
-I18N.te.tts_loading = "గొంతు సిద్ధమవుతోంది…"; I18N.te.tts_server_fail = "ప్రస్తుతం గొంతు వినిపించలేకపోయాం. దయచేసి మళ్ళీ ప్రయత్నించండి.";
 I18N.en.tts_no_voice = "This device has no voice for this language, so read-aloud may stay silent. You can add one in your phone or computer's speech (text-to-speech) settings.";
 I18N.es.tts_no_voice = "Este dispositivo no tiene una voz para este idioma, así que la lectura en voz alta puede quedar en silencio. Puedes añadir una en los ajustes de voz (texto a voz) de tu teléfono o computadora.";
 I18N.fr.tts_no_voice = "Cet appareil n'a pas de voix pour cette langue, la lecture à voix haute peut donc rester silencieuse. Vous pouvez en ajouter une dans les réglages de synthèse vocale de votre téléphone ou ordinateur.";
@@ -1419,7 +1405,6 @@ function pillSvg(shape, color, imprint, size) {
 let S = { meds: [], streak: 0, best: 0, caregiver: {}, alerts: { email: false, sms: false }, profile: {}, today: isoD(new Date()), week: [], ai: false };
 let loaded = false;
 function applyState(data) {
-  if (!chatLoaded) setTimeout(loadChatHistory, 0);
   S.meds = data.medications || [];
   S.streak = data.streak || 0;
   S.best = data.best_streak || 0;
@@ -1494,7 +1479,7 @@ function setLanguage(code, save = true) {
     langChosenHere = true;
     if (loaded) api('/api/profile', jsonOptions('PUT', Object.assign({}, S.profile, { language: code }))).then(applyState).catch(() => {});
   }
-  stopSpeech();
+  if (window.speechSynthesis) speechSynthesis.cancel();
   render(true);
 }
 
@@ -2182,67 +2167,14 @@ function plainText(text) {
 }
 const ttsWarned = {};
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
-let ttsAudio = null, ttsUnlocked = false, ttsSeq = 0;
-function getTtsAudio() { if (!ttsAudio) { try { ttsAudio = new Audio(); } catch (e) { ttsAudio = null; } } return ttsAudio; }
-function stopServerSpeech() { ttsSeq++; if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} } }
-function stopSpeech() { stopServerSpeech(); if ('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch (e) {} } }
-let ttsBusy = false;
-function ttsChunks(text, max) {
-  const out = [];
-  (text.match(/[^.!?।\n]+[.!?।]*\s*/g) || [text]).forEach(sen => {
-    while (sen.length > max) { out.push(sen.slice(0, max)); sen = sen.slice(max); }
-    if (out.length && (out[out.length - 1] + sen).length <= max) out[out.length - 1] += sen; else if (sen.trim()) out.push(sen);
-  });
-  return out.map(x => x.trim()).filter(Boolean);
-}
-function fetchTts(part) {
-  return fetch(API_BASE + '/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: part, lang }) })
-    .then(async res => { if (!res.ok) { let m = ''; try { m = (await res.json()).error; } catch (e) {} throw new Error(m || t('tts_server_fail')); } return res.blob(); });
-}
-/* Read aloud with the server's voice (used when this device has no voice for the language, e.g. Telugu).
-   The text is read in short pieces so the voice starts quickly; the next piece loads while one plays. */
-async function serverSpeak(text) {
-  stopSpeech();
-  const seq = ++ttsSeq;
-  ttsBusy = true;
-  showToast(t('tts_loading'));
-  // Start the player right now, inside the tap (silently), so phones allow the voice to play once it arrives.
-  const a = getTtsAudio();
-  if (a && !ttsUnlocked) { try { a.src = getBeepUrl(); a.muted = true; a.play().then(() => { ttsUnlocked = true; }).catch(() => {}); } catch (e) {} }
-  try {
-    if (!a) throw new Error(t('tts_unsupported'));
-    const parts = ttsChunks(text.slice(0, 3000), 350);
-    let next = fetchTts(parts[0]);
-    for (let i = 0; i < parts.length; i++) {
-      const blob = await next;
-      if (seq !== ttsSeq) return;            // stopped or replaced meanwhile
-      if (i + 1 < parts.length) { next = fetchTts(parts[i + 1]); next.catch(() => {}); }
-      try { a.pause(); } catch (e) {}
-      a.loop = false; a.src = URL.createObjectURL(blob); a.muted = false; a.volume = 1;
-      await a.play();
-      ttsUnlocked = true;
-      if (i === 0 && seq === ttsSeq) $('#toastBox').innerHTML = '';
-      await new Promise(done => { a.onended = done; a.onerror = done; a.onpause = () => { if (seq !== ttsSeq) done(); }; });
-      if (seq !== ttsSeq) return;
-    }
-  } catch (e) {
-    if (seq === ttsSeq) showToast((e && e.name === 'NotAllowedError') ? t('ring_tap_sound') : (e.message || t('tts_server_fail')), 'error');
-  } finally {
-    if (seq === ttsSeq) ttsBusy = false;
-  }
-}
-function speak(text, retry) {
-  retry = retry || 0;
+function speak(text) {
   text = plainText(text);
   if (!text.trim()) return;
-  if (!('speechSynthesis' in window)) { serverSpeak(text); return; }
+  if (!('speechSynthesis' in window)) { showToast(t('tts_unsupported'), 'error'); return; }
   const synth = speechSynthesis;
   const voices = synth.getVoices();
   const voice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(lang)) || null;
-  // No voice for this language on this device (common for Telugu): use the server's voice instead.
-  if (!voice && lang !== 'en' && (voices.length || retry >= 3)) { serverSpeak(text); return; }
-  if (!voices.length && retry < 3) { setTimeout(() => speak(text, retry + 1), 300); return; }  // voices still loading
-  stopServerSpeech();
+  if (!voice && lang !== 'en' && voices.length && !ttsWarned[lang]) { ttsWarned[lang] = true; showToast(t('tts_no_voice'), 'error'); }
   // Short pieces: some browsers (Chrome) stop reading after about 15 seconds.
   const parts = [];
   (text.match(/[^.!?\u0964\n]+[.!?\u0964]*\s*/g) || [text]).forEach(sen => {
@@ -2269,22 +2201,7 @@ function medSentence(m) {
 }
 
 /* ---------- Buddy ---------- */
-let buddyOpen = false, chatHistory = [], chatBusy = false, chatLoaded = false;
-/* Buddy's conversation is saved with the account, so it is still there after a refresh or on another device. */
-async function loadChatHistory() {
-  if (chatLoaded) return;
-  chatLoaded = true;
-  try {
-    const d = await api('/api/chat/history');
-    if (!chatBusy && !chatHistory.length) { chatHistory = d.messages || []; if (buddyOpen) renderBuddy(); }
-  } catch (e) { chatLoaded = false; }
-}
-async function clearChat() {
-  if (chatBusy || !chatHistory.length) return;
-  if (!window.confirm(t('bd_clear_q'))) return;
-  try { await api('/api/chat/history', { method: 'DELETE' }); chatHistory = []; renderBuddy(); }
-  catch (e) { showToast(e.message, 'error'); }
-}
+let buddyOpen = false, chatHistory = [], chatBusy = false;
 function renderBuddy() {
   $('#buddyFab').innerHTML = `${ic('sparkles', 22, 1.6)}${esc(t('buddy'))}`;
   $('#buddyFab').setAttribute('aria-expanded', buddyOpen);
@@ -2294,7 +2211,7 @@ function renderBuddy() {
   const keep = $('#bdInput') ? $('#bdInput').value : '';
   panel.classList.toggle('grown', chatHistory.length > 0);
   panel.innerHTML = `
-    <div class="bd-head"><div><h2>${esc(t('bd_title'))}</h2><small>${esc(t('bd_sub'))}</small></div>${chatHistory.length && !chatBusy ? `<button class="link-btn bd-clear" data-act="buddy-clear">${ic('trash', 16, 1.8)}${esc(t('bd_clear'))}</button>` : ''}<button class="icon-btn" data-act="buddy-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
+    <div class="bd-head"><div><h2>${esc(t('bd_title'))}</h2><small>${esc(t('bd_sub'))}</small></div><button class="icon-btn" data-act="buddy-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
     <div class="bd-msgs" id="bdMsgs" aria-live="polite">${chatHistory.length ? chatHistory.map(m => `<div class="msg ${m.role === 'user' ? 'user' : 'bot'} ${m.error ? 'err' : ''}">${m.role === 'user' ? esc(m.content) : formatAnswer(m.content)}</div>`).join('') + (chatBusy ? '<div class="msg bot typing"><span></span><span></span><span></span></div>' : '')
       : `<p class="bd-intro">${esc(t('bd_intro'))}</p>`}</div>
     <p class="bd-note">${esc(t('bd_note'))}</p>
@@ -2514,7 +2431,7 @@ document.addEventListener('click', async e => {
     case 'a11y-toggle': a11yOpen = !a11yOpen; renderA11y(); break;
     case 'a11y-close': a11yOpen = false; renderA11y(); $('#a11yBtn').focus(); break;
     case 'a11y-read': speak(($('#view').innerText || '').replace(/\s+/g, ' ').slice(0, 4000)); break;
-    case 'a11y-stop': stopSpeech(); break;
+    case 'a11y-stop': if ('speechSynthesis' in window) speechSynthesis.cancel(); break;
     case 'emergency': openEmergency(); break;
     case 'em-close': $('#emDlg').close(); break;
     case 'em-alert': {
@@ -2525,7 +2442,6 @@ document.addEventListener('click', async e => {
     case 'buddy-open': buddyOpen = true; document.body.classList.remove('nav-open'); renderBuddy(); $('#bdInput').focus(); break;
     case 'buddy-toggle': buddyOpen = !buddyOpen; renderBuddy(); if (buddyOpen) $('#bdInput').focus(); break;
     case 'buddy-close': buddyOpen = false; renderBuddy(); $('#buddyFab').focus(); break;
-    case 'buddy-clear': clearChat(); break;
   }
 });
 document.addEventListener('change', e => {
@@ -2647,10 +2563,8 @@ function makeBeepWav() {
   }
   return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
 }
-let beepUrl = null;
-function getBeepUrl() { if (!beepUrl) beepUrl = makeBeepWav(); return beepUrl; }
 function getAlarmAudio() {
-  if (!alarmAudio) { try { alarmAudio = new Audio(getBeepUrl()); alarmAudio.loop = true; alarmAudio.preload = 'auto'; } catch (e) { alarmAudio = null; } }
+  if (!alarmAudio) { try { alarmAudio = new Audio(makeBeepWav()); alarmAudio.loop = true; alarmAudio.preload = 'auto'; } catch (e) { alarmAudio = null; } }
   return alarmAudio;
 }
 function startSound() {
@@ -2666,15 +2580,6 @@ function unlockAudio() {
     if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); }
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   } catch (e) {}
-  // Phones only allow sound after a tap: play silently once so read-aloud audio can play later too.
-  if (!ttsUnlocked && !ttsBusy) {
-    const t2 = getTtsAudio();
-    if (t2 && t2.paused) {
-      try { const warm = getBeepUrl(); t2.src = warm; t2.muted = true;
-        // only touch the player if it's still the silent warm-up (never stop real speech)
-        t2.play().then(() => { ttsUnlocked = true; if (t2.src === warm) { t2.pause(); t2.muted = false; } }).catch(() => { if (t2.src === warm) t2.muted = false; }); } catch (e) {}
-    }
-  }
   // Phones only allow sound after a tap: play the alarm file silently once so it can ring later.
   if (!audioUnlocked && !alarmPlaying) {
     const a = getAlarmAudio(); if (!a) return;
@@ -2735,7 +2640,7 @@ function quietRing() { if (!ringing) return; stopSound(); clearInterval(ringing.
 function stopRing() {
   if (!ringing) return;
   quietRing(); clearTimeout(ringing.stopTimer);
-  stopSpeech();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
   ringing = null; document.title = baseTitle; clearNotifications();
   const d = $('#alarmDlg'); if (d.open) d.close();
   if (route === 'alarms') renderPage(true);

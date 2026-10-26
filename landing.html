@@ -937,65 +937,20 @@
 
         // Read the page out loud in the chosen language.
         var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN', te: 'te-IN' };
-        // Device voice first. Many computers and iPhones have no Telugu voice, so then the server makes the audio.
-        var ttsAudio = null, ttsSeq = 0;
-        function stopSpeech() { ttsSeq++; if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} } if ('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch (e) {} } }
-        var SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-        function ttsChunks(text, max) {
-            var out = [];
-            (text.match(/[^.!?।\n]+[.!?।]*\s*/g) || [text]).forEach(function (sen) {
-                while (sen.length > max) { out.push(sen.slice(0, max)); sen = sen.slice(max); }
-                if (out.length && (out[out.length - 1] + sen).length <= max) out[out.length - 1] += sen; else if (sen.trim()) out.push(sen);
-            });
-            return out.map(function (x) { return x.trim(); }).filter(Boolean);
-        }
-        function fetchTts(part) {
-            return fetch(API + '/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: part, lang: lang }) })
-                .then(function (r) { if (!r.ok) throw new Error('tts'); return r.blob(); });
-        }
-        // Server voice (for Telugu and other languages this device can't speak), read in short pieces.
-        function serverSpeak(text) {
-            stopSpeech(); var seq = ++ttsSeq;
-            if (!ttsAudio) ttsAudio = new Audio();
-            var a = ttsAudio;
-            try { a.src = SILENT_WAV; a.play().catch(function () {}); } catch (e) {}   // allowed now, inside the tap
-            var parts = ttsChunks(text.slice(0, 3000), 350), i = 0, next = fetchTts(parts[0]);
-            function playNext() {
-                if (seq !== ttsSeq || i >= parts.length) return;
-                next.then(function (b) {
-                    if (seq !== ttsSeq) return;
-                    i++;
-                    if (i < parts.length) { next = fetchTts(parts[i]); next.catch(function () {}); }
-                    a.onended = playNext;
-                    a.src = URL.createObjectURL(b);
-                    return a.play();
-                }).catch(function () {});
-            }
-            playNext();
-        }
-        function speak(text, retry) {
-            retry = retry || 0;
-            if (!('speechSynthesis' in window)) { serverSpeak(text); return; }
-            var voices = speechSynthesis.getVoices();
-            var v = voices.find(function (x) { return x.lang && x.lang.toLowerCase().replace('_', '-').indexOf(lang) === 0; });
-            if (!v && lang !== 'en' && (voices.length || retry >= 3)) { serverSpeak(text); return; }
-            if (!voices.length && retry < 3) { setTimeout(function () { speak(text, retry + 1); }, 300); return; }
-            stopSpeech();
+        function speak(text) {
+            if (!('speechSynthesis' in window)) return;
+            speechSynthesis.cancel();
             var u = new SpeechSynthesisUtterance(text); u.lang = LOCALES[lang]; u.rate = 0.92;
+            var v = speechSynthesis.getVoices().find(function (x) { return x.lang && x.lang.toLowerCase().indexOf(lang) === 0; });
             if (v) u.voice = v;
             speechSynthesis.speak(u);
         }
-        // Phones only allow sound after a tap: unlock the audio player on the first tap.
-        document.addEventListener('pointerdown', function unlock() {
-            document.removeEventListener('pointerdown', unlock);
-            try { if (!ttsAudio) ttsAudio = new Audio(); ttsAudio.muted = true; ttsAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='; var p = ttsAudio.play(); if (p) p.then(function () { ttsAudio.pause(); ttsAudio.muted = false; }).catch(function () { ttsAudio.muted = false; }); } catch (e) {}
-        }, { passive: true });
         $('readPage').onclick = function () {
             var parts = ['VeraDose.', t('typing')[0], t('lead'), t('band_title') + '.', t('band_sub'), t('how_title') + '.', t('how_sub')];
             for (var i = 1; i <= 12; i++) parts.push(t('k' + i + '_t') + '. ' + t('k' + i));
             speak(parts.join(' '));
         };
-        $('stopAudio').onclick = function () { stopSpeech(); };
+        $('stopAudio').onclick = function () { if ('speechSynthesis' in window) speechSynthesis.cancel(); };
 
         function closePanel() { $('a11yPanel').hidden = true; $('a11yBtn').setAttribute('aria-expanded', 'false'); }
         $('a11yBtn').onclick = function () {
