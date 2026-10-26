@@ -16,7 +16,7 @@
     <script>try { var d = document.documentElement; d.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); d.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1'); if (localStorage.getItem('medsnap_dyslexia') === '1') d.classList.add('dyslexic'); if (localStorage.getItem('medsnap_contrast') === '1') d.classList.add('hc'); } catch (e) {}</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
     <style>
         /* Palette: #8BA49A sage, #CBDED3 mint, #3B6255 forest, #D2C49E sand */
@@ -33,7 +33,7 @@
             --accent: #8BA49A; --accent-text: #10241c; --glow-1: rgba(59,98,85,.6); --glow-2: rgba(210,196,158,.16);
             --shadow: 0 16px 40px rgba(0,0,0,.4);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; transition: background-color .3s, color .3s, border-color .3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Plus Jakarta Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Kohinoor Devanagari", "PingFang SC", "Microsoft YaHei", sans-serif; transition: background-color .3s, color .3s, border-color .3s; }
         body { background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
         .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(to right, rgba(59,98,85,.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,98,85,.06) 1px, transparent 1px); background-size: 50px 50px; z-index: -2; }
         .orb { position: fixed; width: 560px; height: 560px; border-radius: 50%; filter: blur(130px); z-index: -1; pointer-events: none; }
@@ -169,7 +169,7 @@
 
         /* =============== Redesigned top of the page =============== */
         html { font-size: calc(16px * var(--scale, 1)); }
-        html.dyslexic body, html.dyslexic body *:not(i) { font-family: "OpenDyslexic", "Comic Sans MS", sans-serif !important; letter-spacing: .02em; }
+        html.dyslexic body, html.dyslexic body *:not(i) { font-family: "OpenDyslexic", "Comic Sans MS", "Noto Sans Devanagari", "Nirmala UI", sans-serif !important; letter-spacing: .02em; }
         body { background: linear-gradient(180deg, #E9F1EC 0%, #DCE9E1 55%, var(--bg) 100%) fixed; }
         [data-theme="dark"] body { background: linear-gradient(180deg, #0E1813 0%, #101C17 100%) fixed; }
         .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -327,6 +327,7 @@
             .float { display: none; }
         }
         @media (prefers-reduced-motion: reduce) { .float, .hero-badge .pulse, .caret { animation: none; } }
+        html:lang(hi) *, html:lang(mr) * { letter-spacing: 0 !important; }
     </style>
 </head>
 <body>
@@ -342,7 +343,7 @@
             <button type="button" class="pill-btn" id="authOut" data-auth="signin" data-i18n="sign_in">Sign In</button>
             <label class="lang-pill"><i class="fa-solid fa-globe" aria-hidden="true"></i><span class="sr" data-i18n="language">Language</span>
                 <select id="langSel">
-                    <option value="en">EN</option><option value="es">ES</option><option value="fr">FR</option><option value="zh">中文</option>
+                    <option value="en">EN</option><option value="es">ES</option><option value="fr">FR</option><option value="zh">中文</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option>
                 </select></label>
             <button type="button" class="moon-btn" id="themeBtn" aria-label="Switch to dark mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
         </div>
@@ -363,7 +364,7 @@
             <div class="hero-stats">
                 <div><b>~50%</b><span data-i18n="st1">of long-term medicines aren't taken as prescribed</span></div>
                 <div><b>43%</b><span data-i18n="st2">of adults 65+ take 5 or more prescription medicines</span></div>
-                <div><b>4</b><span data-i18n="st3">languages supported</span></div>
+                <div><b>6</b><span data-i18n="st3">languages supported</span></div>
             </div>
             <a href="/app" class="cta-big" id="ctaBig" data-auth="signin"><span data-i18n="cta_out">Get Started — Sign In Free</span> <i class="fa-solid fa-arrow-right"></i></a>
             <button type="button" class="install-cta" data-install><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><span data-i18n="install_cta">Install the free app on your phone</span></button>
@@ -551,7 +552,7 @@
             k7_t: 'Caregiver Alerts', k7: 'Someone you trust gets a text or email right away if a dose is missed or your pills run low.',
             k8_t: 'Streaks That Motivate', k8: 'Build a streak of days with every dose taken and watch your consistency grow.',
             k9_t: 'Buddy, Your AI Helper', k9: 'Ask Buddy how to use VeraDose or get organized, any time you need a hand.',
-            k10_t: 'Four Languages', k10: 'Use VeraDose in English, Spanish, French or Mandarin with one tap.',
+            k10_t: 'Six Languages', k10: 'Use VeraDose in English, Spanish, French, Mandarin, Hindi or Marathi with one tap.',
             k11_t: 'Emergency in One Tap', k11: 'A 911 button is always at the top of the screen, and it can alert your caregiver too.',
             k12_t: 'Private & Secure', k12: 'Your account keeps your medicines safe and in sync on any device you sign in from.',
             tts: 'Text to speech', auto_read: 'Auto-read AI responses', read_page: 'Read this page aloud', stop: 'Stop audio', readability: 'Readability', visibility: 'Visibility', hc: 'High contrast mode',
@@ -573,7 +574,7 @@
             sources: 'Sources: adherence figures from an <i>Annals of Internal Medicine</i> review, as reported in ' + SRC + '. Chart data from the CDC National Center for Health Statistics, ' + CDC + ' (NHANES 2001–2004 and 2017–March 2020).',
             ft_title: 'Everything you need to stay on track',
             f1_t: 'Read-aloud assistant', f1: "Hear each medication's name, dosage, and instructions spoken out loud, in your chosen language.",
-            f2_t: 'Multi-language', f2: 'Switch the whole app between English, Spanish, French, and Mandarin with one tap.',
+            f2_t: 'Multi-language', f2: 'Switch the whole app between English, Spanish, French, Mandarin, Hindi and Marathi with one tap.',
             f3_t: 'Pill counter and low-stock alerts', f3: "Counts drop automatically when you mark a dose taken, and you're warned when only a few days remain.",
             f4_t: 'Caregiver alerts', f4: 'Optionally let a trusted person know by email or text if a dose is missed or your pills are running low.',
             f5_t: 'Scan a label', f5: 'Photograph a prescription or bottle and VeraDose fills in the medication for you to check and save.',
@@ -602,7 +603,7 @@
             k7_t: 'Avisos al cuidador', k7: 'Una persona de confianza recibe un texto o correo de inmediato si olvidas una dosis o se acaban tus pastillas.',
             k8_t: 'Rachas que motivan', k8: 'Suma días seguidos tomando todas tus dosis y mira crecer tu constancia.',
             k9_t: 'Buddy, tu ayudante IA', k9: 'Pregúntale a Buddy cómo usar VeraDose u organizarte, siempre que necesites ayuda.',
-            k10_t: 'Cuatro idiomas', k10: 'Usa VeraDose en inglés, español, francés o mandarín con un toque.',
+            k10_t: 'Seis idiomas', k10: 'Usa VeraDose en inglés, español, francés, mandarín, hindi o maratí con un toque.',
             k11_t: 'Emergencia en un toque', k11: 'Un botón de 911 siempre está arriba en la pantalla y también puede avisar a tu cuidador.',
             k12_t: 'Privado y seguro', k12: 'Tu cuenta guarda tus medicamentos y los mantiene al día en cualquier dispositivo donde inicies sesión.',
             tts: 'Texto a voz', auto_read: 'Leer en voz alta las respuestas de la IA', read_page: 'Leer esta página en voz alta', stop: 'Detener audio', readability: 'Legibilidad', visibility: 'Visibilidad', hc: 'Modo de alto contraste',
@@ -624,7 +625,7 @@
             sources: 'Fuentes: cifras de adherencia de una revisión de <i>Annals of Internal Medicine</i>, citada en ' + SRC + '. Datos del gráfico del Centro Nacional de Estadísticas de Salud de los CDC, ' + CDC + ' (NHANES 2001–2004 y 2017–marzo 2020).',
             ft_title: 'Todo lo que necesitas para seguir el plan',
             f1_t: 'Asistente de lectura en voz alta', f1: 'Escucha el nombre, la dosis y las instrucciones de cada medicamento en tu idioma.',
-            f2_t: 'Varios idiomas', f2: 'Cambia toda la app entre inglés, español, francés y mandarín con un toque.',
+            f2_t: 'Varios idiomas', f2: 'Cambia toda la app entre inglés, español, francés, mandarín, hindi y maratí con un toque.',
             f3_t: 'Conteo de pastillas y avisos de existencias', f3: 'El conteo baja al marcar una dosis como tomada y te avisa cuando quedan pocos días.',
             f4_t: 'Avisos al cuidador', f4: 'Si quieres, avisa a una persona de confianza por correo o texto si olvidas una dosis o se acaban tus pastillas.',
             f5_t: 'Escanear una etiqueta', f5: 'Fotografía una receta o un frasco y VeraDose completa el medicamento para que lo revises y guardes.',
@@ -653,7 +654,7 @@
             k7_t: "Alertes à l'aidant", k7: 'Une personne de confiance reçoit un SMS ou un e-mail tout de suite si une dose est oubliée ou si le stock baisse.',
             k8_t: 'Des séries motivantes', k8: 'Enchaînez les jours où chaque dose est prise et regardez votre régularité grandir.',
             k9_t: 'Buddy, votre assistant IA', k9: "Demandez à Buddy comment utiliser VeraDose ou vous organiser, dès que vous avez besoin d'aide.",
-            k10_t: 'Quatre langues', k10: "Utilisez VeraDose en anglais, espagnol, français ou mandarin d'un seul geste.",
+            k10_t: 'Six langues', k10: "Utilisez VeraDose en anglais, espagnol, français, mandarin, hindi ou marathi d'un seul geste.",
             k11_t: 'Urgence en un geste', k11: "Un bouton 911 est toujours en haut de l'écran, et il peut aussi prévenir votre aidant.",
             k12_t: 'Privé et sécurisé', k12: 'Votre compte garde vos médicaments en sécurité et à jour sur tous les appareils où vous vous connectez.',
             tts: 'Synthèse vocale', auto_read: "Lire à voix haute les réponses de l'IA", read_page: 'Lire cette page à voix haute', stop: "Arrêter l'audio", readability: 'Lisibilité', visibility: 'Visibilité', hc: 'Mode contraste élevé',
@@ -675,7 +676,7 @@
             sources: "Sources : chiffres d'observance issus d'une revue des <i>Annals of Internal Medicine</i>, rapportés dans " + SRC + '. Données du graphique : CDC National Center for Health Statistics, ' + CDC + ' (NHANES 2001–2004 et 2017–mars 2020).',
             ft_title: 'Tout ce qu\'il faut pour rester sur la bonne voie',
             f1_t: 'Lecture à voix haute', f1: 'Écoutez le nom, la dose et les instructions de chaque médicament, dans votre langue.',
-            f2_t: 'Plusieurs langues', f2: "Passez toute l'application en anglais, espagnol, français ou mandarin d'un seul geste.",
+            f2_t: 'Plusieurs langues', f2: "Passez toute l'application en anglais, espagnol, français, mandarin, hindi ou marathi d'un seul geste.",
             f3_t: 'Décompte et alertes de stock', f3: 'Le décompte baisse à chaque prise notée, et vous êtes prévenu quand il reste peu de jours.',
             f4_t: "Alertes à l'aidant", f4: 'Si vous le souhaitez, prévenez une personne de confiance par e-mail ou SMS en cas de dose oubliée ou de stock bas.',
             f5_t: 'Scanner une étiquette', f5: "Photographiez une ordonnance ou un flacon : VeraDose remplit le médicament, vous vérifiez et enregistrez.",
@@ -704,7 +705,7 @@
             k7_t: '照护人提醒', k7: '漏服或药量不足时，您信任的人会立即收到短信或邮件。',
             k8_t: '激励连续记录', k8: '每天按时服完所有药物，看着坚持的天数不断增加。',
             k9_t: 'AI 助手 Buddy', k9: '随时询问 Buddy 如何使用 VeraDose 或如何安排生活。',
-            k10_t: '四种语言', k10: '一键切换英语、西班牙语、法语或中文。',
+            k10_t: '六种语言', k10: '一键切换英语、西班牙语、法语、中文、印地语或马拉地语。',
             k11_t: '一键紧急求助', k11: '屏幕顶部始终有 911 按钮，也可以同时通知您的照护人。',
             k12_t: '私密安全', k12: '您的账户会安全保存药物信息，并在您登录的任何设备上同步。',
             tts: '语音朗读', auto_read: '自动朗读 AI 回复', read_page: '朗读本页内容', stop: '停止朗读', readability: '易读性', visibility: '可视性', hc: '高对比度模式',
@@ -726,7 +727,7 @@
             sources: '来源：依从性数据来自《Annals of Internal Medicine》的综述，引自 ' + SRC + '。图表数据来自美国 CDC 国家卫生统计中心，' + CDC + '（NHANES 2001–2004 与 2017–2020 年 3 月）。',
             ft_title: '按时服药所需的一切',
             f1_t: '朗读助手', f1: '用您选择的语言朗读每种药物的名称、剂量和说明。',
-            f2_t: '多语言', f2: '一键在英语、西班牙语、法语和中文之间切换整个应用。',
+            f2_t: '多语言', f2: '一键在英语、西班牙语、法语、中文、印地语和马拉地语之间切换整个应用。',
             f3_t: '药片计数与库存提醒', f3: '每次标记已服用时自动减少数量，剩余天数不多时提醒您。',
             f4_t: '照护人提醒', f4: '可选择在漏服或药量不足时，通过邮件或短信通知您信任的人。',
             f5_t: '扫描标签', f5: '拍下处方或药瓶，VeraDose 自动填写药物信息，由您检查后保存。',
@@ -740,7 +741,112 @@
             in_title: '欢迎回来', in_sub: '登录查看您的药物和日常安排。', up_title: '开始设置', up_sub: '账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。',
             offline: 'VeraDose 无法连接服务器。请在 VS Code 终端运行：python app.py', error: '出了点问题，请重试。',
             make_acc: '用这个邮箱创建账户 →', show_pw: '显示密码', hide_pw: '隐藏密码'
-        }};
+        },
+        hi: {
+            band_pill: 'आँकड़ों में असर', band_title: 'हर खुराक क्यों मायने रखती है', band_sub: 'छूटी हुई और गड़बड़ खुराकें रोज़मर्रा की सेहत की सबसे आम, और सबसे आसानी से रोकी जा सकने वाली, समस्याओं में से एक हैं।',
+            g1: 'लंबे समय की दवाएँ पर्चे के अनुसार नहीं ली जातीं', g2: 'पर्चे कभी दवा में नहीं बदलते', g3: 'अमेरिका में हर साल छूटी दवाओं से जुड़ी मौतें', g4: 'अमेरिका में हर साल टाला जा सकने वाला स्वास्थ्य खर्च',
+            res_pill: 'शोध क्या कहता है', res_title: 'समस्या पर एक नज़दीकी नज़र',
+            how_pill: 'यह कैसे काम करता है', how_title: 'आसान, समझदार और सबके लिए सुलभ', how_sub: 'VeraDose हर किसी को सही समय पर सही दवा लेने के साधन देता है, पहले पर्चे से लेकर हर रीफ़िल तक।',
+            k1_t: 'अपना पर्चा स्कैन करें', k1: 'पर्चे के लेबल या बोतल की फ़ोटो लें। VeraDose उसे पढ़कर दवा भर देता है, जिसे आप जाँचकर सेव करते हैं।',
+            k2_t: 'बोलकर सुनें', k2: 'हर दवा का नाम, खुराक और निर्देश आपकी भाषा में, आपकी पसंद की गति से बोलकर सुनाए जाते हैं।',
+            k3_t: 'आपका हफ़्ता एक नज़र में', k3: 'हफ़्ते का कैलेंडर दिखाता है कि क्या और कब लेना है। हर खुराक लेते ही निशान लगाएँ।',
+            k4_t: 'दवा कभी खत्म न हो', k4: 'दवा लेते ही गोलियों की गिनती अपने आप घटती है, और स्टॉक कम होने से पहले आपको याद दिलाया जाता है।',
+            k5_t: 'खाना और समय गाइड', k5: 'हर दवा पर साफ़ बैज, जैसे "खाने के साथ लें", "डेयरी से बचें" या "सोने से पहले"।',
+            k6_t: 'गोली जाँच', k6: 'हाथ में रखी गोली की फ़ोटो लें और उसका आकार, रंग और छाप अपनी सूची से मिलाएँ।',
+            k7_t: 'देखभालकर्ता को सूचना', k7: 'खुराक छूटने या गोलियाँ कम होने पर आपके किसी भरोसेमंद व्यक्ति को तुरंत SMS या ईमेल मिलता है।',
+            k8_t: 'हौसला बढ़ाने वाली स्ट्रीक', k8: 'हर खुराक लेकर लगातार दिनों की स्ट्रीक बनाएँ और अपनी नियमितता बढ़ती देखें।',
+            k9_t: 'Buddy, आपका AI सहायक', k9: 'जब भी मदद चाहिए, Buddy से पूछें कि VeraDose कैसे इस्तेमाल करें या व्यवस्थित कैसे रहें।',
+            k10_t: 'छह भाषाएँ', k10: 'एक टैप में VeraDose को अंग्रेज़ी, स्पैनिश, फ़्रेंच, मंदारिन, हिन्दी या मराठी में इस्तेमाल करें।',
+            k11_t: 'एक टैप में आपातकाल', k11: 'स्क्रीन के ऊपर हमेशा 911 का बटन रहता है, और यह आपके देखभालकर्ता को भी सूचना भेज सकता है।',
+            k12_t: 'निजी और सुरक्षित', k12: 'आपका खाता आपकी दवाओं को सुरक्षित रखता है और जिस भी डिवाइस से आप साइन इन करें, वहाँ एक जैसा रखता है।',
+            tts: 'बोलकर पढ़ना', auto_read: 'AI के जवाब अपने आप पढ़ें', read_page: 'यह पेज बोलकर पढ़ें', stop: 'आवाज़ रोकें',
+            readability: 'पढ़ने में आसानी', visibility: 'दिखावट', hc: 'हाई कॉन्ट्रास्ट मोड', smaller: 'छोटे अक्षर', larger: 'बड़े अक्षर', normal_size: 'सामान्य अक्षर आकार',
+            get_started: 'शुरू करें', open_app: 'VeraDose खोलें', sign_in: 'साइन इन', sign_out: 'साइन आउट', sign_up: 'खाता बनाएँ', language: 'भाषा',
+            badge: 'सबके लिए सुलभ दवा देखभाल',
+            typing: ['कोई खुराक न छूटे, एक-एक दिन।', 'जानिए आप हर गोली कौन-सी ले रहे हैं।', 'ऐसे रिमाइंडर जो खुद बोलकर सुनाएँ।', 'आपके और आपके देखभालकर्ता के लिए सुकून।'],
+            lead: 'दवाओं का हिसाब रखना भारी लग सकता है। VeraDose आपके पर्चों को एक आसान रोज़ की दिनचर्या में बदल देता है, बोलकर याद दिलाने, गोलियों की गिनती, लेबल स्कैन और देखभालकर्ता सूचनाओं के साथ, ताकि आप, आपका परिवार और आपके देखभालकर्ता भरोसे के साथ सही राह पर रहें।',
+            st1: 'लंबे समय की दवाएँ पर्चे के अनुसार नहीं ली जातीं', st2: '65+ उम्र के लोग 5 या ज़्यादा पर्चे वाली दवाएँ लेते हैं', st3: 'भाषाएँ उपलब्ध',
+            cta_out: 'शुरू करें — मुफ़्त साइन इन', install: 'ऐप इंस्टॉल करें', install_cta: 'अपने फ़ोन पर मुफ़्त ऐप इंस्टॉल करें', cta_in: 'VeraDose खोलें',
+            pv_title: 'आज का शेड्यूल (उदाहरण)', pv_streak: '🔥 7 दिन की सेहत स्ट्रीक!', pv_taken: 'आज 4 में से 3 ली गईं', pv_food: '🍽️ खाने के साथ लें', pv_ok: 'ली गई', pv_bed: '🌙 सोने से पहले लें', pv_refill: 'जल्दी भरवाएँ: 4 दिन बाकी',
+            im_title: 'सही राह पर रहना क्यों ज़रूरी है', im_sub: 'छूटी हुई और गड़बड़ खुराकें रोज़मर्रा की सेहत की सबसे आम, और सबसे आसानी से रोकी जा सकने वाली, समस्याओं में से एक हैं। शोध यह बताता है।',
+            s1: 'लंबी बीमारियों की दवाएँ <b>पर्चे के अनुसार नहीं ली जातीं</b>।', s2: 'पर्चे <b>कभी दवा में नहीं बदलते</b>।', s3: 'अमेरिका में <b>हर साल मौतें</b> दवाएँ पर्चे के अनुसार न लेने से जुड़ी हैं।', s4: 'अमेरिका में हर साल टाला जा सकने वाला खर्च (अनुमान <b>$100 से $289 अरब</b> तक)।',
+            c1_t: 'लगभग हर 2 में से 1 खुराक राह से भटकती है', c1_s: 'लंबी (क्रोनिक) बीमारियों की दवाएँ', c1_big: '2 में 1', c1_small: 'पर्चे के अनुसार नहीं', c1_l1: 'पर्चे के अनुसार ली गई (~50%)', c1_l2: 'पर्चे के अनुसार नहीं ली गई (~50%)',
+            c2_t: 'ज़्यादा लोग 5+ दवाएँ संभाल रहे हैं', c2_s: 'अमेरिका में पिछले 30 दिनों में 5 या ज़्यादा पर्चे वाली दवाएँ लेने वाले लोगों का हिस्सा',
+            age1: 'उम्र 18–44', age2: 'सभी उम्र', age3: 'उम्र 65+',
+            callout: '👵 65 और उससे ज़्यादा उम्र के लोगों में, <b>हर 3 में से 2 से ज़्यादा (67.7%)</b> 3 या ज़्यादा पर्चे वाली दवाएँ लेते हैं।',
+            h1_t: 'खुराक भूल जाना', h1: 'रिमाइंडर, हफ़्ते का कैलेंडर और बोलकर पढ़े जाने वाले निर्देश।', h2_t: 'दवा खत्म हो जाना', h2: 'दवा लेते ही गोलियों की गिनती घटती है, और कम होने से पहले चेतावनी मिलती है।', h3_t: 'कोई हाल पूछने वाला नहीं', h3: 'खुराक छूटने पर देखभालकर्ता को तुरंत सूचना मिल सकती है।',
+            sources: 'स्रोत: दवा पालन के आँकड़े <i>Annals of Internal Medicine</i> की एक समीक्षा से, जैसा ' + SRC + ' में बताया गया। चार्ट का डेटा अमेरिका के CDC National Center for Health Statistics से, ' + CDC + ' (NHANES 2001–2004 और 2017–मार्च 2020)।',
+            ft_title: 'सही राह पर रहने के लिए सब कुछ',
+            f1_t: 'बोलकर पढ़ने वाला सहायक', f1: 'हर दवा का नाम, खुराक और निर्देश आपकी चुनी भाषा में बोलकर सुनें।',
+            f2_t: 'कई भाषाएँ', f2: 'एक टैप में पूरे ऐप को अंग्रेज़ी, स्पैनिश, फ़्रेंच, मंदारिन, हिन्दी और मराठी में बदलें।',
+            f3_t: 'गोली गिनती और कम स्टॉक की सूचना', f3: 'खुराक ली गई चिह्नित करते ही गिनती अपने आप घटती है, और कुछ ही दिन बचने पर आपको चेतावनी मिलती है।',
+            f4_t: 'देखभालकर्ता को सूचना', f4: 'चाहें तो खुराक छूटने या गोलियाँ कम होने पर किसी भरोसेमंद व्यक्ति को ईमेल या SMS से बताएँ।',
+            f5_t: 'लेबल स्कैन करें', f5: 'पर्चे या बोतल की फ़ोटो लें और VeraDose दवा भर देता है, जिसे आप जाँचकर सेव करते हैं।',
+            f6_t: 'खाना और समय गाइड', f6: 'हर दवा कार्ड पर साफ़ बैज, जैसे "खाने के साथ लें" या "डेयरी से बचें"।',
+            f7_t: 'दवा पालन की स्ट्रीक', f7: '100% दवा पालन की रोज़ की स्ट्रीक बनाएँ और हौसला बनाए रखें।',
+            f8_t: 'गोली जाँच और AI Buddy', f8: 'किसी गोली की फ़ोटो लेकर उसे अपनी सूची से मिलाएँ, या VeraDose इस्तेमाल करने में Buddy से मदद लें।',
+            footer: 'VeraDose याद दिलाने का साधन है और चिकित्सा सलाह नहीं देता। AI के नतीजे गलत हो सकते हैं, इसलिए हमेशा अपने डॉक्टर और फ़ार्मासिस्ट के निर्देश मानें।',
+            a11y: 'सुलभता', text_size: 'अक्षर का आकार', dyslexia: 'डिस्लेक्सिया के अनुकूल फ़ॉन्ट', dark: 'डार्क मोड', a11y_btn: 'सुलभता विकल्प', to_dark: 'डार्क मोड पर जाएँ', to_light: 'लाइट मोड पर जाएँ',
+            email: 'ईमेल', password: 'पासवर्ड', your_name: 'आपका नाम', pw_hint: 'कम से कम 8 अक्षर।', age: 'उम्र', optional: 'वैकल्पिक', allergies: 'एलर्जी', allergies_ph: 'वैकल्पिक, जैसे पेनिसिलिन',
+            create: 'मेरा खाता बनाएँ', server_down: 'VeraDose के सर्वर ने जवाब नहीं दिया। अगर वह सो रहा था, तो एक मिनट रुककर फिर कोशिश करें।', working: 'कृपया रुकें…', waking: 'सर्वर जाग रहा है। पहली बार इसमें एक मिनट तक लग सकता है। कृपया यह विंडो खुली रखें।', too_slow: 'सर्वर ने जवाब देने में बहुत देर की। कृपया एक मिनट बाद फिर कोशिश करें।',
+            private: 'आपकी जानकारी निजी है।', close: 'बंद करें',
+            in_title: 'फिर से स्वागत है', in_sub: 'अपनी दवाएँ और दिनचर्या देखने के लिए साइन इन करें।', up_title: 'चलिए आपका खाता तैयार करते हैं', up_sub: 'आपका खाता आपकी दवाओं को हर डिवाइस पर सुरक्षित रखता है। उम्र और एलर्जी भरना ज़रूरी नहीं है।',
+            offline: 'VeraDose अपने सर्वर से नहीं जुड़ पा रहा। VS Code टर्मिनल में चलाएँ: python app.py', error: 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।',
+            make_acc: 'इस ईमेल से खाता बनाएँ →', show_pw: 'पासवर्ड दिखाएँ', hide_pw: 'पासवर्ड छिपाएँ'
+        },
+        mr: {
+            band_pill: 'आकड्यांमधील परिणाम', band_title: 'प्रत्येक डोस का महत्त्वाचा आहे', band_sub: 'चुकलेले आणि गोंधळलेले डोस ही रोजच्या आरोग्यातील सर्वात सामान्य, आणि सर्वात सहज टाळता येणारी, समस्या आहे.',
+            g1: 'दीर्घकालीन औषधे प्रिस्क्रिप्शनप्रमाणे घेतली जात नाहीत', g2: 'प्रिस्क्रिप्शन कधीच औषधात बदलत नाहीत', g3: 'अमेरिकेत दरवर्षी चुकलेल्या औषधांशी संबंधित मृत्यू', g4: 'अमेरिकेत दरवर्षी टाळता येणारा आरोग्य खर्च',
+            res_pill: 'संशोधन काय सांगते', res_title: 'समस्येकडे जवळून पाहू',
+            how_pill: 'हे कसे काम करते', how_title: 'सोपे, हुशार आणि सर्वांसाठी सुलभ', how_sub: 'VeraDose प्रत्येकाला योग्य वेळी योग्य औषध घेण्याची साधने देते, पहिल्या प्रिस्क्रिप्शनपासून प्रत्येक रिफिलपर्यंत.',
+            k1_t: 'तुमचे प्रिस्क्रिप्शन स्कॅन करा', k1: 'प्रिस्क्रिप्शनच्या लेबलचा किंवा बाटलीचा फोटो घ्या. VeraDose ते वाचून औषध भरते, जे तुम्ही तपासून सेव्ह करता.',
+            k2_t: 'मोठ्याने ऐका', k2: 'प्रत्येक औषधाचे नाव, डोस आणि सूचना तुमच्या भाषेत, तुम्हाला आवडेल त्या वेगाने वाचून दाखवल्या जातात.',
+            k3_t: 'तुमचा आठवडा एका नजरेत', k3: 'आठवड्याचे कॅलेंडर काय आणि केव्हा घ्यायचे ते दाखवते. प्रत्येक डोस घेताच खूण करा.',
+            k4_t: 'औषध कधीच संपू नये', k4: 'औषध घेताच गोळ्यांची संख्या आपोआप कमी होते, आणि साठा कमी होण्यापूर्वी तुम्हाला आठवण करून दिली जाते.',
+            k5_t: 'जेवण आणि वेळ मार्गदर्शक', k5: 'प्रत्येक औषधावर स्पष्ट बॅज, जसे "जेवणासोबत घ्या", "दुग्धजन्य पदार्थ टाळा" किंवा "झोपण्यापूर्वी".',
+            k6_t: 'गोळी तपासणी', k6: 'हातातील गोळीचा फोटो घ्या आणि तिचा आकार, रंग आणि छाप तुमच्या यादीशी जुळवा.',
+            k7_t: 'काळजीवाहक सूचना', k7: 'डोस चुकल्यास किंवा गोळ्या कमी झाल्यास तुमच्या विश्वासू व्यक्तीला लगेच SMS किंवा ईमेल मिळतो.',
+            k8_t: 'प्रेरणा देणारी स्ट्रीक', k8: 'प्रत्येक डोस घेऊन सलग दिवसांची स्ट्रीक तयार करा आणि तुमचे सातत्य वाढताना पाहा.',
+            k9_t: 'Buddy, तुमचा AI मदतनीस', k9: 'जेव्हा मदत हवी असेल, तेव्हा Buddy ला विचारा की VeraDose कसे वापरायचे किंवा व्यवस्थित कसे राहायचे.',
+            k10_t: 'सहा भाषा', k10: 'एका टॅपमध्ये VeraDose इंग्रजी, स्पॅनिश, फ्रेंच, मँडरिन, हिंदी किंवा मराठीत वापरा.',
+            k11_t: 'एका टॅपमध्ये आपत्कालीन मदत', k11: 'स्क्रीनच्या वर नेहमी 911 चे बटण असते, आणि ते तुमच्या काळजीवाहकालाही कळवू शकते.',
+            k12_t: 'खाजगी आणि सुरक्षित', k12: 'तुमचे खाते तुमची औषधे सुरक्षित ठेवते आणि तुम्ही ज्या डिव्हाइसवरून साइन इन कराल तिथे सारखीच ठेवते.',
+            tts: 'बोलून वाचन', auto_read: 'AI ची उत्तरे आपोआप वाचा', read_page: 'हे पेज मोठ्याने वाचा', stop: 'आवाज थांबवा',
+            readability: 'वाचनसुलभता', visibility: 'दृश्यता', hc: 'हाय कॉन्ट्रास्ट मोड', smaller: 'लहान अक्षरे', larger: 'मोठी अक्षरे', normal_size: 'सामान्य अक्षर आकार',
+            get_started: 'सुरू करा', open_app: 'VeraDose उघडा', sign_in: 'साइन इन', sign_out: 'साइन आउट', sign_up: 'खाते तयार करा', language: 'भाषा',
+            badge: 'सर्वांसाठी सुलभ औषध काळजी',
+            typing: ['एकही डोस चुकू नये, एक एक दिवस.', 'तुम्ही घेता ती प्रत्येक गोळी ओळखा.', 'स्वतः मोठ्याने वाचणाऱ्या आठवणी.', 'तुमच्या आणि तुमच्या काळजीवाहकाच्या मनाला शांती.'],
+            lead: 'औषधांचा हिशोब ठेवणे जड वाटू शकते. VeraDose तुमची प्रिस्क्रिप्शन्स एका सोप्या रोजच्या दिनक्रमात बदलते, बोलक्या आठवणी, गोळ्यांची मोजणी, लेबल स्कॅन आणि काळजीवाहक सूचनांसह, जेणेकरून तुम्ही, तुमचे कुटुंब आणि तुमचे काळजीवाहक आत्मविश्वासाने योग्य मार्गावर राहाल.',
+            st1: 'दीर्घकालीन औषधे प्रिस्क्रिप्शनप्रमाणे घेतली जात नाहीत', st2: '65+ वयाचे लोक 5 किंवा अधिक प्रिस्क्रिप्शन औषधे घेतात', st3: 'भाषा उपलब्ध',
+            cta_out: 'सुरू करा — मोफत साइन इन', install: 'ॲप इन्स्टॉल करा', install_cta: 'तुमच्या फोनवर मोफत ॲप इन्स्टॉल करा', cta_in: 'VeraDose उघडा',
+            pv_title: 'आजचे वेळापत्रक (उदाहरण)', pv_streak: '🔥 7 दिवसांची आरोग्य स्ट्रीक!', pv_taken: 'आज 4 पैकी 3 घेतले', pv_food: '🍽️ जेवणासोबत घ्या', pv_ok: 'घेतले', pv_bed: '🌙 झोपण्यापूर्वी घ्या', pv_refill: 'लवकर भरा: 4 दिवस उरले',
+            im_title: 'योग्य मार्गावर राहणे का महत्त्वाचे आहे', im_sub: 'चुकलेले आणि गोंधळलेले डोस ही रोजच्या आरोग्यातील सर्वात सामान्य, आणि सर्वात सहज टाळता येणारी, समस्या आहे. संशोधन हे सांगते.',
+            s1: 'दीर्घ आजारांची औषधे <b>प्रिस्क्रिप्शनप्रमाणे घेतली जात नाहीत</b>.', s2: 'प्रिस्क्रिप्शन <b>कधीच औषधात बदलत नाहीत</b>.', s3: 'अमेरिकेत <b>दरवर्षी मृत्यू</b> औषधे प्रिस्क्रिप्शनप्रमाणे न घेतल्यामुळे होतात.', s4: 'अमेरिकेत दरवर्षी टाळता येणारा खर्च (अंदाज <b>$100 ते $289 अब्ज</b>).',
+            c1_t: 'जवळपास 2 पैकी 1 डोस चुकतो', c1_s: 'दीर्घकालीन (क्रॉनिक) आजारांची औषधे', c1_big: '2 पैकी 1', c1_small: 'प्रिस्क्रिप्शनप्रमाणे नाही', c1_l1: 'प्रिस्क्रिप्शनप्रमाणे घेतले (~50%)', c1_l2: 'प्रिस्क्रिप्शनप्रमाणे घेतले नाही (~50%)',
+            c2_t: 'अधिक लोक 5+ औषधे सांभाळत आहेत', c2_s: 'अमेरिकेत मागील 30 दिवसांत 5 किंवा अधिक प्रिस्क्रिप्शन औषधे घेणाऱ्या लोकांचे प्रमाण',
+            age1: 'वय 18–44', age2: 'सर्व वयोगट', age3: 'वय 65+',
+            callout: '👵 65 आणि त्याहून अधिक वयाच्या लोकांपैकी <b>3 पैकी 2 पेक्षा जास्त (67.7%)</b> लोक 3 किंवा अधिक प्रिस्क्रिप्शन औषधे घेतात.',
+            h1_t: 'डोस विसरणे', h1: 'आठवणी, आठवड्याचे कॅलेंडर आणि मोठ्याने वाचल्या जाणाऱ्या सूचना.', h2_t: 'औषध संपणे', h2: 'औषध घेताच गोळ्यांची संख्या कमी होते, आणि कमी होण्यापूर्वी इशारा मिळतो.', h3_t: 'कोणी विचारपूस करणारे नाही', h3: 'डोस चुकल्यास काळजीवाहकाला लगेच कळवले जाऊ शकते.',
+            sources: 'स्रोत: औषधपालनाचे आकडे <i>Annals of Internal Medicine</i> मधील एका आढाव्यातून, ' + SRC + ' मध्ये नोंदवल्याप्रमाणे. चार्टचा डेटा अमेरिकेच्या CDC National Center for Health Statistics कडून, ' + CDC + ' (NHANES 2001–2004 आणि 2017–मार्च 2020).',
+            ft_title: 'योग्य मार्गावर राहण्यासाठी हवे ते सर्व',
+            f1_t: 'मोठ्याने वाचणारा सहाय्यक', f1: 'प्रत्येक औषधाचे नाव, डोस आणि सूचना तुम्ही निवडलेल्या भाषेत मोठ्याने ऐका.',
+            f2_t: 'अनेक भाषा', f2: 'एका टॅपमध्ये संपूर्ण ॲप इंग्रजी, स्पॅनिश, फ्रेंच, मँडरिन, हिंदी आणि मराठीमध्ये बदला.',
+            f3_t: 'गोळ्यांची मोजणी आणि कमी साठ्याच्या सूचना', f3: 'डोस घेतला म्हणून खूण करताच संख्या आपोआप कमी होते, आणि काही दिवसच उरल्यावर तुम्हाला इशारा मिळतो.',
+            f4_t: 'काळजीवाहक सूचना', f4: 'हवे असल्यास, डोस चुकल्यास किंवा गोळ्या कमी झाल्यास विश्वासू व्यक्तीला ईमेल किंवा SMS ने कळवा.',
+            f5_t: 'लेबल स्कॅन करा', f5: 'प्रिस्क्रिप्शन किंवा बाटलीचा फोटो घ्या आणि VeraDose औषध भरते, जे तुम्ही तपासून सेव्ह करता.',
+            f6_t: 'जेवण आणि वेळ मार्गदर्शक', f6: 'प्रत्येक औषध कार्डवर स्पष्ट बॅज, जसे "जेवणासोबत घ्या" किंवा "दुग्धजन्य पदार्थ टाळा".',
+            f7_t: 'औषधपालन स्ट्रीक', f7: '100% औषधपालनाची रोजची स्ट्रीक तयार करा आणि प्रेरित राहा.',
+            f8_t: 'गोळी तपासणी आणि AI Buddy', f8: 'एखाद्या गोळीचा फोटो घेऊन ती तुमच्या यादीशी जुळवा, किंवा VeraDose वापरण्यासाठी Buddy ची मदत घ्या.',
+            footer: 'VeraDose हे आठवण करून देणारे साधन आहे आणि वैद्यकीय सल्ला देत नाही. AI चे निकाल चुकीचे असू शकतात, म्हणून नेहमी तुमच्या डॉक्टर आणि फार्मासिस्टच्या सूचना पाळा.',
+            a11y: 'सुलभता', text_size: 'अक्षर आकार', dyslexia: 'डिस्लेक्सियासाठी सोपा फॉन्ट', dark: 'डार्क मोड', a11y_btn: 'सुलभता पर्याय', to_dark: 'डार्क मोडवर जा', to_light: 'लाइट मोडवर जा',
+            email: 'ईमेल', password: 'पासवर्ड', your_name: 'तुमचे नाव', pw_hint: 'किमान 8 अक्षरे.', age: 'वय', optional: 'ऐच्छिक', allergies: 'ॲलर्जी', allergies_ph: 'ऐच्छिक, उदा. पेनिसिलिन',
+            create: 'माझे खाते तयार करा', server_down: 'VeraDose च्या सर्व्हरने उत्तर दिले नाही. तो झोपेत असल्यास, एक मिनिट थांबून पुन्हा प्रयत्न करा.', working: 'कृपया थांबा…', waking: 'सर्व्हर जागा होत आहे. पहिल्या वेळी याला एक मिनिट लागू शकतो. कृपया ही विंडो उघडी ठेवा.', too_slow: 'सर्व्हरने उत्तर द्यायला खूप वेळ घेतला. कृपया एका मिनिटाने पुन्हा प्रयत्न करा.',
+            private: 'तुमची माहिती खाजगी आहे.', close: 'बंद करा',
+            in_title: 'पुन्हा स्वागत आहे', in_sub: 'तुमची औषधे आणि दिनक्रम पाहण्यासाठी साइन इन करा.', up_title: 'चला, तुमचे खाते तयार करूया', up_sub: 'तुमचे खाते तुमची औषधे प्रत्येक डिव्हाइसवर सुरक्षित ठेवते. वय आणि ॲलर्जी भरणे ऐच्छिक आहे.',
+            offline: 'VeraDose त्याच्या सर्व्हरशी जोडू शकत नाही. VS Code टर्मिनलमध्ये चालवा: python app.py', error: 'काहीतरी चुकले. कृपया पुन्हा प्रयत्न करा.',
+            make_acc: 'या ईमेलने खाते तयार करा →', show_pw: 'पासवर्ड दाखवा', hide_pw: 'पासवर्ड लपवा'
+        }
+};
         var $ = function (id) { return document.getElementById(id); };
         var lang = 'en';
         try { lang = localStorage.getItem('medsnap_lang') || (navigator.language || 'en').slice(0, 2); } catch (e) {}
@@ -830,7 +936,7 @@
         $('autoChk').onchange = function () { store('medsnap_autoread', this.checked ? '1' : '0'); };
 
         // Read the page out loud in the chosen language.
-        var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
+        var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN', mr: 'mr-IN' };
         function speak(text) {
             if (!('speechSynthesis' in window)) return;
             speechSynthesis.cancel();

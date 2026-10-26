@@ -98,7 +98,8 @@ ALL_DAYS = [0, 1, 2, 3, 4, 5, 6]  # Monday = 0 ... Sunday = 6
 MISSED_GRACE_MINUTES = int(os.environ.get("MISSED_DOSE_GRACE_MINUTES", "30"))
 VALID_SHAPES = {"", "round", "oval", "capsule", "oblong", "square", "diamond", "triangle", "hexagon"}
 VALID_COLORS = {"", "white", "yellow", "orange", "pink", "red", "brown", "green", "blue", "purple", "gray"}
-LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Simplified Chinese"}
+LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Simplified Chinese",
+                  "hi": "Hindi (Devanagari script)", "mr": "Marathi (Devanagari script)"}
 TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,255}\.[^@\s]{2,}$")
 PHONE_RE = re.compile(r"^\+[1-9]\d{7,14}$")
@@ -841,7 +842,7 @@ def main_app():
 # Installable app (PWA): manifest, icons, service worker, install helper
 # Everything is generated here, so no extra files or folders are needed.
 # ==========================================================================
-PWA_VERSION = "veradose-v3"
+PWA_VERSION = "veradose-v4"
 BRAND = (59, 98, 85)          # #3B6255, the VeraDose green
 BRAND_LIGHT = (203, 222, 211)  # #CBDED3
 
@@ -1048,7 +1049,19 @@ PWA_JS = r"""
           iosOther: '在 iPhone 和 iPad 上，请先用 <b>Safari</b> 打开此页面，再按以下步骤操作。',
           android: ['点按浏览器右上角的 <b>⋮</b> 菜单。', '点按<b>安装应用</b>或<b>添加到主屏幕</b>。', '点按<b>安装</b>。VeraDose 已在你的主屏幕上。'],
           desktop: ['在 <b>Chrome</b> 或 <b>Edge</b> 中，点击地址栏右侧的安装图标，或打开 <b>⋮</b> 菜单选择<b>安装 VeraDose</b>。', '在 Mac 的 <b>Safari</b> 中，选择<b>文件 → 添加到程序坞</b>。', '电脑上的 Firefox 无法安装应用，请使用 Chrome、Edge 或 Safari。'],
-          ok: '知道了', done: 'VeraDose 已安装！请在主屏幕上找到它。' }
+          ok: '知道了', done: 'VeraDose 已安装！请在主屏幕上找到它。' },
+    hi: { btn: 'ऐप इंस्टॉल करें', title: 'VeraDose इंस्टॉल करें', sub: 'VeraDose को अपनी होम स्क्रीन पर जोड़ें। यह सामान्य ऐप की तरह खुलता है, मुफ़्त में।',
+          ios: ['Safari में <b>शेयर</b> बटन (तीर वाला चौकोर) टैप करें।', 'नीचे स्क्रॉल करें और <b>होम स्क्रीन में जोड़ें</b> टैप करें।', '<b>जोड़ें</b> टैप करें। VeraDose अब आपकी होम स्क्रीन पर है।'],
+          iosOther: 'iPhone और iPad पर पहले यह पेज <b>Safari</b> में खोलें, फिर ये चरण अपनाएँ।',
+          android: ['ब्राउज़र में ऊपर दाईं ओर <b>⋮</b> मेनू टैप करें।', '<b>ऐप इंस्टॉल करें</b> या <b>होम स्क्रीन में जोड़ें</b> टैप करें।', '<b>इंस्टॉल करें</b> टैप करें। VeraDose अब आपकी होम स्क्रीन पर है।'],
+          desktop: ['<b>Chrome</b> या <b>Edge</b> में पता बार के दाईं ओर इंस्टॉल आइकन पर क्लिक करें, या <b>⋮</b> मेनू खोलकर <b>VeraDose इंस्टॉल करें</b> चुनें।', 'Mac पर <b>Safari</b> में <b>File → Add to Dock</b> चुनें।', 'कंप्यूटर पर Firefox ऐप इंस्टॉल नहीं कर सकता। कृपया Chrome, Edge या Safari इस्तेमाल करें।'],
+          ok: 'समझ गया', done: 'VeraDose इंस्टॉल हो गया! इसे अपनी होम स्क्रीन पर देखें।' },
+    mr: { btn: 'ॲप इन्स्टॉल करा', title: 'VeraDose इन्स्टॉल करा', sub: 'VeraDose तुमच्या होम स्क्रीनवर जोडा. ते सामान्य ॲपसारखे उघडते, मोफत.',
+          ios: ['Safari मध्ये <b>शेअर</b> बटण (बाण असलेला चौकोन) टॅप करा.', 'खाली स्क्रोल करा आणि <b>होम स्क्रीनवर जोडा</b> टॅप करा.', '<b>जोडा</b> टॅप करा. VeraDose आता तुमच्या होम स्क्रीनवर आहे.'],
+          iosOther: 'iPhone आणि iPad वर आधी हे पेज <b>Safari</b> मध्ये उघडा, मग या पायऱ्या पाळा.',
+          android: ['ब्राउझरमध्ये वर उजवीकडे <b>⋮</b> मेनू टॅप करा.', '<b>ॲप इन्स्टॉल करा</b> किंवा <b>होम स्क्रीनवर जोडा</b> टॅप करा.', '<b>इन्स्टॉल करा</b> टॅप करा. VeraDose आता तुमच्या होम स्क्रीनवर आहे.'],
+          desktop: ['<b>Chrome</b> किंवा <b>Edge</b> मध्ये ॲड्रेस बारच्या उजवीकडील इन्स्टॉल आयकॉनवर क्लिक करा, किंवा <b>⋮</b> मेनू उघडून <b>VeraDose इन्स्टॉल करा</b> निवडा.', 'Mac वर <b>Safari</b> मध्ये <b>File → Add to Dock</b> निवडा.', 'संगणकावर Firefox ॲप इन्स्टॉल करू शकत नाही. कृपया Chrome, Edge किंवा Safari वापरा.'],
+          ok: 'समजले', done: 'VeraDose इन्स्टॉल झाले! ते तुमच्या होम स्क्रीनवर पाहा.' }
   };
   function L() { var l = 'en'; try { l = localStorage.getItem('medsnap_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
   var root = document.documentElement;
