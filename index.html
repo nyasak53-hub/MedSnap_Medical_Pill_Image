@@ -495,68 +495,6 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
   .buddy-fab { right: 1rem; bottom: 1rem; }
   .buddy { right: .5rem; bottom: 5.4rem; width: calc(100vw - 1rem); }
 }
-/* ---------- Alarms ---------- */
-.alarm-top { display: grid; grid-template-columns: 1.15fr 1fr; gap: 1.4rem; margin-bottom: 2.2rem; }
-.clock-card { padding: 2rem 2.1rem; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(160deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 78%, #000) 100%); color: var(--brand-ink); border: 0; }
-.clock-card .k { font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; opacity: .8; }
-.clock-big { white-space: nowrap; font-size: clamp(2.3rem, 4.4vw, 3.6rem); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; margin: .4rem 0 .2rem; font-variant-numeric: tabular-nums; }
-.clock-date { font-size: .95rem; opacity: .85; }
-.clock-next { margin-top: 1.5rem; padding: .95rem 1.1rem; border-radius: 1rem; background: rgba(255,255,255,.14); display: grid; gap: .15rem; }
-.clock-next b { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; opacity: .85; font-weight: 600; }
-.clock-next span { font-size: 1.02rem; font-weight: 500; }
-.alarm-set h2 { font-size: 1.15rem; font-weight: 600; margin-bottom: 1.1rem; }
-.alarm-set .toggle-row { margin-bottom: 1.1rem; }
-.nt-card { display: flex; align-items: center; gap: .85rem; background: var(--sand-bg); color: var(--sand-ink); border-radius: .9rem; padding: .9rem 1rem; margin-bottom: 1.1rem; }
-.nt-card.on { background: var(--done-bg); color: var(--ok); }
-.nt-card > svg { flex: none; }
-.nt-card b { display: block; font-size: .85rem; font-weight: 600; }
-.nt-card small { display: block; font-size: .74rem; opacity: .9; }
-.nt-card .btn { margin-left: auto; flex: none; }
-.sec-title { font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; }
-.sec-sub { font-size: .82rem; color: var(--ink-2); margin: .25rem 0 1.1rem; }
-.alarm-list { overflow: hidden; }
-.alarm-row { display: grid; grid-template-columns: 7.5rem auto 1fr auto; gap: 1.2rem; align-items: center; padding: 1.2rem 1.6rem; border-bottom: 1px solid var(--line); }
-.alarm-row:last-child { border-bottom: 0; }
-.alarm-row.off .alarm-time, .alarm-row.off .pill-art, .alarm-row.off .alarm-info b { opacity: .45; }
-.alarm-time { font-size: 1.55rem; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-.alarm-info b { display: block; font-size: 1rem; font-weight: 600; }
-.alarm-info b span { font-weight: 400; color: var(--ink-2); font-size: .88rem; }
-.alarm-info small { display: block; font-size: .78rem; color: var(--ink-2); margin: .15rem 0 .45rem; }
-.alarm-foot { display: flex; gap: .5rem; align-items: flex-start; font-size: .78rem; color: var(--ink-2); margin-top: 1.2rem; }
-.alarm-foot svg { flex: none; margin-top: .1rem; }
-/* ringing alarm */
-#alarmDlg { width: min(34rem, calc(100vw - 1.4rem)); border-radius: 2rem; }
-#alarmDlg::backdrop { background: color-mix(in srgb, var(--brand) 70%, #000 30%); }
-.ring { padding: 2.2rem 1.8rem 1.8rem; text-align: center; }
-.ring-bell { width: 5.6rem; height: 5.6rem; margin: 0 auto 1rem; border-radius: 50%; display: grid; place-items: center; background: var(--soft); color: var(--brand); animation: ring-shake 1.6s ease-in-out infinite; box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 40%, transparent); }
-@keyframes ring-shake { 0%, 50%, 100% { transform: rotate(0); box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 35%, transparent); } 5%, 15%, 25% { transform: rotate(-14deg); } 10%, 20%, 30% { transform: rotate(14deg); } 40% { box-shadow: 0 0 0 1.2rem transparent; } }
-@media (prefers-reduced-motion: reduce) { .ring-bell { animation: none; } }
-.ring-clock { font-size: 2.6rem; font-weight: 600; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
-.ring h2 { font-size: 1.45rem; font-weight: 600; margin: .5rem 0 .3rem; }
-.ring-note { font-size: .85rem; color: var(--ink-2); }
-.ring-meds { display: grid; gap: .7rem; margin: 1.3rem 0; text-align: left; }
-.ring-med { display: flex; gap: 1rem; align-items: center; background: var(--card-2); border-radius: 1rem; padding: .9rem 1rem; }
-.ring-med b { display: block; font-size: 1.08rem; font-weight: 600; }
-.ring-med small { display: block; font-size: .82rem; color: var(--ink-2); margin-top: .15rem; }
-.ring-med .chips { margin-top: .4rem; }
-.ring-sound { width: 100%; margin-bottom: .8rem; }
-.ring-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
-.ring-actions .ring-big { grid-column: 1 / -1; font-size: 1.15rem; padding: 1.15rem; }
-/* "turn on reminders" prompt */
-#notifDlg { width: min(28rem, calc(100vw - 2rem)); }
-.nt { padding: 2rem 1.8rem 1.6rem; text-align: center; }
-.nt-bell { width: 4.4rem; height: 4.4rem; margin: 0 auto 1rem; border-radius: 1.2rem; display: grid; place-items: center; background: var(--soft); color: var(--brand); }
-.nt h2 { font-size: 1.35rem; font-weight: 600; margin-bottom: .5rem; }
-.nt p { font-size: .92rem; color: var(--ink-2); margin-bottom: 1.4rem; }
-.nt-actions { display: grid; gap: .6rem; }
-.nt-actions .link-btn { justify-self: center; }
-@media (max-width: 900px) {
-  .alarm-top { grid-template-columns: 1fr; }
-  .alarm-row { grid-template-columns: auto 1fr auto; gap: .8rem 1rem; padding: 1rem 1.1rem; }
-  .alarm-row .pill-art { display: none; }
-  .alarm-time { font-size: 1.25rem; min-width: 5.2rem; }
-  .ring { padding: 1.8rem 1.1rem 1.2rem; }
-}
 </style>
 </head>
 <body>
@@ -579,8 +517,6 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
 <dialog id="stockDlg" style="width:min(28rem, calc(100vw - 2rem))"></dialog>
 <dialog id="emDlg"></dialog>
 <dialog id="delDlg" style="width:min(30rem, calc(100vw - 2rem))"></dialog>
-<dialog id="alarmDlg" aria-labelledby="ringTitle"></dialog>
-<dialog id="notifDlg" aria-labelledby="ntTitle"></dialog>
 <div class="gate" id="gate" hidden></div>
 <div id="toastBox" aria-live="polite"></div>
 
@@ -600,8 +536,6 @@ const IC = {
   search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
   heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
-  belloff: '<path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/><path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="m2 2 20 20"/>',
   download: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
   help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
   logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
@@ -948,91 +882,6 @@ zh: {
 }};
 const LOCALE = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
 const LANGS = { en: 'English', es: 'Español', fr: 'Français', zh: '中文' };
-/* ---------- Alarms + notifications text ---------- */
-Object.assign(I18N.en, {
-  n_alarms:'Alarms', al_eyebrow:'Alarms', al_title:'Dose alarms', al_sub:"VeraDose rings an alarm when it's time for each medicine.",
-  al_now:'Right now', al_next:'Next alarm', al_next_in:'{name} at {time}, in {left}', al_none_next:'No more alarms today. Nice work!',
-  al_none:'No alarms yet', al_none_sub:'Add a medicine with its time and an alarm is set for you automatically.',
-  al_list:'Your alarms', al_list_sub:"Each medicine rings at its dose time. Turn one off if you don't want this device to ring for it.",
-  al_on:'Alarm on', al_every_day:'Every day', al_st_taken:'Taken today', al_st_rang:'Rang today', al_st_upcoming:'Rings today',
-  al_st_notoday:'Not today', al_st_snoozed:'Snoozed until {time}', al_st_off:'Off',
-  al_settings:'Alarm settings', al_test:'Test the alarm', al_voice:'Read the medicine aloud', al_voice_sub:'After the beeps, VeraDose says the medicine name and dose.',
-  al_snooze_len:'Snooze length', al_min:'{n} min', al_keep_open:'Alarms ring while VeraDose is open on this device. On iPhone, keep VeraDose open on the screen.',
-  nt_title:'Turn on reminders?', nt_sub:'Get a notification and an alarm at {time} for {name}, even if you are on another page or app.',
-  nt_on:'Turn on notifications', nt_later:'Not now', nt_see:'See my alarms',
-  nt_ios_title:'Install VeraDose for notifications', nt_ios_sub:'On iPhone and iPad, notifications only work after you add VeraDose to your home screen. Your alarm for {name} at {time} still rings while VeraDose is open.',
-  nt_denied:"Notifications are blocked for this site. Open your browser's site settings, allow Notifications, then come back.",
-  nt_enabled:'Notifications are on.', nt_card_t:'Notifications are off', nt_card_s:'Turn them on to see a reminder even when VeraDose is in the background.',
-  nt_card_on_t:'Notifications are on', nt_card_on_s:"You'll get a notification and an alarm at each dose time.", nt_card_blocked_t:'Notifications are blocked',
-  nt_card_ios_t:'Install for notifications', nt_card_ios_s:'On iPhone, add VeraDose to your home screen to get notifications.',
-  alarm_set:'Saved. Alarm set for {time}.', ring_title:'Time for your medicine', ring_tap_sound:'Tap to hear the alarm', ring_taken:'I took it',
-  ring_snooze:'Snooze {n} min', ring_stop:'Stop alarm', ring_test:'This is a test. Your real alarms will look like this.', ring_say:"It's time to take your medicine.",
-  ring_marked:'Marked as taken. Well done!', ring_snoozed:"OK, I'll ring again in {n} minutes.", notif_body:'{names}. Tap to open VeraDose.',
-  left_hm:'{h} h {m} min', left_m:'{m} min', test_med:'Test medicine',
-});
-Object.assign(I18N.es, {
-  n_alarms:'Alarmas', al_eyebrow:'Alarmas', al_title:'Alarmas de dosis', al_sub:'VeraDose hace sonar una alarma cuando es hora de cada medicamento.',
-  al_now:'Ahora mismo', al_next:'Próxima alarma', al_next_in:'{name} a las {time}, en {left}', al_none_next:'No hay más alarmas hoy. ¡Buen trabajo!',
-  al_none:'Aún no hay alarmas', al_none_sub:'Añade un medicamento con su hora y la alarma se programa sola.',
-  al_list:'Tus alarmas', al_list_sub:'Cada medicamento suena a su hora. Desactiva una si no quieres que este dispositivo suene.',
-  al_on:'Alarma activada', al_every_day:'Todos los días', al_st_taken:'Tomado hoy', al_st_rang:'Sonó hoy', al_st_upcoming:'Suena hoy',
-  al_st_notoday:'Hoy no', al_st_snoozed:'Pospuesta hasta {time}', al_st_off:'Desactivada',
-  al_settings:'Ajustes de alarma', al_test:'Probar la alarma', al_voice:'Leer el medicamento en voz alta', al_voice_sub:'Después de los pitidos, VeraDose dice el nombre y la dosis.',
-  al_snooze_len:'Tiempo para posponer', al_min:'{n} min', al_keep_open:'Las alarmas suenan mientras VeraDose está abierta en este dispositivo. En iPhone, mantén VeraDose abierta en la pantalla.',
-  nt_title:'¿Activar recordatorios?', nt_sub:'Recibe una notificación y una alarma a las {time} para {name}, aunque estés en otra página o app.',
-  nt_on:'Activar notificaciones', nt_later:'Ahora no', nt_see:'Ver mis alarmas',
-  nt_ios_title:'Instala VeraDose para recibir notificaciones', nt_ios_sub:'En iPhone y iPad, las notificaciones solo funcionan después de añadir VeraDose a la pantalla de inicio. Tu alarma de {name} a las {time} igual suena mientras VeraDose está abierta.',
-  nt_denied:'Las notificaciones están bloqueadas para este sitio. Abre los ajustes del sitio en tu navegador, permite las notificaciones y vuelve.',
-  nt_enabled:'Notificaciones activadas.', nt_card_t:'Notificaciones desactivadas', nt_card_s:'Actívalas para ver un recordatorio aunque VeraDose esté en segundo plano.',
-  nt_card_on_t:'Notificaciones activadas', nt_card_on_s:'Recibirás una notificación y una alarma a cada hora de dosis.', nt_card_blocked_t:'Notificaciones bloqueadas',
-  nt_card_ios_t:'Instala para recibir notificaciones', nt_card_ios_s:'En iPhone, añade VeraDose a la pantalla de inicio para recibir notificaciones.',
-  alarm_set:'Guardado. Alarma programada a las {time}.', ring_title:'Hora de tu medicamento', ring_tap_sound:'Toca para oír la alarma', ring_taken:'Ya lo tomé',
-  ring_snooze:'Posponer {n} min', ring_stop:'Detener alarma', ring_test:'Esto es una prueba. Tus alarmas reales se verán así.', ring_say:'Es hora de tomar tu medicamento.',
-  ring_marked:'Marcado como tomado. ¡Bien hecho!', ring_snoozed:'De acuerdo, sonaré otra vez en {n} minutos.', notif_body:'{names}. Toca para abrir VeraDose.',
-  left_hm:'{h} h {m} min', left_m:'{m} min', test_med:'Medicamento de prueba',
-});
-Object.assign(I18N.fr, {
-  n_alarms:'Alarmes', al_eyebrow:'Alarmes', al_title:'Alarmes de prise', al_sub:"VeraDose fait sonner une alarme à l'heure de chaque médicament.",
-  al_now:'En ce moment', al_next:'Prochaine alarme', al_next_in:'{name} à {time}, dans {left}', al_none_next:"Plus d'alarmes aujourd'hui. Bravo !",
-  al_none:"Pas encore d'alarme", al_none_sub:"Ajoutez un médicament avec son heure et l'alarme est réglée automatiquement.",
-  al_list:'Vos alarmes', al_list_sub:"Chaque médicament sonne à son heure. Désactivez-en une si vous ne voulez pas que cet appareil sonne.",
-  al_on:'Alarme activée', al_every_day:'Tous les jours', al_st_taken:"Pris aujourd'hui", al_st_rang:"A sonné aujourd'hui", al_st_upcoming:"Sonne aujourd'hui",
-  al_st_notoday:"Pas aujourd'hui", al_st_snoozed:"Reportée jusqu'à {time}", al_st_off:'Désactivée',
-  al_settings:"Réglages de l'alarme", al_test:"Tester l'alarme", al_voice:'Lire le médicament à voix haute', al_voice_sub:'Après les bips, VeraDose dit le nom et la dose.',
-  al_snooze_len:'Durée du report', al_min:'{n} min', al_keep_open:"Les alarmes sonnent quand VeraDose est ouverte sur cet appareil. Sur iPhone, gardez VeraDose ouverte à l'écran.",
-  nt_title:'Activer les rappels ?', nt_sub:'Recevez une notification et une alarme à {time} pour {name}, même sur une autre page ou application.',
-  nt_on:'Activer les notifications', nt_later:'Plus tard', nt_see:'Voir mes alarmes',
-  nt_ios_title:'Installez VeraDose pour les notifications', nt_ios_sub:"Sur iPhone et iPad, les notifications ne fonctionnent qu'après avoir ajouté VeraDose à l'écran d'accueil. Votre alarme pour {name} à {time} sonne quand même si VeraDose est ouverte.",
-  nt_denied:'Les notifications sont bloquées pour ce site. Ouvrez les réglages du site dans votre navigateur, autorisez les notifications, puis revenez.',
-  nt_enabled:'Notifications activées.', nt_card_t:'Notifications désactivées', nt_card_s:'Activez-les pour voir un rappel même quand VeraDose est en arrière-plan.',
-  nt_card_on_t:'Notifications activées', nt_card_on_s:'Vous recevrez une notification et une alarme à chaque heure de prise.', nt_card_blocked_t:'Notifications bloquées',
-  nt_card_ios_t:'Installez pour les notifications', nt_card_ios_s:"Sur iPhone, ajoutez VeraDose à l'écran d'accueil pour recevoir des notifications.",
-  alarm_set:'Enregistré. Alarme réglée pour {time}.', ring_title:"C'est l'heure de votre médicament", ring_tap_sound:"Touchez pour entendre l'alarme", ring_taken:"Je l'ai pris",
-  ring_snooze:'Reporter {n} min', ring_stop:"Arrêter l'alarme", ring_test:"Ceci est un test. Vos vraies alarmes ressembleront à ceci.", ring_say:"C'est l'heure de prendre votre médicament.",
-  ring_marked:'Marqué comme pris. Bravo !', ring_snoozed:'Entendu, je sonnerai de nouveau dans {n} minutes.', notif_body:'{names}. Touchez pour ouvrir VeraDose.',
-  left_hm:'{h} h {m} min', left_m:'{m} min', test_med:'Médicament test',
-});
-Object.assign(I18N.zh, {
-  n_alarms:'闹钟', al_eyebrow:'闹钟', al_title:'服药闹钟', al_sub:'到了每种药的服用时间，VeraDose 会响起闹钟。',
-  al_now:'现在', al_next:'下一个闹钟', al_next_in:'{time} 服用 {name}，还有 {left}', al_none_next:'今天没有更多闹钟了。做得好！',
-  al_none:'还没有闹钟', al_none_sub:'添加药物并设定时间，闹钟会自动设置好。',
-  al_list:'你的闹钟', al_list_sub:'每种药都会在服用时间响铃。如果不想让这台设备响铃，可以关闭。',
-  al_on:'闹钟已开启', al_every_day:'每天', al_st_taken:'今天已服用', al_st_rang:'今天已响铃', al_st_upcoming:'今天会响铃',
-  al_st_notoday:'今天不用', al_st_snoozed:'已推迟到 {time}', al_st_off:'已关闭',
-  al_settings:'闹钟设置', al_test:'测试闹钟', al_voice:'朗读药名', al_voice_sub:'提示音之后，VeraDose 会读出药名和剂量。',
-  al_snooze_len:'推迟时长', al_min:'{n} 分钟', al_keep_open:'VeraDose 在这台设备上打开时闹钟才会响。在 iPhone 上，请让 VeraDose 保持在屏幕上打开。',
-  nt_title:'开启提醒吗？', nt_sub:'在 {time} 收到 {name} 的通知和闹钟，即使你在其他页面或应用中。',
-  nt_on:'开启通知', nt_later:'以后再说', nt_see:'查看我的闹钟',
-  nt_ios_title:'安装 VeraDose 以接收通知', nt_ios_sub:'在 iPhone 和 iPad 上，只有把 VeraDose 添加到主屏幕后才能收到通知。VeraDose 打开时，{time} 的 {name} 闹钟仍会响起。',
-  nt_denied:'此网站的通知已被阻止。请打开浏览器的网站设置，允许通知后再回来。',
-  nt_enabled:'通知已开启。', nt_card_t:'通知已关闭', nt_card_s:'开启后，即使 VeraDose 在后台也能看到提醒。',
-  nt_card_on_t:'通知已开启', nt_card_on_s:'每次服药时间你都会收到通知和闹钟。', nt_card_blocked_t:'通知已被阻止',
-  nt_card_ios_t:'安装后接收通知', nt_card_ios_s:'在 iPhone 上，把 VeraDose 添加到主屏幕即可接收通知。',
-  alarm_set:'已保存。闹钟设在 {time}。', ring_title:'该吃药了', ring_tap_sound:'点按以听到闹钟', ring_taken:'我已服用',
-  ring_snooze:'推迟 {n} 分钟', ring_stop:'停止闹钟', ring_test:'这是一次测试。你真正的闹钟会是这个样子。', ring_say:'该吃药了。',
-  ring_marked:'已标记为服用。做得好！', ring_snoozed:'好的，{n} 分钟后我会再次提醒。', notif_body:'{names}。点按打开 VeraDose。',
-  left_hm:'{h} 小时 {m} 分钟', left_m:'{m} 分钟', test_med:'测试药物',
-});
 const BADGE_KEYS = ['with_food', 'empty_stomach', 'avoid_dairy', 'avoid_alcohol', 'avoid_sugar', 'before_bed', 'with_water', 'before_lunch', 'before_breakfast', 'before_dinner'];
 const SHAPE_KEYS = ['round', 'oval', 'oblong', 'square', 'diamond', 'triangle', 'hexagon'];
 const COLOR_KEYS = ['white', 'yellow', 'pink', 'red', 'purple', 'green', 'blue', 'brown', 'orange'];
@@ -1194,7 +1043,7 @@ async function refresh() {
 let offlineLong = false;
 
 /* ---------- routing ---------- */
-const ROUTES = ['today', 'alarms', 'calendar', 'streaks', 'medications', 'inventory', 'pillcheck', 'caregiver', 'profile'];
+const ROUTES = ['today', 'calendar', 'streaks', 'medications', 'inventory', 'pillcheck', 'caregiver', 'profile'];
 let route = ROUTES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'today';
 window.addEventListener('hashchange', () => {
   const r = location.hash.slice(1);
@@ -1226,7 +1075,7 @@ function renderSidebar() {
   $('#sidebar').innerHTML = `
     <a class="logo" href="#today"><span class="logo-mark">${ic('leaf', 22, 2)}</span><span class="logo-word">vera<span>dose</span></span></a>
     <div class="nav-label">${esc(t('your_space'))}</div>
-    <nav class="nav">${link('today', 'home', 'n_today')}${link('alarms', 'bell', 'n_alarms')}${link('calendar', 'calendar', 'n_calendar')}${link('streaks', 'flame', 'n_streaks')}${link('medications', 'pill', 'n_meds')}${link('inventory', 'box', 'n_inventory')}${link('pillcheck', 'search', 'n_pillcheck')}</nav>
+    <nav class="nav">${link('today', 'home', 'n_today')}${link('calendar', 'calendar', 'n_calendar')}${link('streaks', 'flame', 'n_streaks')}${link('medications', 'pill', 'n_meds')}${link('inventory', 'box', 'n_inventory')}${link('pillcheck', 'search', 'n_pillcheck')}</nav>
     <div class="nav-label">${esc(t('your_details'))}</div>
     <nav class="nav">${link('caregiver', 'heart', 'n_caregiver')}${link('profile', 'user', 'n_profile')}</nav>
     <div class="side-foot">
@@ -2046,7 +1895,7 @@ async function signOut() {
 }
 
 /* ---------- render ---------- */
-const VIEWS = { today: viewToday, alarms: viewAlarms, calendar: viewCalendar, streaks: viewStreaks, medications: viewMeds, inventory: viewInventory, pillcheck: viewPillcheck, caregiver: viewCaregiver, profile: viewProfile };
+const VIEWS = { today: viewToday, calendar: viewCalendar, streaks: viewStreaks, medications: viewMeds, inventory: viewInventory, pillcheck: viewPillcheck, caregiver: viewCaregiver, profile: viewProfile };
 function renderPage(force) {
   // Don't wipe the live camera or a half-filled form when data refreshes in the background.
   if (!force && route === 'pillcheck' && (camStream || (scanHost === 'page' && (scanStream || scanShots.length || scanBusy)))) return;
@@ -2104,13 +1953,6 @@ document.addEventListener('click', async e => {
     }
     case 'week': weekOffset = el.dataset.dir === '0' ? 0 : weekOffset + Number(el.dataset.dir); renderPage(true); break;
     case 'med-new': openMedForm(null); break;
-    case 'alarm-test': { const m = nextAlarm() || S.meds[0]; startRing([m || { id: 0, name: t('test_med'), dosage: '', daily_dose: 1, scheduled_time: '08:00', badges: [], pill: {} }], true); break; }
-    case 'alarm-taken': alarmTaken(); break;
-    case 'alarm-snooze': alarmSnooze(); break;
-    case 'alarm-stop': stopRing(); break;
-    case 'alarm-sound': unlockAudio(); setTimeout(() => { beepPattern(); renderRing(); }, 150); break;
-    case 'nt-on': { const d = $('#notifDlg'); if (d.open) d.close(); await enableNotifications(); if (route === 'alarms') renderPage(true); break; }
-    case 'nt-close': $('#notifDlg').close(); break;
     case 'med-scan': openMedForm(null, { scan: true }); break;
     case 'scan-toggle': if (scanOpen) { scanOpen = false; stopScan(); renderScan(); } else openScan(); break;
     case 'scan-face': scanFacing = el.dataset.v; if (scanStream) await startScan(); else renderScan(); break;
@@ -2166,9 +2008,6 @@ document.addEventListener('click', async e => {
 document.addEventListener('change', e => {
   const c = e.target.dataset.change; if (!c) return;
   if (c === 'lang') setLanguage(e.target.value);
-  if (c === 'alarm-toggle') { const id = Number(e.target.dataset.id); ALARM.off = ALARM.off.filter(x => x !== id); if (!e.target.checked) ALARM.off.push(id); saveAlarmState(); renderPage(true); }
-  if (c === 'alarm-voice') { ALARM.voice = e.target.checked; lsSet('medsnap_alarm_voice', ALARM.voice); }
-  if (c === 'alarm-snooze-len') { ALARM.snoozeMin = Number(e.target.value) || 10; lsSet('medsnap_alarm_snooze_min', ALARM.snoozeMin); }
   if (c === 'preview') updateFormPreview();
   if (c === 'al-other') {
     const wrap = $('#pAllOtherWrap'); if (wrap) wrap.hidden = !e.target.checked;
@@ -2201,13 +2040,7 @@ document.addEventListener('submit', async e => {
     const btn = form.querySelector('[type=submit]'); btn.disabled = true;
     const ok = await run(editingId ? api('/api/medications/' + editingId, jsonOptions('PUT', payload)) : api('/api/medications', jsonOptions('POST', payload)), t('saved'));
     btn.disabled = false;
-    if (ok) {
-      $('#medDlg').close();
-      const saved = (ok.medications || []).find(m => m.name === payload.name && m.scheduled_time === payload.scheduled_time) || payload;
-      // a re-saved dose time should ring again today
-      if (saved.id) { ALARM.off = ALARM.off.filter(x => x !== saved.id); saveAlarmState(); }
-      askNotifications(saved);
-    }
+    if (ok) $('#medDlg').close();
   }
   if (kind === 'stock-add') { if (await run(api(`/api/medications/${form.dataset.id}/refill`, jsonOptions('POST', { amount: f.get('amount') })), t('stock_updated'))) $('#stockDlg').close(); }
   if (kind === 'stock-set') { if (await run(api(`/api/medications/${form.dataset.id}/refill`, jsonOptions('POST', { set: f.get('set') })), t('stock_updated'))) $('#stockDlg').close(); }
@@ -2232,251 +2065,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && a11yOpen) { a11yOpen = false; renderA11y(); }
   if (e.key === 'Escape' && buddyOpen && !document.querySelector('dialog[open]')) { buddyOpen = false; renderBuddy(); }
 });
-
-/* ---------- Alarms: live clock, ringing alarm, notifications ---------- */
-function lsGet(k, fallback) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? fallback : v; } catch (e) { return fallback; } }
-function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
-const ALARM = {
-  off: lsGet('medsnap_alarm_off', []),        // medicine ids whose alarm is turned off on this device
-  rung: lsGet('medsnap_alarm_rung', {}),      // "id|date|time" -> true once that dose has rung
-  snooze: lsGet('medsnap_alarm_snooze', {}),  // "id|date|time" -> time (ms) to ring again
-  voice: lsGet('medsnap_alarm_voice', true),
-  snoozeMin: lsGet('medsnap_alarm_snooze_min', 10),
-};
-const RING_WINDOW = 60; // minutes after the dose time during which a missed alarm still rings (e.g. app opened late)
-let ringing = null;     // { meds: [...], test: bool, beepTimer, stopTimer, voiceTimer }
-let audioCtx = null;
-
-function alarmKey(m, day) { return `${m.id}|${day}|${m.scheduled_time}`; }
-function minsOf(hhmm) { const [h, m] = (hhmm || '00:00').split(':').map(Number); return h * 60 + m; }
-function alarmOn(m) { return !ALARM.off.includes(m.id); }
-function saveAlarmState() {
-  const today = isoD(new Date());
-  for (const k of Object.keys(ALARM.rung)) if (k.split('|')[1] < addDays(today, -2)) delete ALARM.rung[k];
-  for (const k of Object.keys(ALARM.snooze)) if (k.split('|')[1] !== today) delete ALARM.snooze[k];
-  lsSet('medsnap_alarm_rung', ALARM.rung); lsSet('medsnap_alarm_snooze', ALARM.snooze); lsSet('medsnap_alarm_off', ALARM.off);
-}
-function fmtLeft(mins) { const h = Math.floor(mins / 60), m = mins % 60; return h ? t('left_hm', { h, m }) : t('left_m', { m: Math.max(1, m) }); }
-function nextAlarm() {
-  const now = nowMinutes();
-  return S.meds.filter(m => m.due_today && !m.taken && alarmOn(m) && minsOf(m.scheduled_time) > now)
-    .sort((a, b) => minsOf(a.scheduled_time) - minsOf(b.scheduled_time))[0] || null;
-}
-
-/* sound: made in the browser (no audio files). Browsers only allow sound after the person has tapped the page once. */
-function unlockAudio() {
-  try {
-    if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; audioCtx = new C(); }
-    if (audioCtx.state === 'suspended') audioCtx.resume().then(() => { if (ringing) renderRing(); }).catch(() => {});
-  } catch (e) {}
-}
-['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true }));
-function beepPattern() {
-  if (!audioCtx || audioCtx.state !== 'running') return;
-  const t0 = audioCtx.currentTime + 0.02;
-  [0, 0.22, 0.44].forEach((off, i) => {
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.type = 'sine'; o.frequency.value = i === 2 ? 1046 : 880;
-    g.gain.setValueAtTime(0.0001, t0 + off);
-    g.gain.exponentialRampToValueAtTime(0.5, t0 + off + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + off + 0.18);
-    o.connect(g).connect(audioCtx.destination); o.start(t0 + off); o.stop(t0 + off + 0.2);
-  });
-}
-
-async function notify(title, body, tag) {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const opts = { body, tag, icon: '/icons/icon-192.png', badge: '/icons/icon-192.png', renotify: true, requireInteraction: true, vibrate: [400, 200, 400], data: { url: '/app#alarms' } };
-  try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) { await reg.showNotification(title, opts); return; } } catch (e) {}
-  try { new Notification(title, opts); } catch (e) {}
-}
-async function clearNotifications() {
-  try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg) (await reg.getNotifications({ tag: 'veradose-alarm' })).forEach(n => n.close()); } catch (e) {}
-}
-
-const baseTitle = document.title;
-function startRing(meds, test) {
-  if (ringing) { // another dose came due while ringing: add it
-    meds.forEach(m => { if (!ringing.meds.some(x => x.id === m.id)) ringing.meds.push(m); });
-    renderRing(); return;
-  }
-  ringing = { meds: meds.slice(), test: !!test };
-  if (!test) { meds.forEach(m => { ALARM.rung[alarmKey(m, isoD(new Date()))] = true; delete ALARM.snooze[alarmKey(m, isoD(new Date()))]; }); saveAlarmState(); }
-  unlockAudio();
-  beepPattern();
-  ringing.beepTimer = setInterval(() => { beepPattern(); if (navigator.vibrate) try { navigator.vibrate([400, 200, 400]); } catch (e) {} }, 1600);
-  ringing.stopTimer = setTimeout(() => quietRing(), 3 * 60 * 1000); // stop the sound after 3 minutes; the alarm card stays
-  if (ALARM.voice) ringing.voiceTimer = setTimeout(() => { if (ringing) speak(t('ring_say') + ' ' + ringing.meds.map(medSentence).join(' ')); }, 5000);
-  const names = meds.map(m => m.name).join(', ');
-  document.title = '⏰ ' + names;
-  if (!test && (document.hidden || !document.hasFocus())) notify(t('ring_title'), t('notif_body', { names }), 'veradose-alarm');
-  renderRing();
-  const d = $('#alarmDlg'); if (!d.open) d.showModal();
-}
-function quietRing() { if (!ringing) return; clearInterval(ringing.beepTimer); clearTimeout(ringing.voiceTimer); ringing.beepTimer = null; if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {} }
-function stopRing() {
-  if (!ringing) return;
-  quietRing(); clearTimeout(ringing.stopTimer);
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
-  ringing = null; document.title = baseTitle; clearNotifications();
-  const d = $('#alarmDlg'); if (d.open) d.close();
-  if (route === 'alarms') renderPage(true);
-}
-function renderRing() {
-  if (!ringing) return;
-  const now = new Date();
-  const needTap = !audioCtx || audioCtx.state !== 'running';
-  $('#alarmDlg').innerHTML = `<div class="ring">
-    <div class="ring-bell" aria-hidden="true">${ic('bell', 46, 1.6)}</div>
-    <p class="ring-clock">${esc(now.toLocaleTimeString(LOCALE[lang], { hour: 'numeric', minute: '2-digit' }))}</p>
-    <h2 id="ringTitle">${esc(t('ring_title'))}</h2>
-    ${ringing.test ? `<p class="ring-note">${esc(t('ring_test'))}</p>` : ''}
-    <div class="ring-meds">${ringing.meds.map(m => `<div class="ring-med"><div class="pill-art">${pillSvg(m.pill.shape, m.pill.color, m.pill.imprint, 56)}</div>
-      <div><b>${esc(m.name)}${m.dosage ? ' · ' + esc(m.dosage) : ''}</b><small>${esc(tabletsText(m.daily_dose))} · ${esc(fmtTime(m.scheduled_time))}</small>
-      ${m.badges && m.badges.length ? `<div class="chips">${badgeChips(m)}</div>` : ''}${m.food_guide ? `<small>${esc(m.food_guide)}</small>` : ''}</div></div>`).join('')}</div>
-    ${needTap && ringing.beepTimer ? `<button class="btn btn-light ring-sound" data-act="alarm-sound">${ic('volume', 20, 1.8)}${esc(t('ring_tap_sound'))}</button>` : ''}
-    <div class="ring-actions">
-      <button class="btn ring-big" data-act="alarm-taken">${ic('check', 22, 2.2)}${esc(t('ring_taken'))}</button>
-      <button class="btn btn-light" data-act="alarm-snooze">${ic('clock', 20, 1.8)}${esc(t('ring_snooze', { n: ALARM.snoozeMin }))}</button>
-      <button class="btn btn-light" data-act="alarm-stop">${ic('belloff', 20, 1.8)}${esc(t('ring_stop'))}</button>
-    </div></div>`;
-}
-async function alarmTaken() {
-  if (!ringing) return;
-  const r = ringing; const ids = r.test ? [] : r.meds.map(m => m.id);
-  stopRing();
-  let last = null;
-  for (const id of ids) {
-    const m = S.meds.find(x => x.id === id);
-    if (m && !m.taken) { try { last = await api(`/api/medications/${id}/take`, { method: 'POST' }); } catch (e) { showToast(e.message, 'error'); } }
-  }
-  if (last) applyState(last);
-  showToast(t('ring_marked'));
-}
-function alarmSnooze() {
-  if (!ringing) return;
-  const r = ringing; const n = ALARM.snoozeMin;
-  if (!r.test) { const day = isoD(new Date()); r.meds.forEach(m => { ALARM.snooze[alarmKey(m, day)] = Date.now() + n * 60000; }); saveAlarmState(); }
-  stopRing(); showToast(t('ring_snoozed', { n }));
-}
-
-function alarmTick() {
-  // live clock on the Alarms page
-  if (route === 'alarms') {
-    const now = new Date();
-    const c = $('#clkTime'); if (c) c.textContent = now.toLocaleTimeString(LOCALE[lang], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
-    if (now.getSeconds() === 0) { const n = $('#clkNext'); if (n) n.innerHTML = nextAlarmHtml(); }
-  }
-  if (ringing && $('#alarmDlg').open && new Date().getSeconds() === 0) renderRing();
-  if (!loaded || !$('#gate').hidden) return;
-  const day = isoD(new Date()), now = nowMinutes(), ms = Date.now();
-  const due = S.meds.filter(m => {
-    if (!m.due_today || m.taken || !alarmOn(m)) return false;
-    const k = alarmKey(m, day);
-    if (ALARM.snooze[k]) return ms >= ALARM.snooze[k];
-    const tm = minsOf(m.scheduled_time);
-    return !ALARM.rung[k] && now >= tm && now < tm + RING_WINDOW;
-  }).filter(m => !ringing || !ringing.meds.some(x => x.id === m.id));
-  if (due.length) startRing(due);
-}
-setInterval(alarmTick, 1000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) alarmTick(); });
-
-/* ---------- Notifications permission ---------- */
-function isIOSDevice() { return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
-function isStandalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
-function notifState() {
-  if (!('Notification' in window)) return isIOSDevice() && !isStandalone() ? 'ios' : 'unsupported';
-  return Notification.permission; // 'default' | 'granted' | 'denied'
-}
-async function enableNotifications() {
-  if (!('Notification' in window)) return notifState();
-  let p = Notification.permission;
-  try { if (p === 'default') p = await Notification.requestPermission(); } catch (e) {}
-  if (p === 'granted') { showToast(t('nt_enabled')); notify('VeraDose', t('nt_card_on_s'), 'veradose-hello'); }
-  else if (p === 'denied') showToast(t('nt_denied'), 'error');
-  return p;
-}
-function askNotifications(med) {
-  const st = notifState();
-  const vars = { name: med.name, time: fmtTime(med.scheduled_time) };
-  if (st === 'granted' || st === 'unsupported' || st === 'denied') { showToast(t('alarm_set', { time: vars.time })); return; }
-  const ios = st === 'ios';
-  const d = $('#notifDlg');
-  d.innerHTML = `<div class="nt">
-    <div class="nt-bell" aria-hidden="true">${ic('bell', 34, 1.7)}</div>
-    <h2 id="ntTitle">${esc(t(ios ? 'nt_ios_title' : 'nt_title'))}</h2>
-    <p>${esc(t(ios ? 'nt_ios_sub' : 'nt_sub', vars))}</p>
-    <div class="nt-actions">
-      ${ios ? `<button class="btn" data-install data-act="nt-close">${ic('download', 20, 1.8)}${esc(t('install_app'))}</button>`
-            : `<button class="btn" data-act="nt-on">${ic('bell', 20, 1.8)}${esc(t('nt_on'))}</button>`}
-      <a class="btn btn-light" href="#alarms" data-act="nt-close">${ic('clock', 20, 1.8)}${esc(t('nt_see'))}</a>
-      <button class="link-btn" data-act="nt-close">${esc(t('nt_later'))}</button>
-    </div></div>`;
-  d.showModal();
-}
-
-/* ---------- Alarms page ---------- */
-function nextAlarmHtml() {
-  const n = nextAlarm();
-  if (!n) return `<b>${esc(t('al_next'))}</b><span>${esc(t('al_none_next'))}</span>`;
-  return `<b>${esc(t('al_next'))}</b><span>${esc(t('al_next_in', { name: n.name, time: fmtTime(n.scheduled_time), left: fmtLeft(minsOf(n.scheduled_time) - nowMinutes()) }))}</span>`;
-}
-function alarmStatus(m) {
-  if (!alarmOn(m)) return ['', t('al_st_off')];
-  if (!m.due_today) return ['', t('al_st_notoday')];
-  if (m.taken) return ['ok', t('al_st_taken')];
-  const k = alarmKey(m, isoD(new Date()));
-  if (ALARM.snooze[k]) return ['sand', t('al_st_snoozed', { time: new Date(ALARM.snooze[k]).toLocaleTimeString(LOCALE[lang], { hour: 'numeric', minute: '2-digit' }) })];
-  if (ALARM.rung[k]) return ['sand', t('al_st_rang')];
-  if (nowMinutes() >= minsOf(m.scheduled_time) + RING_WINDOW) return ['miss', t('st_missed')];
-  return ['', t('al_st_upcoming')];
-}
-function daysText(m) {
-  const d = (m.days || [0, 1, 2, 3, 4, 5, 6]).slice().sort();
-  return d.length === 7 ? t('al_every_day') : d.map(i => weekdayName(i)).join(', ');
-}
-function viewAlarms() {
-  const now = new Date();
-  const st = notifState();
-  const meds = S.meds.slice().sort((a, b) => minsOf(a.scheduled_time) - minsOf(b.scheduled_time));
-  const ntCard = st === 'granted'
-    ? `<div class="nt-card on">${ic('bell', 22, 1.7)}<div><b>${esc(t('nt_card_on_t'))}</b><small>${esc(t('nt_card_on_s'))}</small></div></div>`
-    : st === 'denied' ? `<div class="nt-card">${ic('belloff', 22, 1.7)}<div><b>${esc(t('nt_card_blocked_t'))}</b><small>${esc(t('nt_denied'))}</small></div></div>`
-    : st === 'ios' ? `<div class="nt-card">${ic('bell', 22, 1.7)}<div><b>${esc(t('nt_card_ios_t'))}</b><small>${esc(t('nt_card_ios_s'))}</small></div><button class="btn btn-sm" data-install>${ic('download', 16, 1.8)}${esc(t('install_app'))}</button></div>`
-    : st === 'default' ? `<div class="nt-card">${ic('bell', 22, 1.7)}<div><b>${esc(t('nt_card_t'))}</b><small>${esc(t('nt_card_s'))}</small></div><button class="btn btn-sm" data-act="nt-on">${esc(t('nt_on'))}</button></div>` : '';
-  const list = !meds.length
-    ? `<div class="card empty"><div class="tile">${ic('bell', 26, 1.6)}</div><h2>${esc(t('al_none'))}</h2><p>${esc(t('al_none_sub'))}</p>
-       <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap"><button class="btn btn-light" data-act="med-scan">${ic('camera', 20, 1.8)}${esc(t('sc_btn'))}</button>
-       <button class="btn" data-act="med-new">${ic('plus', 20, 2)}${esc(t('add_med'))}</button></div></div>`
-    : `<div class="card alarm-list">${meds.map(m => { const [cls, label] = alarmStatus(m); return `<div class="alarm-row ${alarmOn(m) ? '' : 'off'}">
-        <div class="alarm-time">${esc(fmtTime(m.scheduled_time))}</div>
-        <div class="pill-art">${pillSvg(m.pill.shape, m.pill.color, m.pill.imprint, 44)}</div>
-        <div class="alarm-info"><b>${esc(m.name)}${m.dosage ? ` <span>${esc(m.dosage)}</span>` : ''}</b><small>${esc(daysText(m))}</small><span class="chip ${cls}">${esc(label)}</span></div>
-        <label class="alarm-switch"><span class="sr">${esc(t('al_on'))}: ${esc(m.name)}</span><input type="checkbox" class="switch" data-change="alarm-toggle" data-id="${m.id}" ${alarmOn(m) ? 'checked' : ''}></label>
-      </div>`; }).join('')}</div>`;
-  return `<div class="head-row"><div><p class="eyebrow">${esc(t('al_eyebrow'))}</p><h1 class="title">${esc(t('al_title'))}</h1><p class="lede">${esc(t('al_sub'))}</p></div>
-      ${meds.length ? `<button class="btn" data-act="alarm-test">${ic('bell', 20, 1.8)}${esc(t('al_test'))}</button>` : ''}</div>
-    <div class="alarm-top">
-      <div class="card clock-card">
-        <p class="k">${esc(t('al_now'))}</p>
-        <p class="clock-big" id="clkTime">${esc(now.toLocaleTimeString(LOCALE[lang], { hour: 'numeric', minute: '2-digit', second: '2-digit' }))}</p>
-        <p class="clock-date">${esc(now.toLocaleDateString(LOCALE[lang], { weekday: 'long', month: 'long', day: 'numeric' }))}</p>
-        <div class="clock-next" id="clkNext">${nextAlarmHtml()}</div>
-      </div>
-      <div class="card pad alarm-set">
-        <h2>${esc(t('al_settings'))}</h2>
-        ${ntCard}
-        <div class="toggle-row"><div><b>${esc(t('al_voice'))}</b><small>${esc(t('al_voice_sub'))}</small></div><input type="checkbox" class="switch" data-change="alarm-voice" aria-label="${esc(t('al_voice'))}" ${ALARM.voice ? 'checked' : ''}></div>
-        <div class="field" style="margin-bottom:0"><label for="snzLen">${esc(t('al_snooze_len'))}</label>
-          <select class="input" id="snzLen" data-change="alarm-snooze-len">${[5, 10, 15, 30].map(n => `<option value="${n}" ${n === ALARM.snoozeMin ? 'selected' : ''}>${esc(t('al_min', { n }))}</option>`).join('')}</select></div>
-      </div>
-    </div>
-    <h2 class="sec-title">${esc(t('al_list'))}</h2><p class="sec-sub">${esc(t('al_list_sub'))}</p>
-    ${list}
-    <p class="alarm-foot">${ic('alert', 16, 1.7)}${esc(t('al_keep_open'))}</p>`;
-}
-$('#alarmDlg').addEventListener('cancel', e => { e.preventDefault(); stopRing(); });
 
 /* ---------- start ---------- */
 render(true);
