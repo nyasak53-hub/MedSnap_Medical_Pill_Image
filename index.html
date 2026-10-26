@@ -23,7 +23,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
 <style>
 :root {
@@ -36,7 +36,7 @@
   --em-bg: #FCF1EF; --em-line: #E9B7AF; --em-ink: #B23A30;
   --ok: #3B6255; --done-bg: #E3EEE6;
   --shadow: 0 1px 2px rgba(36,69,58,.04), 0 6px 24px rgba(36,69,58,.05);
-  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font: "Plus Jakarta Sans", "Noto Sans Devanagari", "Noto Sans Telugu", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Kohinoor Devanagari", "Kohinoor Telugu", "PingFang SC", "Microsoft YaHei", sans-serif;
   color-scheme: light;
 }
 [data-theme="dark"] {
@@ -52,7 +52,7 @@
   color-scheme: dark;
 }
 html { font-size: calc(16px * var(--scale, 1)); }
-html.dyslexic { --font: "OpenDyslexic", "Comic Sans MS", sans-serif; }
+html.dyslexic { --font: "OpenDyslexic", "Comic Sans MS", "Noto Sans Devanagari", "Noto Sans Telugu", "Nirmala UI", sans-serif; }
 html.dyslexic body { letter-spacing: .02em; word-spacing: .1em; line-height: 1.7; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font); background: var(--bg); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
@@ -557,6 +557,8 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
   .alarm-time { font-size: 1.25rem; min-width: 5.2rem; }
   .ring { padding: 1.8rem 1.1rem 1.2rem; }
 }
+/* Hindi and Telugu: spaced-out letters would break joined characters apart */
+html:lang(hi) *, html:lang(te) * { letter-spacing: 0 !important; }
 </style>
 </head>
 <body>
@@ -946,11 +948,11 @@ zh: {
   tts_dose:'{name}，{dose}。{time} 服用 {n}。', tts_intro:'您今天的药物。', tts_none:'今天没有安排。', tts_unsupported:'此浏览器不支持朗读。',
   err_server:'无法连接服务器。', err_offline:'VeraDose 无法连接服务器（app.py）。请确认它正在运行。', err_page:'此页面出现问题，请刷新。', retry:'重试', off_banner_t:'VeraDose 无法连接服务器。', off_banner:'在 VS Code 终端运行：python app.py，然后打开 http://127.0.0.1:5000/app', tz_hint:'例如 America/New_York',
 }};
-const LOCALE = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
-const LANGS = { en: 'English', es: 'Español', fr: 'Français', zh: '中文' };
+const LOCALE = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN', te: 'te-IN' };
+const LANGS = { en: 'English', es: 'Español', fr: 'Français', zh: '中文', hi: 'हिन्दी', te: 'తెలుగు' };
 /* ---------- Alarms + notifications text ---------- */
 Object.assign(I18N.en, {
-  n_alarms:'Alarms', al_eyebrow:'Alarms', al_title:'Dose alarms', al_sub:"VeraDose rings an alarm when it's time for each medicine.",
+  n_alarms:'Alarms', al_eyebrow:'Alarms', al_title:'Dose alarms', alm_sub:"VeraDose rings an alarm when it's time for each medicine.",
   al_now:'Right now', al_next:'Next alarm', al_next_in:'{name} at {time}, in {left}', al_none_next:'No more alarms today. Nice work!',
   al_none:'No alarms yet', al_none_sub:'Add a medicine with its time and an alarm is set for you automatically.',
   al_list:'Your alarms', al_list_sub:"Each medicine rings at its dose time. Turn one off if you don't want this device to ring for it.",
@@ -971,7 +973,7 @@ Object.assign(I18N.en, {
   left_hm:'{h} h {m} min', left_m:'{m} min', test_med:'Test medicine',
 });
 Object.assign(I18N.es, {
-  n_alarms:'Alarmas', al_eyebrow:'Alarmas', al_title:'Alarmas de dosis', al_sub:'VeraDose hace sonar una alarma cuando es hora de cada medicamento.',
+  n_alarms:'Alarmas', al_eyebrow:'Alarmas', al_title:'Alarmas de dosis', alm_sub:'VeraDose hace sonar una alarma cuando es hora de cada medicamento.',
   al_now:'Ahora mismo', al_next:'Próxima alarma', al_next_in:'{name} a las {time}, en {left}', al_none_next:'No hay más alarmas hoy. ¡Buen trabajo!',
   al_none:'Aún no hay alarmas', al_none_sub:'Añade un medicamento con su hora y la alarma se programa sola.',
   al_list:'Tus alarmas', al_list_sub:'Cada medicamento suena a su hora. Desactiva una si no quieres que este dispositivo suene.',
@@ -992,7 +994,7 @@ Object.assign(I18N.es, {
   left_hm:'{h} h {m} min', left_m:'{m} min', test_med:'Medicamento de prueba',
 });
 Object.assign(I18N.fr, {
-  n_alarms:'Alarmes', al_eyebrow:'Alarmes', al_title:'Alarmes de prise', al_sub:"VeraDose fait sonner une alarme à l'heure de chaque médicament.",
+  n_alarms:'Alarmes', al_eyebrow:'Alarmes', al_title:'Alarmes de prise', alm_sub:"VeraDose fait sonner une alarme à l'heure de chaque médicament.",
   al_now:'En ce moment', al_next:'Prochaine alarme', al_next_in:'{name} à {time}, dans {left}', al_none_next:"Plus d'alarmes aujourd'hui. Bravo !",
   al_none:"Pas encore d'alarme", al_none_sub:"Ajoutez un médicament avec son heure et l'alarme est réglée automatiquement.",
   al_list:'Vos alarmes', al_list_sub:"Chaque médicament sonne à son heure. Désactivez-en une si vous ne voulez pas que cet appareil sonne.",
@@ -1013,7 +1015,7 @@ Object.assign(I18N.fr, {
   left_hm:'{h} h {m} min', left_m:'{m} min', test_med:'Médicament test',
 });
 Object.assign(I18N.zh, {
-  n_alarms:'闹钟', al_eyebrow:'闹钟', al_title:'服药闹钟', al_sub:'到了每种药的服用时间，VeraDose 会响起闹钟。',
+  n_alarms:'闹钟', al_eyebrow:'闹钟', al_title:'服药闹钟', alm_sub:'到了每种药的服用时间，VeraDose 会响起闹钟。',
   al_now:'现在', al_next:'下一个闹钟', al_next_in:'{time} 服用 {name}，还有 {left}', al_none_next:'今天没有更多闹钟了。做得好！',
   al_none:'还没有闹钟', al_none_sub:'添加药物并设定时间，闹钟会自动设置好。',
   al_list:'你的闹钟', al_list_sub:'每种药都会在服用时间响铃。如果不想让这台设备响铃，可以关闭。',
@@ -1033,6 +1035,268 @@ Object.assign(I18N.zh, {
   ring_marked:'已标记为服用。做得好！', ring_snoozed:'好的，{n} 分钟后我会再次提醒。', notif_body:'{names}。点按打开 VeraDose。',
   left_hm:'{h} 小时 {m} 分钟', left_m:'{m} 分钟', test_med:'测试药物',
 });
+/* ---------- Hindi and Telugu ---------- */
+I18N.hi = {
+  g_signin:"साइन इन", g_signup:"खाता बनाएँ", g_in_title:"फिर से स्वागत है", g_in_sub:"अपनी दवाएँ और दिनचर्या देखने के लिए साइन इन करें।",
+  g_up_title:"चलिए आपका खाता तैयार करते हैं", g_up_sub:"आपका खाता आपकी दवाओं को हर डिवाइस पर सुरक्षित रखता है। उम्र और एलर्जी भरना ज़रूरी नहीं है।",
+  g_password:"पासवर्ड", g_pw_hint:"कम से कम 8 अक्षर।", g_signin_btn:"साइन इन", g_signup_btn:"मेरा खाता बनाएँ",
+  sc_btn:"लेबल स्कैन करें", sc_hide:"स्कैनर बंद करें", sc_title:"पर्चा या दवा की बोतल स्कैन करें",
+  sc_sub:"लेबल की फ़ोटो लें और VeraDose यह फ़ॉर्म आपके लिए भर देगा। 3 फ़ोटो तक जोड़ें, जैसे पर्चा और बोतल।",
+  sc_hint:"लेबल को सीधा, पास से और अच्छी रोशनी में रखें।", sc_take_more:"एक और फ़ोटो लें", sc_read:"लेबल पढ़ें", sc_reading:"लेबल पढ़ा जा रहा है…",
+  sc_photos:"3 में से {n} फ़ोटो", sc_photo_n:"फ़ोटो {n}", sc_remove:"फ़ोटो हटाएँ", sc_max:"3 फ़ोटो की सीमा पूरी हो गई। लेबल पढ़ें दबाएँ।",
+  sc_need:"पहले एक फ़ोटो लें या अपलोड करें।", sc_done_t:"लेबल से भरा गया:", sc_done:"{f}। भरे गए बॉक्स पर निशान लगा है।",
+  sc_times:"लेबल के अनुसार दिन में {n} बार लेनी है। VeraDose हर दवा के लिए एक समय रखता है, इसलिए सेव करने के बाद बाकी हर समय के लिए इसे फिर से जोड़ें।",
+  sc_check:"सेव करने से पहले हर जानकारी को अपने लेबल से मिलाएँ, और जो लेबल पर नहीं था वह भरें, जैसे किन दिनों में लेनी है।",
+  sc_pc_t:"नया पर्चा?", sc_pc_s:"लेबल या बोतल स्कैन करें और उसे अपनी दवाओं, स्टॉक और कैलेंडर में जोड़ें।",
+  pc_main_title:"स्कैन करें। दो बार जाँचें।", pc_main_sub:"दवा जोड़ने के लिए पर्चा या बोतल स्कैन करें, या हाथ में रखी गोली को अपनी सूची से मिलाएँ।",
+  pc_mode_scan:"लेबल स्कैन करें", pc_mode_check:"गोली जाँचें", sc_main_t:"यह भरने के लिए लेबल स्कैन करें",
+  sc_main_s:"अपने पर्चे के लेबल या दवा की बोतल की फ़ोटो लें। VeraDose उसे पढ़कर नई दवा भर देगा, जिसे आप जाँचकर सेव कर सकते हैं।",
+  how_k:"यह कैसे काम करता है", how_t:"तीन चरणों में दवा जोड़ें", how1_t:"3 फ़ोटो तक लें", how1:"पर्चा और बोतल दोनों साथ हों तो VeraDose को पढ़ने के लिए सबसे ज़्यादा जानकारी मिलती है।",
+  how2_t:"VeraDose लेबल पढ़ता है", how2:"नाम, खुराक, निर्देश, बोतल में कितनी गोलियाँ आईं, और खाने या समय से जुड़ी बातें।",
+  how3_t:"जाँचें और सेव करें", how3:"फिर यह आपके दवाएँ, स्टॉक और कैलेंडर पेज पर दिखेगी।",
+  sc_safe_t:"कुछ भी सेव होने से पहले आप जाँचते हैं", sc_safe_p:"VeraDose सिर्फ़ वही भरता है जो लेबल पर छपा है। जब तक आप देखकर सेव नहीं दबाते, कुछ नहीं जुड़ता।",
+  sc_to_check_t:"हाथ में कोई गोली है?", sc_to_check:"उसका आकार, रंग और छाप अपनी सेव की गई दवाओं से मिलाएँ।",
+  al_sub:"जिन चीज़ों से आपको एलर्जी है, उन सब पर निशान लगाएँ।", al_other:"अन्य", al_other_q:"आपको और किन चीज़ों से एलर्जी है?", al_other_ph:"जैसे बिल्ली, स्ट्रॉबेरी (कॉमा से अलग करें)",
+  al_penicillin:"पेनिसिलिन", al_sulfa:"सल्फ़ा दवाएँ", al_aspirin:"एस्पिरिन", al_nsaids:"आइबुप्रोफ़ेन / NSAIDs", al_codeine:"कोडीन / ओपिओइड",
+  al_latex:"लेटेक्स", al_contrast:"कॉन्ट्रास्ट डाई (आयोडीन)", al_peanuts:"मूँगफली", al_tree_nuts:"सूखे मेवे (ट्री नट्स)", al_shellfish:"शेलफ़िश",
+  al_fish:"मछली", al_eggs:"अंडे", al_milk:"दूध / डेयरी", al_soy:"सोया", al_wheat:"गेहूँ / ग्लूटेन", al_bee_stings:"मधुमक्खी का डंक",
+  acc_title:"खाता", acc_sub:"लॉग आउट करने तक आप इस डिवाइस पर साइन इन रहेंगे।", acc_logout:"लॉग आउट", acc_logout_s:"इस डिवाइस से साइन आउट करें। आपकी दवाएँ सेव रहेंगी।",
+  acc_delete:"खाता हटाएँ", acc_delete_s:"अपना खाता और उसमें मौजूद सब कुछ हमेशा के लिए मिटाएँ।", del_title:"अपना खाता हटाएँ?", del_sub:"इसे वापस नहीं किया जा सकता।",
+  del_warn_t:"सब कुछ मिट जाएगा", del_warn:"आपकी प्रोफ़ाइल, दवाएँ, स्टॉक, कैलेंडर इतिहास, स्ट्रीक और देखभालकर्ता की जानकारी हमेशा के लिए हट जाएगी।",
+  del_pw:"पुष्टि के लिए अपना पासवर्ड लिखें", del_btn:"मेरा खाता हटाएँ",
+  conn_t:"VeraDose से जुड़ रहे हैं…", conn:"अगर सर्वर सो रहा था तो इसमें एक मिनट तक लग सकता है। आप साइन इन रहेंगे।",
+  still_trying:"VeraDose कोशिश करता रहेगा और सर्वर चलते ही अपने आप जुड़ जाएगा।", reconnected:"जुड़ गए। फिर से स्वागत है!",
+  show_pw:"पासवर्ड दिखाएँ", hide_pw:"पासवर्ड छिपाएँ", g_make_acc:"इस ईमेल से खाता बनाएँ →",
+  a11y:"सुलभता", a11y_btn:"सुलभता विकल्प", tts:"बोलकर पढ़ना", auto_read:"AI के जवाब अपने आप पढ़ें", read_page:"यह पेज बोलकर पढ़ें", stop_audio:"आवाज़ रोकें",
+  readability:"पढ़ने में आसानी", visibility:"दिखावट", hc:"हाई कॉन्ट्रास्ट मोड", normal_size:"सामान्य अक्षर आकार", smaller:"छोटे अक्षर", larger:"बड़े अक्षर", dark_mode:"डार्क मोड",
+  your_space:"आपकी जगह", your_details:"आपकी जानकारी", n_today:"आज", n_calendar:"कैलेंडर", n_streaks:"स्ट्रीक", n_meds:"दवाएँ", n_inventory:"स्टॉक",
+  n_pillcheck:"गोली जाँच", n_caregiver:"देखभालकर्ता", n_profile:"प्रोफ़ाइल और पसंद", install_app:"ऐप इंस्टॉल करें", install_sub:"VeraDose को अपनी होम स्क्रीन पर जोड़ें।",
+  need_hand:"मदद चाहिए?", need_hand_sub:"आपकी दिनचर्या, एक-एक कदम।", your_care:"आपकी देखभाल", personal_account:"निजी खाता", sign_out:"साइन आउट", menu:"मेनू",
+  emergency:"आपातकाल · 911 पर कॉल करें", private:"आपकी जानकारी निजी है", language:"भाषा", foot_tag:"रोज़मर्रा को थोड़ा आसान बनाने के लिए।",
+  td_eyebrow:"आज", g_morning:"सुप्रभात", g_afternoon:"नमस्ते", g_evening:"शुभ संध्या", td_title:"यह रहा आपका दिन।",
+  td_sub:"आज के लिए सब कुछ तय है। हर खुराक लेने के बाद उस पर निशान लगाएँ।", td_read:"आज का दिन बोलकर सुनें", td_doses:"आज की खुराकें",
+  td_of:"{b} में से {a} ली गईं", td_streak:"मौजूदा स्ट्रीक", td_next:"अगली खुराक", td_next_none:"आज का सब पूरा", td_none_title:"आज कुछ तय नहीं है",
+  td_none_sub:"अपने दिन का आनंद लें। आने वाली खुराकें यहाँ दिखेंगी।", empty_title:"चलिए आपकी पहली दवा जोड़ते हैं",
+  empty_sub:"एक दवा जोड़ें और VeraDose आपकी रोज़ की दिनचर्या, कैलेंडर और स्ट्रीक बना देगा।",
+  st_taken:"ली गई", st_due:"अभी लेनी है", st_missed:"छूट गई", st_upcoming:"आने वाली", mark_taken:"ली गई चिह्नित करें", undo:"वापस लें", read_aloud:"बोलकर पढ़ें",
+  low_text:"{names}: {n} दिन से कम बची है। दोबारा भरवाने का समय है।", go_inventory:"स्टॉक",
+  cal_eyebrow:"कैलेंडर", cal_title:"आपका हफ़्ता, एक नज़र में।", cal_sub:"देखें हर दिन क्या तय है। हर खुराक लेते ही निशान लगाएँ।", add_a_med:"दवा जोड़ें",
+  this_week:"इस हफ़्ते", last_week:"पिछले हफ़्ते", next_week:"अगले हफ़्ते", weeks_ago:"{n} हफ़्ते पहले", weeks_ahead:"{n} हफ़्ते बाद", today_btn:"आज", today_lbl:"आज",
+  nothing_planned:"कुछ तय नहीं", tablets:"{n} गोलियाँ", tablet:"1 गोली", planned:"तय", completed:"पूरा", taken_short:"ली गई", prev_week:"पिछला हफ़्ता", next_week_aria:"अगला हफ़्ता",
+  future_no:"वह दिन आने पर आप इसे चिह्नित कर सकेंगे।", st_eyebrow:"स्ट्रीक", st_title:"आपकी नियमितता, दिन-ब-दिन।",
+  st_sub:"स्ट्रीक उन लगातार दिनों को गिनती है जब हर तय खुराक ली गई चिह्नित हो।", momentum:"आपकी रफ़्तार", days:"दिन", day:"दिन",
+  showing_up:"अपनी दिनचर्या निभा रहे हैं", best:"सबसे अच्छा रिकॉर्ड", cal_link:"कैलेंडर", t_missed:"छूटी", t_none:"कोई खुराक नहीं", t_planned:"तय", t_complete:"पूरा", t_today:"जारी है",
+  cg_box_title:"देखभालकर्ता", cg_box_on:"संपर्क भेजना चालू है। अगर कोई खुराक छूटती है या स्टॉक कम होता है, तो {name} को तुरंत सूचना मिलेगी।",
+  cg_box_saved:"{name} आपके देखभालकर्ता के रूप में सेव हैं। सर्वर पर ईमेल या SMS सेट होते ही सूचनाएँ शुरू हो जाएँगी।",
+  cg_box_off:"अभी कोई देखभालकर्ता नहीं है। देखभालकर्ता पेज पर किसी भरोसेमंद व्यक्ति को जोड़ें ताकि खुराक छूटने पर उन्हें पता चले।", your_caregiver:"आपके देखभालकर्ता",
+  m_eyebrow:"दवाएँ", m_title:"आपकी दवाएँ", m_sub:"अपनी खुराक, समय, निर्देश और गोली की जानकारी एक जगह रखें।", add_med:"दवा जोड़ें", important:"ज़रूरी",
+  cur_stock:"मौजूदा स्टॉक (गोलियाँ)", per_dose:"हर खुराक में {n}", days_left:"{n} दिन बाकी", edit:"बदलें", delete:"हटाएँ", confirm_delete:"{name} को अपनी दवाओं से हटाएँ?",
+  m_private:"दवा की जानकारी आपके खाते तक निजी है और आपके ब्राउज़र में सेव नहीं होती।", every_day:"हर दिन",
+  f_new:"दवा जोड़ें", f_edit:"दवा बदलें", f_sub:"जो पता है वह भरें। आप इसे कभी भी बदल सकते हैं।", f_name:"दवा का नाम", f_name_ph:"जैसे Metformin",
+  f_dose:"खुराक", f_dose_ph:"जैसे 500 mg", f_instr:"निर्देश / याद दिलाने वाली बातें", f_instr_ph:"जैसे पूरी निगलें। बेहतर महसूस हो तब भी लेते रहें।",
+  f_food:"खाना और समय गाइड", f_food_ph:"जैसे नाश्ते से 30 मिनट पहले लें", f_guidance:"मददगार सलाह", f_guidance_sub:"जो भी लागू हो, उन सब पर निशान लगाएँ।",
+  f_days:"हफ़्ते के दिन", f_time:"खुराक का समय", f_stock:"मौजूदा स्टॉक (गोलियाँ)", f_ppd:"हर खुराक में गोलियाँ", f_shape:"आकार", f_color:"रंग", f_choose:"चुनें…",
+  f_imprint:"छाप (वैकल्पिक)", f_imprint_ph:"जैसे MET 500", f_important:"यह एक ज़रूरी दवा है", cancel:"रद्द करें", save_med:"दवा सेव करें", saved:"सेव हो गया।",
+  b_with_food:"खाने के साथ लें", b_empty_stomach:"खाली पेट", b_avoid_dairy:"डेयरी से बचें", b_avoid_alcohol:"शराब से बचें", b_avoid_sugar:"चीनी से बचें",
+  b_before_bed:"सोने से पहले", b_with_water:"पानी के साथ लें", b_before_lunch:"दोपहर के खाने से पहले", b_before_breakfast:"नाश्ते से पहले", b_before_dinner:"रात के खाने से पहले",
+  b_avoid_grapefruit:"ग्रेपफ़्रूट से बचें",
+  s_round:"गोल", s_oval:"अंडाकार", s_oblong:"लंबा", s_square:"चौकोर", s_diamond:"हीरे जैसा", s_triangle:"त्रिकोण", s_hexagon:"षट्कोण", s_capsule:"कैप्सूल",
+  c_white:"सफ़ेद", c_yellow:"पीला", c_pink:"गुलाबी", c_red:"लाल", c_purple:"बैंगनी", c_green:"हरा", c_blue:"नीला", c_brown:"भूरा", c_orange:"नारंगी", c_gray:"स्लेटी",
+  i_eyebrow:"स्टॉक", i_title:"जानिए आपके पास क्या है।", i_sub:"जब कोई दवा आपके चुने हुए दिनों से कम बचे, तो एक हल्की सी याद।",
+  i_steady_k:"आपका स्टॉक ठीक है", i_steady_t:"आपका स्टॉक ठीक है", i_steady_s:"हर दवा के लिए कम से कम {n} दिन बाकी हैं।",
+  i_low_k:"जल्दी भरवाएँ", i_low_t:"{names} दोबारा भरवाने का समय", i_low_s:"{n} दिन से कम बाकी हैं। सूचनाएँ चालू हों तो आपके देखभालकर्ता को भी बताया जाता है।",
+  col_meds:"दवाएँ", col_inv:"स्टॉक", col_days:"दिन", pills_n:"{n} गोलियाँ", update_stock:"स्टॉक अपडेट करें",
+  i_note:"अनुमानित दिन आपके सेव किए गए समय, दिनों और हर खुराक की गोलियों से गिने जाते हैं।",
+  us_title:"स्टॉक अपडेट करें", us_now:"अभी {n} गोलियाँ हैं", us_add:"अभी जोड़ी गई गोलियाँ", us_add_btn:"जोड़ें", us_set:"या सही गिनती डालें", us_set_btn:"सेट करें", stock_updated:"स्टॉक अपडेट हो गया।",
+  pc_eyebrow:"गोली जाँच", pc_title:"क्या यह जानी-पहचानी लगती है?", pc_sub:"यह जाँच किसी अनजान गोली को पहचान नहीं सकती और न ही बता सकती है कि क्या लेना सुरक्षित है। शक हो तो फ़ार्मासिस्ट से पूछें।",
+  cam_back:"पीछे का कैमरा", cam_front:"सामने का कैमरा", cam_start:"कैमरा चालू करें", cam_snap:"फ़ोटो लें", cam_retake:"फिर से लें", cam_upload:"फ़ोटो अपलोड करें",
+  cam_hint:"एक गोली को सादी सतह पर अच्छी रोशनी में रखें, फिर फ़ोटो लें।",
+  cam_https:"कैमरा सिर्फ़ सुरक्षित पेज (https:// या http://127.0.0.1) पर चलता है। इसकी जगह “फ़ोटो अपलोड करें” का इस्तेमाल करें।",
+  cam_denied:"कैमरे की अनुमति बंद है। ब्राउज़र के पता बार में कैमरे की अनुमति दें, फिर दोबारा कोशिश करें।", cam_none:"इस डिवाइस पर कोई कैमरा नहीं मिला। इसकी जगह “फ़ोटो अपलोड करें” का इस्तेमाल करें।",
+  cam_err:"कैमरा शुरू नहीं हो सका: {e}", compare:"मेरी सूची से मिलाएँ", comparing:"फ़ोटो जाँची जा रही है…", need_photo:"पहले एक फ़ोटो लें या अपलोड करें।",
+  helpful:"एक मददगार जाँच", match_title:"जो बातें आप पहचानते हैं उन्हें मिलाएँ", ref_title:"सिर्फ़ आपकी सूची के लिए संदर्भ",
+  ref_text:"यह टूल सिर्फ़ VeraDose में सेव की गई आपकी दवाओं से मिलाता है। यह किसी अनजान गोली को पहचान नहीं सकता और न बता सकता है कि क्या लेना सुरक्षित है।",
+  saw:"कैमरे ने क्या देखा", unknown:"पक्का नहीं", m_strong:"मिलती-जुलती लगती है", m_partial:"कुछ हद तक मिलती है", m_none:"नहीं मिलती", matched_on:"इन बातों पर मिली: {w}", matched_none:"कुछ नहीं",
+  no_saved:"अभी आपकी किसी दवा का आकार, रंग या छाप सेव नहीं है। दवाएँ पेज पर इन्हें जोड़ें ताकि फ़ोटो से मिलाया जा सके।",
+  w_shape:"आकार", w_color:"रंग", w_imprint:"छाप",
+  cg_eyebrow:"देखभालकर्ता", cg_title:"एक देखभालकर्ता, अगर आप चाहें।",
+  cg_sub_on:"संपर्क भेजना चालू है। देखभालकर्ता सेव करने के बाद, खुराक छूटने या गोलियाँ कम होने पर उन्हें तुरंत सूचना मिलेगी।",
+  cg_sub_off:"एक देखभालकर्ता सेव करें, और खुराक छूटने या गोलियाँ कम होने पर उन्हें तुरंत सूचना मिलेगी।",
+  cp_title:"संपर्क पसंद", cp_sub:"देखभालकर्ता की जानकारी इस खाते में रखें", en_title:"देखभालकर्ता सूचनाएँ चालू करें", en_sub:"खुराक छूटने या स्टॉक कम होने पर उन्हें बताएँ",
+  cg_name:"देखभालकर्ता का नाम", cg_email:"ईमेल", cg_email_ph:"name@example.com", cg_phone:"फ़ोन", cg_phone_ph:"+919876543210",
+  cg_consent:"मेरे पास इस व्यक्ति की संपर्क जानकारी सेव करने की अनुमति है।", on_title:"संपर्क भेजना चालू है।",
+  on_text:"खुराक {m} मिनट देर होते ही, या किसी दवा का स्टॉक आपकी सीमा से कम होने पर, {ch} से सूचना जाती है।", ch_email:"ईमेल", ch_sms:"SMS", ch_and:" और ",
+  off_title:"सर्वर पर संपर्क भेजना अभी सेट नहीं है।", off_text:"अपनी ईमेल (SMTP) या Twilio जानकारी .env फ़ाइल में डालें और VeraDose फिर से शुरू करें। तब तक आपके देखभालकर्ता की जानकारी सेव रहती है।",
+  save_prefs:"पसंद सेव करें", send_test:"टेस्ट भेजें", cs_k:"आपकी पसंद, आपकी रफ़्तार", cs_t:"देखभाल तब सबसे अच्छी होती है जब वह आपको सही लगे।",
+  cs_p:"आप यह जानकारी कभी भी बदल या हटा सकते हैं। सूचनाएँ सिर्फ़ उसी व्यक्ति को जाती हैं जिसे आप यहाँ सेव करते हैं।",
+  cg_saved_on:"सेव हो गया। {name} को बता दिया गया है कि वे आपके देखभालकर्ता हैं और उन्हें तुरंत सूचना मिलेगी।", cg_saved:"देखभालकर्ता की पसंद सेव हो गई।", test_sent:"टेस्ट संदेश भेज दिया गया।",
+  pf_eyebrow:"प्रोफ़ाइल और पसंद", pf_title:"आपके हिसाब की प्रोफ़ाइल।", pf_sub:"आपकी प्रोफ़ाइल VeraDose की दिनचर्या को और निजी बनाती है।",
+  pd_title:"निजी जानकारी", pd_sub:"आपकी प्रोफ़ाइल VeraDose की दिनचर्या को और निजी बनाती है।", f_pname:"नाम", optional:"वैकल्पिक", f_age:"उम्र", f_allergies:"एलर्जी",
+  f_tz:"समय क्षेत्र", f_low:"कम स्टॉक की सूचना (दिन)", not_stored:"आपकी प्रोफ़ाइल और एलर्जी की जानकारी ब्राउज़र में सेव नहीं होती।", save_profile:"प्रोफ़ाइल सेव करें",
+  ps_t:"आपकी प्रोफ़ाइल VeraDose की दिनचर्या को और निजी बनाती है।", ps_p:"दवाओं के नाम और निर्देश वैसे ही रहते हैं जैसे आपने लिखे; VeraDose पर्चे के निर्देशों का अनुवाद नहीं करता।",
+  ds_title:"दिखावट की सेटिंग", ds_sub:"अक्षर का आकार", text_size:"अक्षर का आकार", dyslexia:"डिस्लेक्सिया के अनुकूल फ़ॉन्ट", theme:"थीम", light:"हल्की", dark:"गहरी", profile_saved:"प्रोफ़ाइल सेव हो गई।",
+  buddy:"Buddy", bd_title:"VeraDose Buddy", bd_sub:"सामान्य मदद, चिकित्सा सलाह नहीं",
+  bd_intro:"VeraDose इस्तेमाल करने या व्यवस्थित रहने के बारे में पूछें। दवा से जुड़े फ़ैसलों के लिए फ़ार्मासिस्ट या डॉक्टर से बात करें।",
+  bd_note:"आपका सवाल Groq को भेजा जाता है। नाम या निजी चिकित्सा जानकारी न लिखें।", bd_ph:"मैं किस बात में मदद करूँ?", bd_send:"भेजें", close:"बंद करें",
+  em_title:"आपातकाल", em_body:"अगर आप या आपके पास कोई खतरे में है, तो अभी 911 पर कॉल करें।", em_call:"911 पर कॉल करें", em_desktop:"कंप्यूटर पर हैं? किसी भी फ़ोन से 911 डायल करें।",
+  em_alert:"मेरे देखभालकर्ता को बताएँ", em_sent:"आपके देखभालकर्ता को सूचना भेज दी गई है।",
+  tts_dose:"{name}, {dose}। {time} पर {n} लें।", tts_intro:"आज की आपकी दवाएँ।", tts_none:"आज कुछ तय नहीं है।", tts_unsupported:"इस ब्राउज़र में बोलकर पढ़ना उपलब्ध नहीं है।",
+  err_server:"सर्वर से नहीं जुड़ सके।", err_offline:"VeraDose अपने सर्वर (app.py) से नहीं जुड़ पा रहा। पक्का करें कि वह चल रहा है।", err_page:"इस पेज में कोई दिक्कत आई। कृपया रीफ़्रेश करें।",
+  retry:"फिर से कोशिश करें", off_banner_t:"VeraDose अपने सर्वर से नहीं जुड़ पा रहा।", off_banner:"VS Code टर्मिनल में चलाएँ: python app.py — फिर खोलें http://127.0.0.1:5000/app",
+  tz_hint:"उदाहरण के लिए Asia/Kolkata",
+  n_alarms:"अलार्म", al_eyebrow:"अलार्म", al_title:"खुराक के अलार्म", alm_sub:"हर दवा का समय होने पर VeraDose अलार्म बजाता है।",
+  al_now:"अभी", al_next:"अगला अलार्म", al_next_in:"{time} पर {name}, {left} में", al_none_next:"आज और कोई अलार्म नहीं। बहुत बढ़िया!",
+  al_none:"अभी कोई अलार्म नहीं", al_none_sub:"समय के साथ दवा जोड़ें और अलार्म अपने आप लग जाएगा।", al_list:"आपके अलार्म",
+  al_list_sub:"हर दवा अपने समय पर बजती है। अगर आप नहीं चाहते कि यह डिवाइस किसी दवा के लिए बजे, तो उसे बंद कर दें।",
+  al_on:"अलार्म चालू", al_every_day:"हर दिन", al_st_taken:"आज ली गई", al_st_rang:"आज बजा", al_st_upcoming:"आज बजेगा", al_st_notoday:"आज नहीं", al_st_snoozed:"{time} तक टाला गया", al_st_off:"बंद",
+  al_settings:"अलार्म सेटिंग", al_test:"अलार्म जाँचें", al_voice:"दवा का नाम बोलकर सुनाएँ", al_voice_sub:"बीप के बाद VeraDose दवा का नाम और खुराक बोलता है।",
+  al_snooze_len:"टालने का समय", al_min:"{n} मिनट", al_keep_open:"अलार्म तभी बजते हैं जब इस डिवाइस पर VeraDose खुला हो। iPhone पर VeraDose को स्क्रीन पर खुला रखें।",
+  nt_title:"रिमाइंडर चालू करें?", nt_sub:"{time} पर {name} के लिए सूचना और अलार्म पाएँ, चाहे आप किसी और पेज या ऐप पर हों।",
+  nt_on:"सूचनाएँ चालू करें", nt_later:"अभी नहीं", nt_see:"मेरे अलार्म देखें", nt_ios_title:"सूचनाओं के लिए VeraDose इंस्टॉल करें",
+  nt_ios_sub:"iPhone और iPad पर सूचनाएँ तभी आती हैं जब आप VeraDose को होम स्क्रीन पर जोड़ते हैं। VeraDose खुला होने पर {time} पर {name} का अलार्म फिर भी बजेगा।",
+  nt_denied:"इस साइट के लिए सूचनाएँ बंद हैं। ब्राउज़र की साइट सेटिंग खोलें, सूचनाओं की अनुमति दें, फिर वापस आएँ।",
+  nt_enabled:"सूचनाएँ चालू हैं।", nt_card_t:"सूचनाएँ बंद हैं", nt_card_s:"इन्हें चालू करें ताकि VeraDose पीछे चलते समय भी आपको याद दिलाया जा सके।",
+  nt_card_on_t:"सूचनाएँ चालू हैं", nt_card_on_s:"हर खुराक के समय आपको सूचना और अलार्म मिलेगा।", nt_card_blocked_t:"सूचनाएँ बंद की गई हैं",
+  nt_card_ios_t:"सूचनाओं के लिए इंस्टॉल करें", nt_card_ios_s:"iPhone पर सूचनाओं के लिए VeraDose को होम स्क्रीन पर जोड़ें।",
+  alarm_set:"सेव हो गया। अलार्म {time} पर लगा है।", ring_title:"दवा लेने का समय", ring_tap_sound:"अलार्म सुनने के लिए टैप करें", ring_taken:"मैंने ले ली",
+  ring_snooze:"{n} मिनट टालें", ring_stop:"अलार्म बंद करें", ring_test:"यह एक टेस्ट है। आपके असली अलार्म ऐसे दिखेंगे।", ring_say:"आपकी दवा लेने का समय हो गया है।",
+  ring_marked:"ली गई चिह्नित की गई। शाबाश!", ring_snoozed:"ठीक है, मैं {n} मिनट बाद फिर बजूँगा।", notif_body:"{names}। VeraDose खोलने के लिए टैप करें।",
+  left_hm:"{h} घंटे {m} मिनट", left_m:"{m} मिनट", test_med:"टेस्ट दवा",
+};
+I18N.te = {
+  g_signin:"సైన్ ఇన్", g_signup:"ఖాతా సృష్టించండి", g_in_title:"మళ్ళీ స్వాగతం", g_in_sub:"మీ మందులు మరియు దినచర్యను చూడటానికి సైన్ ఇన్ చేయండి.",
+  g_up_title:"మీ ఖాతాను సిద్ధం చేద్దాం", g_up_sub:"మీ ఖాతా మీ మందులను ఏ పరికరంలోనైనా సురక్షితంగా ఉంచుతుంది. వయస్సు మరియు అలెర్జీలు ఐచ్ఛికం.",
+  g_password:"పాస్‌వర్డ్", g_pw_hint:"కనీసం 8 అక్షరాలు.", g_signin_btn:"సైన్ ఇన్", g_signup_btn:"నా ఖాతా సృష్టించండి",
+  sc_btn:"లేబుల్ స్కాన్ చేయండి", sc_hide:"స్కానర్ మూసివేయండి", sc_title:"ప్రిస్క్రిప్షన్ లేదా మందుల సీసాను స్కాన్ చేయండి",
+  sc_sub:"లేబుల్ ఫోటో తీయండి, VeraDose మీ కోసం ఈ ఫారమ్ నింపుతుంది. ప్రిస్క్రిప్షన్ మరియు సీసా వంటి 3 ఫోటోల వరకు జోడించండి.",
+  sc_hint:"లేబుల్‌ను సమతలంగా, దగ్గరగా, మంచి వెలుతురులో పట్టుకోండి.", sc_take_more:"మరో ఫోటో తీయండి", sc_read:"లేబుల్ చదవండి", sc_reading:"లేబుల్ చదువుతోంది…",
+  sc_photos:"3 లో {n} ఫోటోలు", sc_photo_n:"ఫోటో {n}", sc_remove:"ఫోటో తొలగించండి", sc_max:"3 ఫోటోల పరిమితి పూర్తయింది. లేబుల్ చదవండి నొక్కండి.",
+  sc_need:"ముందుగా ఒక ఫోటో తీయండి లేదా అప్‌లోడ్ చేయండి.", sc_done_t:"లేబుల్ నుండి నింపినవి:", sc_done:"{f}. నింపిన పెట్టెలకు గుర్తు పెట్టబడింది.",
+  sc_times:"లేబుల్ ప్రకారం రోజుకు {n} సార్లు వేసుకోవాలి. VeraDose ప్రతి మందుకు ఒక సమయం ఉంచుతుంది, కాబట్టి సేవ్ చేసిన తర్వాత మిగతా ప్రతి సమయానికి దాన్ని మళ్ళీ జోడించండి.",
+  sc_check:"సేవ్ చేసే ముందు ప్రతి వివరాన్ని మీ లేబుల్‌తో సరిచూడండి, లేబుల్‌లో లేనివి నింపండి, ఉదాహరణకు ఏ రోజుల్లో వేసుకోవాలి.",
+  sc_pc_t:"కొత్త ప్రిస్క్రిప్షనా?", sc_pc_s:"లేబుల్ లేదా సీసాను స్కాన్ చేసి మీ మందులు, నిల్వ మరియు క్యాలెండర్‌కు జోడించండి.",
+  pc_main_title:"స్కాన్ చేయండి. రెండుసార్లు చూడండి.", pc_main_sub:"మందు జోడించడానికి ప్రిస్క్రిప్షన్ లేదా సీసాను స్కాన్ చేయండి, లేదా చేతిలోని మాత్రను మీ జాబితాతో పోల్చండి.",
+  pc_mode_scan:"లేబుల్ స్కాన్ చేయండి", pc_mode_check:"మాత్రను తనిఖీ చేయండి", sc_main_t:"దీన్ని నింపడానికి లేబుల్ స్కాన్ చేయండి",
+  sc_main_s:"మీ ప్రిస్క్రిప్షన్ లేబుల్ లేదా మందుల సీసా ఫోటో తీయండి. VeraDose దాన్ని చదివి కొత్త మందును నింపుతుంది, మీరు తనిఖీ చేసి సేవ్ చేయవచ్చు.",
+  how_k:"ఇది ఎలా పనిచేస్తుంది", how_t:"మూడు దశల్లో మందు జోడించండి", how1_t:"3 ఫోటోల వరకు తీయండి", how1:"ప్రిస్క్రిప్షన్ మరియు సీసా రెండూ ఉంటే VeraDose కి చదవడానికి ఎక్కువ సమాచారం దొరుకుతుంది.",
+  how2_t:"VeraDose లేబుల్ చదువుతుంది", how2:"పేరు, మోతాదు, సూచనలు, సీసాలో ఎన్ని మాత్రలు వచ్చాయి, మరియు ఆహారం లేదా సమయం గురించిన గమనికలు.",
+  how3_t:"తనిఖీ చేసి సేవ్ చేయండి", how3:"తర్వాత అది మీ మందులు, నిల్వ మరియు క్యాలెండర్ పేజీలలో కనిపిస్తుంది.",
+  sc_safe_t:"ఏదైనా సేవ్ అయ్యే ముందు మీరే తనిఖీ చేస్తారు", sc_safe_p:"VeraDose లేబుల్‌పై ముద్రించినది మాత్రమే నింపుతుంది. మీరు చూసి సేవ్ నొక్కే వరకు ఏదీ జోడించబడదు.",
+  sc_to_check_t:"చేతిలో మాత్ర ఉందా?", sc_to_check:"దాని ఆకారం, రంగు మరియు ముద్రను మీరు సేవ్ చేసిన మందులతో పోల్చండి.",
+  al_sub:"మీకు అలెర్జీ ఉన్న అన్నింటిపై టిక్ పెట్టండి.", al_other:"ఇతర", al_other_q:"మీకు ఇంకా వేటికి అలెర్జీ ఉంది?", al_other_ph:"ఉదా. పిల్లులు, స్ట్రాబెర్రీలు (కామాలతో వేరు చేయండి)",
+  al_penicillin:"పెన్సిలిన్", al_sulfa:"సల్ఫా మందులు", al_aspirin:"ఆస్పిరిన్", al_nsaids:"ఐబుప్రోఫెన్ / NSAIDs", al_codeine:"కోడీన్ / ఓపియాయిడ్లు",
+  al_latex:"లేటెక్స్", al_contrast:"కాంట్రాస్ట్ డై (అయోడిన్)", al_peanuts:"వేరుశెనగలు", al_tree_nuts:"డ్రై ఫ్రూట్స్ (ట్రీ నట్స్)", al_shellfish:"షెల్‌ఫిష్",
+  al_fish:"చేపలు", al_eggs:"గుడ్లు", al_milk:"పాలు / పాల ఉత్పత్తులు", al_soy:"సోయా", al_wheat:"గోధుమ / గ్లూటెన్", al_bee_stings:"తేనెటీగ కుట్టడం",
+  acc_title:"ఖాతా", acc_sub:"మీరు లాగ్ అవుట్ చేసే వరకు ఈ పరికరంలో సైన్ ఇన్‌లో ఉంటారు.", acc_logout:"లాగ్ అవుట్", acc_logout_s:"ఈ పరికరం నుండి సైన్ అవుట్ చేయండి. మీ మందులు సేవ్ అయి ఉంటాయి.",
+  acc_delete:"ఖాతా తొలగించండి", acc_delete_s:"మీ ఖాతాను మరియు అందులోని ప్రతిదాన్ని శాశ్వతంగా తొలగించండి.", del_title:"మీ ఖాతాను తొలగించాలా?", del_sub:"దీన్ని తిరిగి చేయలేరు.",
+  del_warn_t:"అన్నీ తొలగించబడతాయి", del_warn:"మీ ప్రొఫైల్, మందులు, నిల్వ, క్యాలెండర్ చరిత్ర, స్ట్రీక్ మరియు సంరక్షకుని వివరాలు శాశ్వతంగా తొలగించబడతాయి.",
+  del_pw:"నిర్ధారించడానికి మీ పాస్‌వర్డ్ టైప్ చేయండి", del_btn:"నా ఖాతా తొలగించండి",
+  conn_t:"VeraDose కి కనెక్ట్ అవుతోంది…", conn:"సర్వర్ నిద్రలో ఉంటే దీనికి ఒక నిమిషం వరకు పట్టవచ్చు. మీరు సైన్ ఇన్‌లోనే ఉంటారు.",
+  still_trying:"VeraDose ప్రయత్నిస్తూనే ఉంటుంది, సర్వర్ నడవగానే స్వయంగా కనెక్ట్ అవుతుంది.", reconnected:"కనెక్ట్ అయింది. మళ్ళీ స్వాగతం!",
+  show_pw:"పాస్‌వర్డ్ చూపించు", hide_pw:"పాస్‌వర్డ్ దాచు", g_make_acc:"ఈ ఈమెయిల్‌తో ఖాతా సృష్టించండి →",
+  a11y:"అందుబాటు", a11y_btn:"అందుబాటు ఎంపికలు", tts:"చదివి వినిపించడం", auto_read:"AI సమాధానాలను స్వయంగా చదవండి", read_page:"ఈ పేజీని చదివి వినిపించండి", stop_audio:"శబ్దం ఆపండి",
+  readability:"చదవడం సులభం", visibility:"కనిపించే విధానం", hc:"హై కాంట్రాస్ట్ మోడ్", normal_size:"సాధారణ అక్షర పరిమాణం", smaller:"చిన్న అక్షరాలు", larger:"పెద్ద అక్షరాలు", dark_mode:"డార్క్ మోడ్",
+  your_space:"మీ స్థలం", your_details:"మీ వివరాలు", n_today:"ఈరోజు", n_calendar:"క్యాలెండర్", n_streaks:"స్ట్రీక్‌లు", n_meds:"మందులు", n_inventory:"నిల్వ",
+  n_pillcheck:"మాత్ర తనిఖీ", n_caregiver:"సంరక్షకుడు", n_profile:"ప్రొఫైల్ & ప్రాధాన్యతలు", install_app:"యాప్ ఇన్‌స్టాల్ చేయండి", install_sub:"VeraDose ను మీ హోమ్ స్క్రీన్‌కు జోడించండి.",
+  need_hand:"సహాయం కావాలా?", need_hand_sub:"మీ దినచర్య, ఒక్కో అడుగు.", your_care:"మీ సంరక్షణ", personal_account:"వ్యక్తిగత ఖాతా", sign_out:"సైన్ అవుట్", menu:"మెను",
+  emergency:"అత్యవసరం · 911 కి కాల్ చేయండి", private:"మీ సమాచారం గోప్యంగా ఉంటుంది", language:"భాష", foot_tag:"రోజువారీ జీవితాన్ని కాస్త సులభం చేయడానికి.",
+  td_eyebrow:"ఈరోజు", g_morning:"శుభోదయం", g_afternoon:"నమస్కారం", g_evening:"శుభ సాయంత్రం", td_title:"ఇదిగో మీ రోజు.",
+  td_sub:"ఈరోజు కోసం అంతా ప్లాన్ చేయబడింది. ప్రతి మోతాదు వేసుకున్న తర్వాత దానికి గుర్తు పెట్టండి.", td_read:"ఈరోజును చదివి వినిపించండి", td_doses:"ఈరోజు మోతాదులు",
+  td_of:"{b} లో {a} వేసుకున్నారు", td_streak:"ప్రస్తుత స్ట్రీక్", td_next:"తదుపరి మోతాదు", td_next_none:"ఈరోజుకి అన్నీ పూర్తి", td_none_title:"ఈరోజు ఏమీ ప్లాన్ చేయలేదు",
+  td_none_sub:"మీ రోజును ఆనందించండి. రాబోయే మోతాదులు ఇక్కడ కనిపిస్తాయి.", empty_title:"మీ మొదటి మందును జోడిద్దాం",
+  empty_sub:"ఒక మందును జోడించండి, VeraDose మీ రోజువారీ దినచర్య, క్యాలెండర్ మరియు స్ట్రీక్‌ను తయారు చేస్తుంది.",
+  st_taken:"వేసుకున్నారు", st_due:"ఇప్పుడు వేసుకోవాలి", st_missed:"తప్పిపోయింది", st_upcoming:"రాబోయేది", mark_taken:"వేసుకున్నట్లు గుర్తించండి", undo:"రద్దు చేయండి", read_aloud:"చదివి వినిపించండి",
+  low_text:"{names}: {n} రోజుల కంటే తక్కువ మిగిలి ఉంది. మళ్ళీ తెచ్చుకునే సమయం.", go_inventory:"నిల్వ",
+  cal_eyebrow:"క్యాలెండర్", cal_title:"మీ వారం, ఒక్క చూపులో.", cal_sub:"ప్రతి రోజు ఏమి ప్లాన్ చేశారో చూడండి. ప్రతి మోతాదు వేసుకోగానే గుర్తు పెట్టండి.", add_a_med:"మందు జోడించండి",
+  this_week:"ఈ వారం", last_week:"గత వారం", next_week:"వచ్చే వారం", weeks_ago:"{n} వారాల క్రితం", weeks_ahead:"{n} వారాల తర్వాత", today_btn:"ఈరోజు", today_lbl:"ఈరోజు",
+  nothing_planned:"ఏమీ ప్లాన్ చేయలేదు", tablets:"{n} మాత్రలు", tablet:"1 మాత్ర", planned:"ప్లాన్ చేసినవి", completed:"పూర్తయింది", taken_short:"వేసుకున్నారు", prev_week:"మునుపటి వారం", next_week_aria:"వచ్చే వారం",
+  future_no:"ఆ రోజు వచ్చాక మీరు దీనికి గుర్తు పెట్టవచ్చు.", st_eyebrow:"స్ట్రీక్‌లు", st_title:"మీ క్రమశిక్షణ, రోజు రోజుకీ.",
+  st_sub:"ప్రతి ప్లాన్ చేసిన మోతాదు వేసుకున్నట్లు గుర్తించిన వరుస రోజులను స్ట్రీక్ లెక్కిస్తుంది.", momentum:"మీ జోరు", days:"రోజులు", day:"రోజు",
+  showing_up:"మీ దినచర్యను పాటిస్తున్నారు", best:"అత్యుత్తమ రికార్డు", cal_link:"క్యాలెండర్", t_missed:"తప్పిపోయింది", t_none:"మోతాదులు లేవు", t_planned:"ప్లాన్ చేసినవి", t_complete:"పూర్తి", t_today:"జరుగుతోంది",
+  cg_box_title:"సంరక్షకుడు", cg_box_on:"సంప్రదింపు పంపడం ఆన్‌లో ఉంది. మోతాదు తప్పిపోయినా లేదా నిల్వ తగ్గినా {name} కి వెంటనే తెలియజేయబడుతుంది.",
+  cg_box_saved:"{name} మీ సంరక్షకుడిగా సేవ్ అయ్యారు. సర్వర్‌లో ఈమెయిల్ లేదా SMS సెట్ అవ్వగానే హెచ్చరికలు మొదలవుతాయి.",
+  cg_box_off:"ఇంకా సంరక్షకుడు లేరు. మోతాదు తప్పిపోతే తెలిసేలా సంరక్షకుడు పేజీలో మీరు నమ్మే వ్యక్తిని జోడించండి.", your_caregiver:"మీ సంరక్షకుడు",
+  m_eyebrow:"మందులు", m_title:"మీ మందులు", m_sub:"మీ మోతాదులు, సమయాలు, సూచనలు మరియు మాత్రల వివరాలను ఒకే చోట ఉంచండి.", add_med:"మందు జోడించండి", important:"ముఖ్యమైనది",
+  cur_stock:"ప్రస్తుత నిల్వ (మాత్రలు)", per_dose:"ఒక్కో మోతాదుకు {n}", days_left:"{n} రోజులు మిగిలాయి", edit:"మార్చండి", delete:"తొలగించండి", confirm_delete:"{name} ని మీ మందుల నుండి తొలగించాలా?",
+  m_private:"మందుల వివరాలు మీ ఖాతాకు మాత్రమే గోప్యం, మీ బ్రౌజర్‌లో సేవ్ కావు.", every_day:"ప్రతి రోజు",
+  f_new:"మందు జోడించండి", f_edit:"మందును మార్చండి", f_sub:"మీకు తెలిసినది నింపండి. ఎప్పుడైనా మార్చవచ్చు.", f_name:"మందు పేరు", f_name_ph:"ఉదా. Metformin",
+  f_dose:"మోతాదు", f_dose_ph:"ఉదా. 500 mg", f_instr:"సూచనలు / గుర్తుచేతలు", f_instr_ph:"ఉదా. పూర్తిగా మింగండి. బాగున్నా వేసుకుంటూ ఉండండి.",
+  f_food:"ఆహారం & సమయ గైడ్", f_food_ph:"ఉదా. అల్పాహారానికి 30 నిమిషాల ముందు వేసుకోండి", f_guidance:"ఉపయోగకరమైన సూచనలు", f_guidance_sub:"వర్తించే అన్నింటిపై టిక్ పెట్టండి.",
+  f_days:"వారంలోని రోజులు", f_time:"మోతాదు సమయం", f_stock:"ప్రస్తుత నిల్వ (మాత్రలు)", f_ppd:"ఒక్కో మోతాదుకు మాత్రలు", f_shape:"ఆకారం", f_color:"రంగు", f_choose:"ఎంచుకోండి…",
+  f_imprint:"ముద్ర (ఐచ్ఛికం)", f_imprint_ph:"ఉదా. MET 500", f_important:"ఇది ముఖ్యమైన మందు", cancel:"రద్దు", save_med:"మందును సేవ్ చేయండి", saved:"సేవ్ అయింది.",
+  b_with_food:"ఆహారంతో వేసుకోండి", b_empty_stomach:"ఖాళీ కడుపుతో", b_avoid_dairy:"పాల ఉత్పత్తులు వద్దు", b_avoid_alcohol:"మద్యం వద్దు", b_avoid_sugar:"చక్కెర వద్దు",
+  b_before_bed:"నిద్రకు ముందు", b_with_water:"నీటితో వేసుకోండి", b_before_lunch:"మధ్యాహ్న భోజనానికి ముందు", b_before_breakfast:"అల్పాహారానికి ముందు", b_before_dinner:"రాత్రి భోజనానికి ముందు",
+  b_avoid_grapefruit:"గ్రేప్‌ఫ్రూట్ వద్దు",
+  s_round:"గుండ్రని", s_oval:"అండాకారం", s_oblong:"పొడవాటి", s_square:"చతురస్రం", s_diamond:"వజ్రాకారం", s_triangle:"త్రిభుజం", s_hexagon:"షడ్భుజి", s_capsule:"క్యాప్సూల్",
+  c_white:"తెలుపు", c_yellow:"పసుపు", c_pink:"గులాబీ", c_red:"ఎరుపు", c_purple:"ఊదా", c_green:"ఆకుపచ్చ", c_blue:"నీలం", c_brown:"గోధుమ", c_orange:"నారింజ", c_gray:"బూడిద",
+  i_eyebrow:"నిల్వ", i_title:"మీ దగ్గర ఏముందో తెలుసుకోండి.", i_sub:"ఏదైనా మందు మీరు ఎంచుకున్న రోజుల కంటే తక్కువ మిగిలినప్పుడు ఒక చిన్న హెచ్చరిక.",
+  i_steady_k:"మీ నిల్వ బాగుంది", i_steady_t:"మీ నిల్వ బాగుంది", i_steady_s:"ప్రతి మందుకు కనీసం {n} రోజులు మిగిలి ఉన్నాయి.",
+  i_low_k:"త్వరలో తెచ్చుకోండి", i_low_t:"{names} మళ్ళీ తెచ్చుకునే సమయం", i_low_s:"{n} రోజుల కంటే తక్కువ మిగిలింది. హెచ్చరికలు ఆన్‌లో ఉంటే మీ సంరక్షకుడికి కూడా తెలియజేయబడుతుంది.",
+  col_meds:"మందులు", col_inv:"నిల్వ", col_days:"రోజులు", pills_n:"{n} మాత్రలు", update_stock:"నిల్వ నవీకరించండి",
+  i_note:"అంచనా రోజులు మీరు సేవ్ చేసిన సమయాలు, రోజులు మరియు ఒక్కో మోతాదు మాత్రల ఆధారంగా లెక్కించబడతాయి.",
+  us_title:"నిల్వ నవీకరించండి", us_now:"ప్రస్తుతం {n} మాత్రలు ఉన్నాయి", us_add:"ఇప్పుడే జోడించిన మాత్రలు", us_add_btn:"జోడించండి", us_set:"లేదా ఖచ్చితమైన సంఖ్య ఇవ్వండి", us_set_btn:"సెట్ చేయండి", stock_updated:"నిల్వ నవీకరించబడింది.",
+  pc_eyebrow:"మాత్ర తనిఖీ", pc_title:"ఇది పరిచయంగా అనిపిస్తుందా?", pc_sub:"ఈ తనిఖీ తెలియని మాత్రను గుర్తించలేదు, ఏది వేసుకోవడం సురక్షితమో చెప్పలేదు. సందేహం ఉంటే ఫార్మసిస్ట్‌ను అడగండి.",
+  cam_back:"వెనుక కెమెరా", cam_front:"ముందు కెమెరా", cam_start:"కెమెరా ఆన్ చేయండి", cam_snap:"ఫోటో తీయండి", cam_retake:"మళ్ళీ తీయండి", cam_upload:"ఫోటో అప్‌లోడ్ చేయండి",
+  cam_hint:"ఒక మాత్రను సాదా ఉపరితలంపై మంచి వెలుతురులో ఉంచి, ఫోటో తీయండి.",
+  cam_https:"కెమెరా సురక్షిత పేజీలో (https:// లేదా http://127.0.0.1) మాత్రమే పనిచేస్తుంది. బదులుగా “ఫోటో అప్‌లోడ్ చేయండి” వాడండి.",
+  cam_denied:"కెమెరా అనుమతి నిరోధించబడింది. బ్రౌజర్ అడ్రస్ బార్‌లో కెమెరాకు అనుమతి ఇచ్చి, మళ్ళీ ప్రయత్నించండి.", cam_none:"ఈ పరికరంలో కెమెరా కనబడలేదు. బదులుగా “ఫోటో అప్‌లోడ్ చేయండి” వాడండి.",
+  cam_err:"కెమెరా ప్రారంభం కాలేదు: {e}", compare:"నా జాబితాతో పోల్చండి", comparing:"ఫోటోను తనిఖీ చేస్తోంది…", need_photo:"ముందుగా ఒక ఫోటో తీయండి లేదా అప్‌లోడ్ చేయండి.",
+  helpful:"ఉపయోగకరమైన తనిఖీ", match_title:"మీరు గుర్తించే వివరాలను పోల్చండి", ref_title:"మీ జాబితాకు మాత్రమే సూచన",
+  ref_text:"ఈ సాధనం VeraDose లో మీరు సేవ్ చేసిన మందులతో మాత్రమే పోల్చుతుంది. ఇది తెలియని మాత్రను గుర్తించలేదు, ఏది వేసుకోవడం సురక్షితమో చెప్పలేదు.",
+  saw:"కెమెరా ఏమి చూసింది", unknown:"ఖచ్చితంగా తెలియదు", m_strong:"సరిపోలినట్లు ఉంది", m_partial:"కొంతవరకు సరిపోలింది", m_none:"సరిపోలలేదు", matched_on:"వీటిలో సరిపోలింది: {w}", matched_none:"ఏమీ లేదు",
+  no_saved:"మీ ఏ మందుకూ ఇంకా ఆకారం, రంగు లేదా ముద్ర సేవ్ కాలేదు. ఫోటోలతో పోల్చడానికి మందులు పేజీలో వాటిని జోడించండి.",
+  w_shape:"ఆకారం", w_color:"రంగు", w_imprint:"ముద్ర",
+  cg_eyebrow:"సంరక్షకుడు", cg_title:"మీరు కోరుకుంటే, ఒక సంరక్షకుడు.",
+  cg_sub_on:"సంప్రదింపు పంపడం ఆన్‌లో ఉంది. సంరక్షకుడిని సేవ్ చేశాక, మోతాదు తప్పినా లేదా మాత్రలు తగ్గినా వారికి వెంటనే తెలియజేయబడుతుంది.",
+  cg_sub_off:"ఒక సంరక్షకుడిని సేవ్ చేయండి, మోతాదు తప్పినా లేదా మాత్రలు తగ్గినా వారికి వెంటనే తెలియజేయబడుతుంది.",
+  cp_title:"సంప్రదింపు ప్రాధాన్యతలు", cp_sub:"సంరక్షకుని వివరాలు ఈ ఖాతాలో ఉంచండి", en_title:"సంరక్షకుని హెచ్చరికలు ఆన్ చేయండి", en_sub:"మోతాదు తప్పినా లేదా నిల్వ తగ్గినా వారికి తెలియజేయండి",
+  cg_name:"సంరక్షకుని పేరు", cg_email:"ఈమెయిల్", cg_email_ph:"name@example.com", cg_phone:"ఫోన్", cg_phone_ph:"+919876543210",
+  cg_consent:"ఈ వ్యక్తి సంప్రదింపు వివరాలు సేవ్ చేయడానికి నాకు అనుమతి ఉంది.", on_title:"సంప్రదింపు పంపడం ఆన్‌లో ఉంది.",
+  on_text:"మోతాదు {m} నిమిషాలు ఆలస్యం కాగానే, లేదా ఏదైనా మందు నిల్వ మీ పరిమితి కంటే తగ్గినప్పుడు, {ch} ద్వారా హెచ్చరిక వెళుతుంది.", ch_email:"ఈమెయిల్", ch_sms:"SMS", ch_and:" మరియు ",
+  off_title:"సర్వర్‌లో సంప్రదింపు పంపడం ఇంకా సెట్ కాలేదు.", off_text:"మీ ఈమెయిల్ (SMTP) లేదా Twilio వివరాలను .env ఫైల్‌లో జోడించి VeraDose ను మళ్ళీ ప్రారంభించండి. అప్పటివరకు మీ సంరక్షకుని వివరాలు సేవ్ అయి ఉంటాయి.",
+  save_prefs:"ప్రాధాన్యతలు సేవ్ చేయండి", send_test:"పరీక్ష పంపండి", cs_k:"మీ ఎంపిక, మీ వేగం", cs_t:"సంరక్షణ మీకు సరైనదిగా అనిపించినప్పుడే బాగా పనిచేస్తుంది.",
+  cs_p:"మీరు ఈ వివరాలను ఎప్పుడైనా మార్చవచ్చు లేదా తొలగించవచ్చు. హెచ్చరికలు మీరు ఇక్కడ సేవ్ చేసిన వ్యక్తికి మాత్రమే వెళతాయి.",
+  cg_saved_on:"సేవ్ అయింది. {name} గారికి వారు మీ సంరక్షకుడని తెలియజేశాం, వారికి వెంటనే హెచ్చరికలు వస్తాయి.", cg_saved:"సంరక్షకుని ప్రాధాన్యతలు సేవ్ అయ్యాయి.", test_sent:"పరీక్ష సందేశం పంపబడింది.",
+  pf_eyebrow:"ప్రొఫైల్ & ప్రాధాన్యతలు", pf_title:"మీకు సరిపోయే ప్రొఫైల్.", pf_sub:"మీ ప్రొఫైల్ VeraDose దినచర్యను మరింత వ్యక్తిగతంగా చేస్తుంది.",
+  pd_title:"వ్యక్తిగత వివరాలు", pd_sub:"మీ ప్రొఫైల్ VeraDose దినచర్యను మరింత వ్యక్తిగతంగా చేస్తుంది.", f_pname:"పేరు", optional:"ఐచ్ఛికం", f_age:"వయస్సు", f_allergies:"అలెర్జీలు",
+  f_tz:"సమయ మండలం", f_low:"తక్కువ నిల్వ హెచ్చరిక (రోజులు)", not_stored:"మీ ప్రొఫైల్ మరియు అలెర్జీ వివరాలు బ్రౌజర్‌లో సేవ్ కావు.", save_profile:"ప్రొఫైల్ సేవ్ చేయండి",
+  ps_t:"మీ ప్రొఫైల్ VeraDose దినచర్యను మరింత వ్యక్తిగతంగా చేస్తుంది.", ps_p:"మందుల పేర్లు మరియు సూచనలు మీరు రాసినట్లే ఉంటాయి; VeraDose ప్రిస్క్రిప్షన్ సూచనలను అనువదించదు.",
+  ds_title:"ప్రదర్శన సెట్టింగ్‌లు", ds_sub:"అక్షర పరిమాణం", text_size:"అక్షర పరిమాణం", dyslexia:"డిస్లెక్సియాకు అనుకూలమైన ఫాంట్", theme:"థీమ్", light:"లేత", dark:"ముదురు", profile_saved:"ప్రొఫైల్ సేవ్ అయింది.",
+  buddy:"Buddy", bd_title:"VeraDose Buddy", bd_sub:"సాధారణ సహాయం, వైద్య సలహా కాదు",
+  bd_intro:"VeraDose వాడటం లేదా క్రమబద్ధంగా ఉండటం గురించి అడగండి. మందుల నిర్ణయాల కోసం ఫార్మసిస్ట్ లేదా డాక్టర్‌ను సంప్రదించండి.",
+  bd_note:"మీ ప్రశ్న Groq కి పంపబడుతుంది. పేర్లు లేదా వ్యక్తిగత వైద్య వివరాలు రాయవద్దు.", bd_ph:"నేను ఎలా సహాయం చేయగలను?", bd_send:"పంపండి", close:"మూసివేయండి",
+  em_title:"అత్యవసరం", em_body:"మీరు లేదా మీ దగ్గర ఎవరైనా ప్రమాదంలో ఉంటే, ఇప్పుడే 911 కి కాల్ చేయండి.", em_call:"911 కి కాల్ చేయండి", em_desktop:"కంప్యూటర్‌లో ఉన్నారా? ఏ ఫోన్ నుండైనా 911 డయల్ చేయండి.",
+  em_alert:"నా సంరక్షకుడికి తెలియజేయండి", em_sent:"మీ సంరక్షకుడికి తెలియజేయబడింది.",
+  tts_dose:"{name}, {dose}. {time} కి {n} వేసుకోండి.", tts_intro:"ఈరోజు మీ మందులు.", tts_none:"ఈరోజు ఏమీ ప్లాన్ చేయలేదు.", tts_unsupported:"ఈ బ్రౌజర్‌లో చదివి వినిపించడం అందుబాటులో లేదు.",
+  err_server:"సర్వర్‌ను చేరుకోలేకపోయాం.", err_offline:"VeraDose తన సర్వర్‌ను (app.py) చేరుకోలేకపోతోంది. అది నడుస్తోందని నిర్ధారించుకోండి.", err_page:"ఈ పేజీలో సమస్య వచ్చింది. దయచేసి రిఫ్రెష్ చేయండి.",
+  retry:"మళ్ళీ ప్రయత్నించండి", off_banner_t:"VeraDose తన సర్వర్‌ను చేరుకోలేకపోతోంది.", off_banner:"VS Code టెర్మినల్‌లో నడపండి: python app.py — తర్వాత తెరవండి http://127.0.0.1:5000/app",
+  tz_hint:"ఉదాహరణకు Asia/Kolkata",
+  n_alarms:"అలారాలు", al_eyebrow:"అలారాలు", al_title:"మోతాదు అలారాలు", alm_sub:"ప్రతి మందు సమయం రాగానే VeraDose అలారం మోగిస్తుంది.",
+  al_now:"ఇప్పుడు", al_next:"తదుపరి అలారం", al_next_in:"{time} కి {name}, {left} లో", al_none_next:"ఈరోజు ఇంకా అలారాలు లేవు. చాలా బాగుంది!",
+  al_none:"ఇంకా అలారాలు లేవు", al_none_sub:"సమయంతో మందును జోడించండి, అలారం స్వయంగా సెట్ అవుతుంది.", al_list:"మీ అలారాలు",
+  al_list_sub:"ప్రతి మందు దాని సమయానికి మోగుతుంది. ఈ పరికరం ఏదైనా మందుకు మోగకూడదనుకుంటే దాన్ని ఆఫ్ చేయండి.",
+  al_on:"అలారం ఆన్", al_every_day:"ప్రతి రోజు", al_st_taken:"ఈరోజు వేసుకున్నారు", al_st_rang:"ఈరోజు మోగింది", al_st_upcoming:"ఈరోజు మోగుతుంది", al_st_notoday:"ఈరోజు కాదు", al_st_snoozed:"{time} వరకు వాయిదా", al_st_off:"ఆఫ్",
+  al_settings:"అలారం సెట్టింగ్‌లు", al_test:"అలారం పరీక్షించండి", al_voice:"మందు పేరు చదివి వినిపించండి", al_voice_sub:"బీప్‌ల తర్వాత VeraDose మందు పేరు మరియు మోతాదు చెబుతుంది.",
+  al_snooze_len:"వాయిదా సమయం", al_min:"{n} నిమి", al_keep_open:"ఈ పరికరంలో VeraDose తెరిచి ఉన్నప్పుడే అలారాలు మోగుతాయి. iPhone లో VeraDose ను స్క్రీన్‌పై తెరిచి ఉంచండి.",
+  nt_title:"రిమైండర్లు ఆన్ చేయాలా?", nt_sub:"మీరు వేరే పేజీ లేదా యాప్‌లో ఉన్నా, {time} కి {name} కోసం నోటిఫికేషన్ మరియు అలారం పొందండి.",
+  nt_on:"నోటిఫికేషన్లు ఆన్ చేయండి", nt_later:"ఇప్పుడు కాదు", nt_see:"నా అలారాలు చూడండి", nt_ios_title:"నోటిఫికేషన్ల కోసం VeraDose ఇన్‌స్టాల్ చేయండి",
+  nt_ios_sub:"iPhone మరియు iPad లో, VeraDose ను హోమ్ స్క్రీన్‌కు జోడించిన తర్వాతే నోటిఫికేషన్లు వస్తాయి. VeraDose తెరిచి ఉన్నప్పుడు {time} కి {name} అలారం అయినా మోగుతుంది.",
+  nt_denied:"ఈ సైట్‌కు నోటిఫికేషన్లు నిరోధించబడ్డాయి. బ్రౌజర్ సైట్ సెట్టింగ్‌లు తెరిచి, నోటిఫికేషన్లకు అనుమతి ఇచ్చి, తిరిగి రండి.",
+  nt_enabled:"నోటిఫికేషన్లు ఆన్‌లో ఉన్నాయి.", nt_card_t:"నోటిఫికేషన్లు ఆఫ్‌లో ఉన్నాయి", nt_card_s:"VeraDose వెనుక నడుస్తున్నప్పుడు కూడా రిమైండర్ చూడటానికి వాటిని ఆన్ చేయండి.",
+  nt_card_on_t:"నోటిఫికేషన్లు ఆన్‌లో ఉన్నాయి", nt_card_on_s:"ప్రతి మోతాదు సమయానికి మీకు నోటిఫికేషన్ మరియు అలారం వస్తాయి.", nt_card_blocked_t:"నోటిఫికేషన్లు నిరోధించబడ్డాయి",
+  nt_card_ios_t:"నోటిఫికేషన్ల కోసం ఇన్‌స్టాల్ చేయండి", nt_card_ios_s:"iPhone లో నోటిఫికేషన్లు పొందడానికి VeraDose ను హోమ్ స్క్రీన్‌కు జోడించండి.",
+  alarm_set:"సేవ్ అయింది. {time} కి అలారం సెట్ చేయబడింది.", ring_title:"మందు వేసుకునే సమయం", ring_tap_sound:"అలారం వినడానికి నొక్కండి", ring_taken:"నేను వేసుకున్నాను",
+  ring_snooze:"{n} నిమి వాయిదా", ring_stop:"అలారం ఆపండి", ring_test:"ఇది పరీక్ష మాత్రమే. మీ నిజమైన అలారాలు ఇలాగే కనిపిస్తాయి.", ring_say:"మీ మందు వేసుకునే సమయం అయింది.",
+  ring_marked:"వేసుకున్నట్లు గుర్తించబడింది. శభాష్!", ring_snoozed:"సరే, {n} నిమిషాల తర్వాత మళ్ళీ మోగుతాను.", notif_body:"{names}. VeraDose తెరవడానికి నొక్కండి.",
+  left_hm:"{h} గం {m} నిమి", left_m:"{m} నిమి", test_med:"పరీక్ష మందు",
+};
+I18N.en.tts_no_voice = "This device has no voice for this language, so read-aloud may stay silent. You can add one in your phone or computer's speech (text-to-speech) settings.";
+I18N.es.tts_no_voice = "Este dispositivo no tiene una voz para este idioma, así que la lectura en voz alta puede quedar en silencio. Puedes añadir una en los ajustes de voz (texto a voz) de tu teléfono o computadora.";
+I18N.fr.tts_no_voice = "Cet appareil n'a pas de voix pour cette langue, la lecture à voix haute peut donc rester silencieuse. Vous pouvez en ajouter une dans les réglages de synthèse vocale de votre téléphone ou ordinateur.";
+I18N.zh.tts_no_voice = "此设备没有这种语言的语音，朗读可能没有声音。您可以在手机或电脑的语音（文字转语音）设置中添加。";
+I18N.hi.tts_no_voice = "इस डिवाइस में इस भाषा की आवाज़ नहीं है, इसलिए बोलकर पढ़ना चुप रह सकता है। आप अपने फ़ोन या कंप्यूटर की स्पीच (टेक्स्ट-टू-स्पीच) सेटिंग में इसे जोड़ सकते हैं।";
+I18N.te.tts_no_voice = "ఈ పరికరంలో ఈ భాషకు గొంతు లేదు, కాబట్టి చదివి వినిపించడం నిశ్శబ్దంగా ఉండవచ్చు. మీ ఫోన్ లేదా కంప్యూటర్ స్పీచ్ (టెక్స్ట్-టు-స్పీచ్) సెట్టింగ్‌లలో దాన్ని జోడించవచ్చు.";
+
 const BADGE_KEYS = ['with_food', 'empty_stomach', 'avoid_dairy', 'avoid_alcohol', 'avoid_sugar', 'before_bed', 'with_water', 'before_lunch', 'before_breakfast', 'before_dinner'];
 const SHAPE_KEYS = ['round', 'oval', 'oblong', 'square', 'diamond', 'triangle', 'hexagon'];
 const COLOR_KEYS = ['white', 'yellow', 'pink', 'red', 'purple', 'green', 'blue', 'brown', 'orange'];
@@ -1901,15 +2165,32 @@ function formatAnswer(text) {
 function plainText(text) {
   return String(text || '').replace(/\*\*|__|#{1,6}\s|^[*\-•]\s+|^\d+[.)]\s+/gm, '').replace(/\*/g, '');
 }
+const ttsWarned = {};
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
 function speak(text) {
   text = plainText(text);
+  if (!text.trim()) return;
   if (!('speechSynthesis' in window)) { showToast(t('tts_unsupported'), 'error'); return; }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = LOCALE[lang]; u.rate = 0.9;
-  const v = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(lang));
-  if (v) u.voice = v;
-  speechSynthesis.speak(u);
+  const synth = speechSynthesis;
+  const voices = synth.getVoices();
+  const voice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(lang)) || null;
+  if (!voice && lang !== 'en' && voices.length && !ttsWarned[lang]) { ttsWarned[lang] = true; showToast(t('tts_no_voice'), 'error'); }
+  // Short pieces: some browsers (Chrome) stop reading after about 15 seconds.
+  const parts = [];
+  (text.match(/[^.!?\u0964\n]+[.!?\u0964]*\s*/g) || [text]).forEach(sen => {
+    if (parts.length && (parts[parts.length - 1] + sen).length < 180) parts[parts.length - 1] += sen; else parts.push(sen);
+  });
+  const go = () => {
+    try { synth.resume(); } catch (e) {}
+    parts.forEach(p => {
+      const u = new SpeechSynthesisUtterance(p.trim());
+      u.lang = LOCALE[lang].split('-u-')[0]; u.rate = 0.9;
+      if (voice) u.voice = voice;
+      synth.speak(u);
+    });
+  };
+  // Chrome sometimes drops speech that starts right after cancel(), so wait a moment in that case.
+  if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 120); } else go();
 }
 function medSentence(m) {
   let s = t('tts_dose', { name: m.name, dose: m.dosage || '', n: tabletsText(m.daily_dose), time: fmtTime(m.scheduled_time) });
@@ -2108,7 +2389,7 @@ document.addEventListener('click', async e => {
     case 'alarm-taken': alarmTaken(); break;
     case 'alarm-snooze': alarmSnooze(); break;
     case 'alarm-stop': stopRing(); break;
-    case 'alarm-sound': unlockAudio(); setTimeout(() => { beepPattern(); renderRing(); }, 150); break;
+    case 'alarm-sound': startSound().then(ok => { if (!ringing) { stopSound(); return; } ringing.soundOk = ok; if (ok) clearInterval(ringing.webBeep); else { unlockAudio(); beepPattern(); } renderRing(); }); break;
     case 'nt-on': { const d = $('#notifDlg'); if (d.open) d.close(); await enableNotifications(); if (route === 'alarms') renderPage(true); break; }
     case 'nt-close': $('#notifDlg').close(); break;
     case 'med-scan': openMedForm(null, { scan: true }); break;
@@ -2264,11 +2545,48 @@ function nextAlarm() {
 }
 
 /* sound: made in the browser (no audio files). Browsers only allow sound after the person has tapped the page once. */
+/* The alarm sound is a real looping sound file made in the browser. An <audio> element keeps
+   playing when an iPhone's silent switch is on (Web Audio does not), so it is used first. */
+let alarmAudio = null, audioUnlocked = false, alarmPlaying = false;
+function makeBeepWav() {
+  const rate = 16000, secs = 1.6, n = Math.floor(rate * secs);
+  const buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const str = (o, x) => { for (let i = 0; i < x.length; i++) v.setUint8(o + i, x.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt '); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, n * 2, true);
+  const beeps = [[0, 880], [0.22, 880], [0.44, 1046]];
+  for (let i = 0; i < n; i++) {
+    const tt = i / rate; let val = 0;
+    for (const [st, f] of beeps) { const d = tt - st; if (d >= 0 && d < 0.18) { const env = Math.min(1, d / 0.01, (0.18 - d) / 0.03); val += Math.sin(2 * Math.PI * f * d) * env; } }
+    v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, val * 0.8)) * 32767, true);
+  }
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+}
+function getAlarmAudio() {
+  if (!alarmAudio) { try { alarmAudio = new Audio(makeBeepWav()); alarmAudio.loop = true; alarmAudio.preload = 'auto'; } catch (e) { alarmAudio = null; } }
+  return alarmAudio;
+}
+function startSound() {
+  const a = getAlarmAudio(); alarmPlaying = true;
+  if (!a) return Promise.resolve(false);
+  a.muted = false; a.volume = 1;
+  try { a.currentTime = 0; } catch (e) {}
+  return a.play().then(() => { audioUnlocked = true; return true; }).catch(() => false);
+}
+function stopSound() { alarmPlaying = false; if (alarmAudio) { try { alarmAudio.pause(); } catch (e) {} } }
 function unlockAudio() {
   try {
-    if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; audioCtx = new C(); }
-    if (audioCtx.state === 'suspended') audioCtx.resume().then(() => { if (ringing) renderRing(); }).catch(() => {});
+    if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   } catch (e) {}
+  // Phones only allow sound after a tap: play the alarm file silently once so it can ring later.
+  if (!audioUnlocked && !alarmPlaying) {
+    const a = getAlarmAudio(); if (!a) return;
+    a.muted = true;
+    a.play().then(() => { if (!alarmPlaying) { a.pause(); try { a.currentTime = 0; } catch (e) {} } a.muted = false; audioUnlocked = true; })
+      .catch(() => { a.muted = false; });
+  }
 }
 ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true }));
 function beepPattern() {
@@ -2302,9 +2620,14 @@ function startRing(meds, test) {
   }
   ringing = { meds: meds.slice(), test: !!test };
   if (!test) { meds.forEach(m => { ALARM.rung[alarmKey(m, isoD(new Date()))] = true; delete ALARM.snooze[alarmKey(m, isoD(new Date()))]; }); saveAlarmState(); }
-  unlockAudio();
-  beepPattern();
-  ringing.beepTimer = setInterval(() => { beepPattern(); if (navigator.vibrate) try { navigator.vibrate([400, 200, 400]); } catch (e) {} }, 1600);
+  ringing.beepTimer = setInterval(() => { if (navigator.vibrate) try { navigator.vibrate([400, 200, 400]); } catch (e) {} }, 1600);
+  const ringNow = ringing;
+  startSound().then(ok => {
+    if (ringing !== ringNow) return;
+    ringing.soundOk = ok;
+    if (!ok) { unlockAudio(); beepPattern(); ringing.webBeep = setInterval(beepPattern, 1600); } // backup sound
+    renderRing();
+  });
   ringing.stopTimer = setTimeout(() => quietRing(), 3 * 60 * 1000); // stop the sound after 3 minutes; the alarm card stays
   if (ALARM.voice) ringing.voiceTimer = setTimeout(() => { if (ringing) speak(t('ring_say') + ' ' + ringing.meds.map(medSentence).join(' ')); }, 5000);
   const names = meds.map(m => m.name).join(', ');
@@ -2313,7 +2636,7 @@ function startRing(meds, test) {
   renderRing();
   const d = $('#alarmDlg'); if (!d.open) d.showModal();
 }
-function quietRing() { if (!ringing) return; clearInterval(ringing.beepTimer); clearTimeout(ringing.voiceTimer); ringing.beepTimer = null; if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {} }
+function quietRing() { if (!ringing) return; stopSound(); clearInterval(ringing.webBeep); clearInterval(ringing.beepTimer); clearTimeout(ringing.voiceTimer); ringing.beepTimer = null; if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {} }
 function stopRing() {
   if (!ringing) return;
   quietRing(); clearTimeout(ringing.stopTimer);
@@ -2325,7 +2648,7 @@ function stopRing() {
 function renderRing() {
   if (!ringing) return;
   const now = new Date();
-  const needTap = !audioCtx || audioCtx.state !== 'running';
+  const needTap = ringing.soundOk === false && !(audioCtx && audioCtx.state === 'running');
   $('#alarmDlg').innerHTML = `<div class="ring">
     <div class="ring-bell" aria-hidden="true">${ic('bell', 46, 1.6)}</div>
     <p class="ring-clock">${esc(now.toLocaleTimeString(LOCALE[lang], { hour: 'numeric', minute: '2-digit' }))}</p>
@@ -2455,7 +2778,7 @@ function viewAlarms() {
         <div class="alarm-info"><b>${esc(m.name)}${m.dosage ? ` <span>${esc(m.dosage)}</span>` : ''}</b><small>${esc(daysText(m))}</small><span class="chip ${cls}">${esc(label)}</span></div>
         <label class="alarm-switch"><span class="sr">${esc(t('al_on'))}: ${esc(m.name)}</span><input type="checkbox" class="switch" data-change="alarm-toggle" data-id="${m.id}" ${alarmOn(m) ? 'checked' : ''}></label>
       </div>`; }).join('')}</div>`;
-  return `<div class="head-row"><div><p class="eyebrow">${esc(t('al_eyebrow'))}</p><h1 class="title">${esc(t('al_title'))}</h1><p class="lede">${esc(t('al_sub'))}</p></div>
+  return `<div class="head-row"><div><p class="eyebrow">${esc(t('al_eyebrow'))}</p><h1 class="title">${esc(t('al_title'))}</h1><p class="lede">${esc(t('alm_sub'))}</p></div>
       ${meds.length ? `<button class="btn" data-act="alarm-test">${ic('bell', 20, 1.8)}${esc(t('al_test'))}</button>` : ''}</div>
     <div class="alarm-top">
       <div class="card clock-card">
