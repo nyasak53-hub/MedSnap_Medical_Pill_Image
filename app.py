@@ -1138,8 +1138,28 @@ def pwa_js():
     return resp
 
 
+_ai_check = {"at": 0, "result": None}
+
+
+def check_ai_now():
+    """Ask Groq one tiny question (only when /healthz?check_ai=1 is opened) and report the result."""
+    if not client:
+        return "not set: add GROQ_API_KEY"
+    if time.time() - _ai_check["at"] < 120 and _ai_check["result"]:
+        return _ai_check["result"]
+    try:
+        ai_complete([{"role": "user", "content": "Reply with the word OK."}], max_tokens=20)
+        result = "working"
+    except Exception as exc:
+        result = "error: " + ai_error_message(exc)
+    _ai_check.update(at=time.time(), result=result)
+    return result
+
+
 @app.route("/healthz")
 def healthz():
+    if request.args.get("check_ai"):
+        return jsonify({"ai": check_ai_now(), "models_tried": TEXT_MODELS})
     return jsonify({
         "status": "ok",
         "index_html_found": os.path.isfile(os.path.join(BASE_DIR, "index.html")),
@@ -1783,7 +1803,8 @@ def ai_error_message(exc):
     status = getattr(exc, "status_code", None)
     name = type(exc).__name__
     if status == 401:
-        return "Groq rejected the API key. Check GROQ_API_KEY in your .env file (no quotes or spaces), then restart app.py."
+        return ("Groq rejected the AI key. Make a new key at console.groq.com/keys and paste it as GROQ_API_KEY "
+                "(on Render: Environment tab; on your computer: the .env file), with no quotes or spaces.")
     if status == 403:
         return "Groq refused the request (403). Check that your Groq account and key are active."
     if status == 429:
@@ -1792,7 +1813,7 @@ def ai_error_message(exc):
         return ("The AI model isn't available. Set GROQ_TEXT_MODEL in .env to a current model from "
                 "console.groq.com/docs/models, then restart app.py.")
     if "Connection" in name or "Timeout" in name:
-        return "The server couldn't connect to Groq. Check this computer's internet connection and try again."
+        return "The server couldn't connect to Groq. Please try again in a moment."
     return f"The AI service had a problem: {str(exc)[:160]}"
 
 

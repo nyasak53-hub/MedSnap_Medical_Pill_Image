@@ -1290,6 +1290,12 @@ I18N.te = {
   ring_marked:"వేసుకున్నట్లు గుర్తించబడింది. శభాష్!", ring_snoozed:"సరే, {n} నిమిషాల తర్వాత మళ్ళీ మోగుతాను.", notif_body:"{names}. VeraDose తెరవడానికి నొక్కండి.",
   left_hm:"{h} గం {m} నిమి", left_m:"{m} నిమి", test_med:"పరీక్ష మందు",
 };
+I18N.en.tts_no_voice = "This device has no voice for this language, so read-aloud may stay silent. You can add one in your phone or computer's speech (text-to-speech) settings.";
+I18N.es.tts_no_voice = "Este dispositivo no tiene una voz para este idioma, así que la lectura en voz alta puede quedar en silencio. Puedes añadir una en los ajustes de voz (texto a voz) de tu teléfono o computadora.";
+I18N.fr.tts_no_voice = "Cet appareil n'a pas de voix pour cette langue, la lecture à voix haute peut donc rester silencieuse. Vous pouvez en ajouter une dans les réglages de synthèse vocale de votre téléphone ou ordinateur.";
+I18N.zh.tts_no_voice = "此设备没有这种语言的语音，朗读可能没有声音。您可以在手机或电脑的语音（文字转语音）设置中添加。";
+I18N.hi.tts_no_voice = "इस डिवाइस में इस भाषा की आवाज़ नहीं है, इसलिए बोलकर पढ़ना चुप रह सकता है। आप अपने फ़ोन या कंप्यूटर की स्पीच (टेक्स्ट-टू-स्पीच) सेटिंग में इसे जोड़ सकते हैं।";
+I18N.te.tts_no_voice = "ఈ పరికరంలో ఈ భాషకు గొంతు లేదు, కాబట్టి చదివి వినిపించడం నిశ్శబ్దంగా ఉండవచ్చు. మీ ఫోన్ లేదా కంప్యూటర్ స్పీచ్ (టెక్స్ట్-టు-స్పీచ్) సెట్టింగ్‌లలో దాన్ని జోడించవచ్చు.";
 
 const BADGE_KEYS = ['with_food', 'empty_stomach', 'avoid_dairy', 'avoid_alcohol', 'avoid_sugar', 'before_bed', 'with_water', 'before_lunch', 'before_breakfast', 'before_dinner'];
 const SHAPE_KEYS = ['round', 'oval', 'oblong', 'square', 'diamond', 'triangle', 'hexagon'];
@@ -2159,15 +2165,32 @@ function formatAnswer(text) {
 function plainText(text) {
   return String(text || '').replace(/\*\*|__|#{1,6}\s|^[*\-•]\s+|^\d+[.)]\s+/gm, '').replace(/\*/g, '');
 }
+const ttsWarned = {};
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
 function speak(text) {
   text = plainText(text);
+  if (!text.trim()) return;
   if (!('speechSynthesis' in window)) { showToast(t('tts_unsupported'), 'error'); return; }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = LOCALE[lang].split('-u-')[0]; u.rate = 0.9;
-  const v = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(lang));
-  if (v) u.voice = v;
-  speechSynthesis.speak(u);
+  const synth = speechSynthesis;
+  const voices = synth.getVoices();
+  const voice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(lang)) || null;
+  if (!voice && lang !== 'en' && voices.length && !ttsWarned[lang]) { ttsWarned[lang] = true; showToast(t('tts_no_voice'), 'error'); }
+  // Short pieces: some browsers (Chrome) stop reading after about 15 seconds.
+  const parts = [];
+  (text.match(/[^.!?\u0964\n]+[.!?\u0964]*\s*/g) || [text]).forEach(sen => {
+    if (parts.length && (parts[parts.length - 1] + sen).length < 180) parts[parts.length - 1] += sen; else parts.push(sen);
+  });
+  const go = () => {
+    try { synth.resume(); } catch (e) {}
+    parts.forEach(p => {
+      const u = new SpeechSynthesisUtterance(p.trim());
+      u.lang = LOCALE[lang].split('-u-')[0]; u.rate = 0.9;
+      if (voice) u.voice = voice;
+      synth.speak(u);
+    });
+  };
+  // Chrome sometimes drops speech that starts right after cancel(), so wait a moment in that case.
+  if (synth.speaking || synth.pending) { synth.cancel(); setTimeout(go, 120); } else go();
 }
 function medSentence(m) {
   let s = t('tts_dose', { name: m.name, dose: m.dosage || '', n: tabletsText(m.daily_dose), time: fmtTime(m.scheduled_time) });
@@ -2366,7 +2389,7 @@ document.addEventListener('click', async e => {
     case 'alarm-taken': alarmTaken(); break;
     case 'alarm-snooze': alarmSnooze(); break;
     case 'alarm-stop': stopRing(); break;
-    case 'alarm-sound': unlockAudio(); setTimeout(() => { beepPattern(); renderRing(); }, 150); break;
+    case 'alarm-sound': startSound().then(ok => { if (!ringing) { stopSound(); return; } ringing.soundOk = ok; if (ok) clearInterval(ringing.webBeep); else { unlockAudio(); beepPattern(); } renderRing(); }); break;
     case 'nt-on': { const d = $('#notifDlg'); if (d.open) d.close(); await enableNotifications(); if (route === 'alarms') renderPage(true); break; }
     case 'nt-close': $('#notifDlg').close(); break;
     case 'med-scan': openMedForm(null, { scan: true }); break;
@@ -2522,11 +2545,48 @@ function nextAlarm() {
 }
 
 /* sound: made in the browser (no audio files). Browsers only allow sound after the person has tapped the page once. */
+/* The alarm sound is a real looping sound file made in the browser. An <audio> element keeps
+   playing when an iPhone's silent switch is on (Web Audio does not), so it is used first. */
+let alarmAudio = null, audioUnlocked = false, alarmPlaying = false;
+function makeBeepWav() {
+  const rate = 16000, secs = 1.6, n = Math.floor(rate * secs);
+  const buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const str = (o, x) => { for (let i = 0; i < x.length; i++) v.setUint8(o + i, x.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt '); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, n * 2, true);
+  const beeps = [[0, 880], [0.22, 880], [0.44, 1046]];
+  for (let i = 0; i < n; i++) {
+    const tt = i / rate; let val = 0;
+    for (const [st, f] of beeps) { const d = tt - st; if (d >= 0 && d < 0.18) { const env = Math.min(1, d / 0.01, (0.18 - d) / 0.03); val += Math.sin(2 * Math.PI * f * d) * env; } }
+    v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, val * 0.8)) * 32767, true);
+  }
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+}
+function getAlarmAudio() {
+  if (!alarmAudio) { try { alarmAudio = new Audio(makeBeepWav()); alarmAudio.loop = true; alarmAudio.preload = 'auto'; } catch (e) { alarmAudio = null; } }
+  return alarmAudio;
+}
+function startSound() {
+  const a = getAlarmAudio(); alarmPlaying = true;
+  if (!a) return Promise.resolve(false);
+  a.muted = false; a.volume = 1;
+  try { a.currentTime = 0; } catch (e) {}
+  return a.play().then(() => { audioUnlocked = true; return true; }).catch(() => false);
+}
+function stopSound() { alarmPlaying = false; if (alarmAudio) { try { alarmAudio.pause(); } catch (e) {} } }
 function unlockAudio() {
   try {
-    if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; audioCtx = new C(); }
-    if (audioCtx.state === 'suspended') audioCtx.resume().then(() => { if (ringing) renderRing(); }).catch(() => {});
+    if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   } catch (e) {}
+  // Phones only allow sound after a tap: play the alarm file silently once so it can ring later.
+  if (!audioUnlocked && !alarmPlaying) {
+    const a = getAlarmAudio(); if (!a) return;
+    a.muted = true;
+    a.play().then(() => { if (!alarmPlaying) { a.pause(); try { a.currentTime = 0; } catch (e) {} } a.muted = false; audioUnlocked = true; })
+      .catch(() => { a.muted = false; });
+  }
 }
 ['pointerdown', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, unlockAudio, { passive: true }));
 function beepPattern() {
@@ -2560,9 +2620,14 @@ function startRing(meds, test) {
   }
   ringing = { meds: meds.slice(), test: !!test };
   if (!test) { meds.forEach(m => { ALARM.rung[alarmKey(m, isoD(new Date()))] = true; delete ALARM.snooze[alarmKey(m, isoD(new Date()))]; }); saveAlarmState(); }
-  unlockAudio();
-  beepPattern();
-  ringing.beepTimer = setInterval(() => { beepPattern(); if (navigator.vibrate) try { navigator.vibrate([400, 200, 400]); } catch (e) {} }, 1600);
+  ringing.beepTimer = setInterval(() => { if (navigator.vibrate) try { navigator.vibrate([400, 200, 400]); } catch (e) {} }, 1600);
+  const ringNow = ringing;
+  startSound().then(ok => {
+    if (ringing !== ringNow) return;
+    ringing.soundOk = ok;
+    if (!ok) { unlockAudio(); beepPattern(); ringing.webBeep = setInterval(beepPattern, 1600); } // backup sound
+    renderRing();
+  });
   ringing.stopTimer = setTimeout(() => quietRing(), 3 * 60 * 1000); // stop the sound after 3 minutes; the alarm card stays
   if (ALARM.voice) ringing.voiceTimer = setTimeout(() => { if (ringing) speak(t('ring_say') + ' ' + ringing.meds.map(medSentence).join(' ')); }, 5000);
   const names = meds.map(m => m.name).join(', ');
@@ -2571,7 +2636,7 @@ function startRing(meds, test) {
   renderRing();
   const d = $('#alarmDlg'); if (!d.open) d.showModal();
 }
-function quietRing() { if (!ringing) return; clearInterval(ringing.beepTimer); clearTimeout(ringing.voiceTimer); ringing.beepTimer = null; if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {} }
+function quietRing() { if (!ringing) return; stopSound(); clearInterval(ringing.webBeep); clearInterval(ringing.beepTimer); clearTimeout(ringing.voiceTimer); ringing.beepTimer = null; if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {} }
 function stopRing() {
   if (!ringing) return;
   quietRing(); clearTimeout(ringing.stopTimer);
@@ -2583,7 +2648,7 @@ function stopRing() {
 function renderRing() {
   if (!ringing) return;
   const now = new Date();
-  const needTap = !audioCtx || audioCtx.state !== 'running';
+  const needTap = ringing.soundOk === false && !(audioCtx && audioCtx.state === 'running');
   $('#alarmDlg').innerHTML = `<div class="ring">
     <div class="ring-bell" aria-hidden="true">${ic('bell', 46, 1.6)}</div>
     <p class="ring-clock">${esc(now.toLocaleTimeString(LOCALE[lang], { hour: 'numeric', minute: '2-digit' }))}</p>
