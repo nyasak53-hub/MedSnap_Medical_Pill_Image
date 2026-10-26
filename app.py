@@ -245,38 +245,131 @@ class StorageBusy(Exception):
 # Render's free plan erases saved files on every restart, so accounts must live in a database there.
 # Without DATABASE_URL (e.g. on your own computer) everything is saved in files next to app.py.
 # ==========================================================================
-DATABASE_URL = normalize_secret(os.environ.get("DATABASE_URL"))
+def _clean_database_url(raw):
+    """Accept the link however it was pasted: with quotes, with "psql '...'" from Neon's
+    Connect box, or with "DATABASE_URL=" in front. Returns (url, problem)."""
+    if raw is None or not str(raw).strip():
+        return None, None
+    m = re.search(r"postgres(?:ql)?://[^\s'\"]+", str(raw))
+    if not m:
+        return None, ("DATABASE_URL doesn't look like a database link. It must start with postgresql:// "
+                      "(copy it from Neon > Connect, and paste only the link).")
+    url = m.group(0)
+    if "@" not in url:
+        return None, "DATABASE_URL is missing the user name and password part (user:password@). Copy the full link from Neon again."
+    return url, None
+
+
+DATABASE_URL, DATABASE_PROBLEM = _clean_database_url(os.environ.get("DATABASE_URL"))
+DATABASE_STATUS = "not used" if not DATABASE_URL else "not checked yet"
 _pg = None
+_DB_HTTP = None        # Neon: talk to the database over normal HTTPS (no extra driver needed)
 if DATABASE_URL:
-    try:
-        import psycopg as _pg
-    except ImportError:
-        raise SystemExit("\n[VeraDose] DATABASE_URL is set but the database driver is missing.\n"
-                         "Add this line to requirements.txt and deploy again:  psycopg[binary]\n")
+    from urllib.parse import urlsplit
+    _db_host = (urlsplit(DATABASE_URL).hostname or "").lower()
+    _http_endpoint = os.environ.get("NEON_HTTP_ENDPOINT")       # only used for testing
+    if _http_endpoint or _db_host.endswith(".neon.tech") or _db_host.endswith(".neon.build"):
+        _DB_HTTP = _http_endpoint or f"https://{_db_host}/sql"
+    else:
+        try:
+            import psycopg as _pg
+        except ImportError:
+            DATABASE_URL = None
+            DATABASE_PROBLEM = ("this database needs the psycopg driver. Add this line to requirements.txt "
+                                "and push again:  psycopg[binary]   (Neon databases don't need it.)")
+if DATABASE_PROBLEM:
+    print("\n" + "!" * 78 + f"\n[VeraDose] DATABASE PROBLEM: {DATABASE_PROBLEM}\n"
+          "VeraDose is running, but accounts are NOT being saved permanently until this is fixed.\n" + "!" * 78 + "\n")
+
+_KV_TABLE_SQL = ("CREATE TABLE IF NOT EXISTS medsnap_kv ("
+                 "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
 _db_conn = None
 _db_lock = threading.Lock()
+_db_table_ready = False
+
+
+class _DbHttpError(Exception):
+    pass
+
+
+def _db_http(sql, params=()):
+    """One query over HTTPS to Neon (POST https://<host>/sql), using only Python's built-in
+    tools. Each call is independent and has a hard time limit, so a slow or sleeping
+    database can never freeze the website."""
+    import urllib.request
+    import urllib.error
+    n = 0
+
+    def number(_m):
+        nonlocal n
+        n += 1
+        return f"${n}"
+    query = re.sub(r"%s", number, sql)
+    body = json.dumps({"query": query, "params": [str(p) for p in params]}).encode("utf-8")
+    req = urllib.request.Request(_DB_HTTP, data=body, method="POST", headers={
+        "Content-Type": "application/json", "Neon-Connection-String": DATABASE_URL})
+    try:
+        with urllib.request.urlopen(req, timeout=12) as res:
+            data = json.loads(res.read().decode("utf-8") or "{}")
+    except urllib.error.HTTPError as exc:
+        try:
+            msg = json.loads(exc.read().decode("utf-8") or "{}").get("message")
+        except Exception:
+            msg = None
+        raise _DbHttpError(msg or f"database answered with HTTP {exc.code}")
+    except Exception as exc:   # no internet, wrong address, timeout, bad reply...
+        raise _DbHttpError(f"could not reach the database ({exc.__class__.__name__}: {exc})")
+    rows = data.get("rows") or []
+    if not rows:
+        return None
+    row = rows[0]
+    return tuple(row.values()) if isinstance(row, dict) else tuple(row)
 
 
 def _db_connect():
     global _db_conn
-    _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=15)
-    _db_conn.execute("CREATE TABLE IF NOT EXISTS medsnap_kv ("
-                     "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
+    # keepalives + tcp_user_timeout: a dropped connection fails in seconds instead of hanging the site
+    _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=8,
+                           keepalives=1, keepalives_idle=20, keepalives_interval=5, keepalives_count=3,
+                           tcp_user_timeout=10000)
+    _db_conn.execute(_KV_TABLE_SQL)
 
 
 def _db(sql, params=()):
-    """Run one query on a shared connection. Reconnects once if the database closed it
-    (free databases go to sleep when idle and drop old connections)."""
-    global _db_conn
-    with _db_lock:
+    """Run one query. Neon goes over HTTPS; other Postgres databases use a shared psycopg
+    connection that reconnects once if the database closed it."""
+    global _db_conn, DATABASE_STATUS, _db_table_ready
+    if _DB_HTTP:
+        last = None
+        for attempt in (1, 2):
+            try:
+                if not _db_table_ready:
+                    _db_http(_KV_TABLE_SQL)
+                    _db_table_ready = True
+                out = _db_http(sql, params)
+                DATABASE_STATUS = "connected"
+                return out
+            except _DbHttpError as exc:
+                last = exc
+                DATABASE_STATUS = "error: " + _db_hint(exc)
+                print(f"[warn] Database problem ({_db_hint(exc)}).")
+                if "password" in str(exc).lower() or "does not exist" in str(exc).lower():
+                    break   # retrying won't help
+        raise StorageBusy(str(last))
+    # Never let requests pile up behind a stuck database call.
+    if not _db_lock.acquire(timeout=25):
+        raise StorageBusy("database busy")
+    try:
         for attempt in (1, 2):
             try:
                 if _db_conn is None or getattr(_db_conn, "closed", False):
                     _db_connect()
                 cur = _db_conn.execute(sql, params)
+                DATABASE_STATUS = "connected"
                 return cur.fetchone() if cur.description else None
-            except (_pg.OperationalError, _pg.InterfaceError) as exc:
-                print(f"[warn] Database connection problem ({exc}); reconnecting.")
+            except _pg.Error as exc:
+                DATABASE_STATUS = "error: " + _db_hint(exc)
+                print(f"[warn] Database problem ({_db_hint(exc)}); reconnecting.")
                 try:
                     _db_conn.close()
                 except Exception:
@@ -284,6 +377,41 @@ def _db(sql, params=()):
                 _db_conn = None
                 if attempt == 2:
                     raise StorageBusy(str(exc))
+    finally:
+        _db_lock.release()
+
+
+def _db_hint(exc):
+    """Explain a database error in plain words (never prints the password)."""
+    msg = str(exc).strip().splitlines()[0] if str(exc).strip() else exc.__class__.__name__
+    low = msg.lower()
+    if "password authentication failed" in low:
+        tip = "the password in DATABASE_URL is wrong. Copy the link from Neon again (click Show password first)."
+    elif "could not translate host name" in low or "name or service not known" in low or "nodename nor servname" in low:
+        tip = "the database address in DATABASE_URL is wrong or cut off. Copy the full link from Neon again."
+    elif "does not exist" in low and "database" in low:
+        tip = "the database name at the end of DATABASE_URL doesn't exist. Copy the link from Neon again."
+    elif "invalid dsn" in low or "missing \"=\"" in low or "invalid connection option" in low:
+        tip = "DATABASE_URL has extra text in it. Paste only the link that starts with postgresql://"
+    elif ("could not reach the database" in low or "connecterror" in low) and "timeout" not in low:
+        tip = "VeraDose couldn't reach the database address in DATABASE_URL. Copy the full link from Neon again."
+    elif "timeout" in low or "timed out" in low:
+        tip = "the database took too long to answer (it may be waking up). It will try again."
+    else:
+        tip = msg
+    return re.sub(r"://[^@\s]+@", "://***@", tip)
+
+
+def _check_database_at_startup():
+    global DATABASE_STATUS
+    try:
+        _db("SELECT 1")
+        DATABASE_STATUS = "connected"
+        print("[VeraDose] Database connected. Accounts and medicines are saved permanently.")
+    except Exception as exc:
+        DATABASE_STATUS = "error: " + _db_hint(exc)
+        print("\n" + "!" * 78 + f"\n[VeraDose] COULD NOT CONNECT TO THE DATABASE: {_db_hint(exc)}\n"
+              "The website still opens, but signing in won't work until this is fixed.\n" + "!" * 78 + "\n")
 
 
 def _db_key(path):
@@ -1007,6 +1135,7 @@ def healthz():
         "email_alerts": EMAIL_CONFIGURED,
         "sms_alerts": SMS_CONFIGURED,
         "storage": storage_mode(),
+        "database": DATABASE_STATUS if not DATABASE_PROBLEM else "problem: " + DATABASE_PROBLEM,
         "accounts_saved_permanently": bool(DATABASE_URL) or not os.environ.get("RENDER"),
     })
 
@@ -1578,11 +1707,12 @@ def start_alert_worker():
 
 start_alert_worker()
 
-if os.environ.get("RENDER") and not DATABASE_URL:
+if os.environ.get("RENDER") and not DATABASE_URL and not DATABASE_PROBLEM:
     print("\n" + "!" * 78 + "\n[VeraDose] WARNING: no DATABASE_URL is set. Render's free plan erases saved files on every"
           "\nrestart, so ALL ACCOUNTS AND MEDICINES WILL BE LOST. Add a free Neon database and set DATABASE_URL in Render's Environment tab.\n" + "!" * 78 + "\n")
 elif DATABASE_URL:
-    print("[VeraDose] Saving accounts and medicines in the database (DATABASE_URL).")
+    print("[VeraDose] Saving accounts and medicines in the database (DATABASE_URL). Checking the connection...")
+    threading.Thread(target=_check_database_at_startup, name="db-check", daemon=True).start()
 
 
 # ==========================================================================
@@ -1918,6 +2048,9 @@ def analyze(cid):
 # ==========================================================================
 @app.errorhandler(StorageBusy)
 def handle_storage_busy(_err):
+    if DATABASE_URL:
+        return jsonify({"success": False, "error": "VeraDose can't reach its database right now. Nothing was lost. "
+                                                   "Please try again in a minute."}), 503
     return jsonify({"success": False, "error": "VeraDose couldn't open its saved data for a moment. "
                                                "Nothing was lost. Please try again."}), 503
 
