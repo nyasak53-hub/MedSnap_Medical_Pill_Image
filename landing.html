@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedSnap | Never miss a dose</title>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#3B6255">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="MedSnap">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script src="/pwa.js" defer></script>
     <script>try { var d = document.documentElement; d.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); d.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1'); if (localStorage.getItem('medsnap_dyslexia') === '1') d.classList.add('dyslexic'); if (localStorage.getItem('medsnap_contrast') === '1') d.classList.add('hc'); } catch (e) {}</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -174,6 +183,11 @@
         .me-chip { display: inline-flex; align-items: center; gap: .65rem; }
         .me-chip .av { width: 2.6rem; height: 2.6rem; border-radius: 50%; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; font-weight: 800; font-size: 1.05rem; }
         .me-chip b { font-size: 1.05rem; }
+        [data-install] { display: none !important; }
+        html.can-install .pill-btn[data-install] { display: inline-flex !important; align-items: center; gap: .45rem; }
+        html.can-install .install-cta { display: flex !important; }
+        .install-cta { width: fit-content; margin: 1rem auto 0; align-items: center; gap: .6rem; background: var(--card); color: var(--ink); border: 1px solid var(--border); border-radius: 999px; padding: .75rem 1.5rem; font: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(31,58,48,.08); }
+        .install-cta i { color: var(--muted); }
         .pill-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: .5rem 1rem; font-weight: 600; font-size: .95rem; cursor: pointer; }
         .pill-btn:hover { background: var(--card); color: var(--ink); }
         .lang-pill { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: .45rem .5rem .45rem .95rem; color: var(--ink); }
@@ -302,7 +316,7 @@
         @media (max-width: 760px) {
             .top-right { gap: .5rem; } .me-chip b, .start-long { display: none; } .btn-start { padding: .65rem 1rem; font-size: .9rem; }
             .moon-btn { width: 2.7rem; height: 2.7rem; font-size: 1.1rem; } .lang-pill { padding: .35rem .35rem .35rem .7rem; }
-            .me-chip .av { width: 2.2rem; height: 2.2rem; } .pill-btn { padding: .4rem .7rem; font-size: .82rem; }
+            .pill-btn[data-install] span { display: none; } .me-chip .av { width: 2.2rem; height: 2.2rem; } .pill-btn { padding: .4rem .7rem; font-size: .82rem; }
             .topbar .logo { font-size: 1.35rem; } .topbar .logo span { display: none; }
             .hero2 { padding-top: 4rem; } .hero-badge { font-size: .88rem; }
             .hero-stats { flex-direction: column; gap: 1.6rem; } .hero-stats > div + div { border-left: 0; border-top: 1px solid var(--border); padding-top: 1.6rem; }
@@ -318,6 +332,7 @@
     <nav class="topbar">
         <a class="logo" href="/"><i class="fa-solid fa-capsules"></i> <span>MedSnap</span></a>
         <div class="top-right">
+            <button type="button" class="pill-btn" data-install data-i18n-aria="install"><i class="fa-solid fa-download" aria-hidden="true"></i><span data-i18n="install">Install app</span></button>
             <a href="/app" class="btn-start" id="startBtn" data-auth="signup"><span data-i18n="get_started">Get Started</span></a>
             <span class="me-chip" id="authIn" hidden>
                 <span class="av" id="meInitial" aria-hidden="true">M</span><b id="hiName"></b>
@@ -350,6 +365,7 @@
                 <div><b>4</b><span data-i18n="st3">languages supported</span></div>
             </div>
             <a href="/app" class="cta-big" id="ctaBig" data-auth="signin"><span data-i18n="cta_out">Get Started — Sign In Free</span> <i class="fa-solid fa-arrow-right"></i></a>
+            <button type="button" class="install-cta" data-install><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><span data-i18n="install_cta">Install the free app on your phone</span></button>
 
             <div class="preview" id="how" aria-label="Example of the MedSnap schedule">
                 <div class="preview-head">
@@ -544,7 +560,7 @@
             typing: ['Never miss a dose, one day at a time.', 'Know every pill you take.', 'Reminders that read themselves out loud.', 'Peace of mind for you and your caregiver.'],
             lead: 'Keeping track of medicines can feel overwhelming. MedSnap turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.',
             st1: "of long-term medicines aren't taken as prescribed", st2: 'of adults 65+ take 5 or more prescription medicines', st3: 'languages supported',
-            cta_out: 'Get Started — Sign In Free', cta_in: 'Open MedSnap',
+            cta_out: 'Get Started — Sign In Free', install: "Install app", install_cta: "Install the free app on your phone", cta_in: 'Open MedSnap',
             pv_title: "Today's schedule (example)", pv_streak: '🔥 7-Day Health Streak!', pv_taken: '3 of 4 taken today', pv_food: '🍽️ Take with food', pv_ok: 'Taken', pv_bed: '🌙 Take before bedtime', pv_refill: 'Refill soon: 4 days left',
             im_title: 'Why staying on track matters', im_sub: "Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health. Here's what the research shows.",
             s1: 'of medicines for long-term conditions are <b>not taken as prescribed</b>.', s2: 'of prescriptions are <b>never filled</b> at all.',
@@ -595,7 +611,7 @@
             typing: ['Nunca olvides una dosis, un día a la vez.', 'Conoce cada pastilla que tomas.', 'Recordatorios que se leen en voz alta.', 'Tranquilidad para ti y tu cuidador.'],
             lead: 'Llevar el control de los medicamentos puede ser abrumador. MedSnap convierte tus recetas en una rutina diaria sencilla, con recordatorios hablados, conteo de pastillas, escaneo de etiquetas y avisos al cuidador, para que tú, tu familia y tus cuidadores sigan el plan con confianza.',
             st1: 'de los medicamentos de largo plazo no se toman como se recetan', st2: 'de los adultos de 65+ toman 5 o más medicamentos recetados', st3: 'idiomas disponibles',
-            cta_out: 'Comenzar — Inicia sesión gratis', cta_in: 'Abrir MedSnap',
+            cta_out: 'Comenzar — Inicia sesión gratis', install: "Instalar app", install_cta: "Instala la app gratis en tu teléfono", cta_in: 'Abrir MedSnap',
             pv_title: 'Horario de hoy (ejemplo)', pv_streak: '🔥 ¡Racha de salud de 7 días!', pv_taken: '3 de 4 tomadas hoy', pv_food: '🍽️ Tomar con comida', pv_ok: 'Tomada', pv_bed: '🌙 Tomar antes de dormir', pv_refill: 'Reabastecer: quedan 4 días',
             im_title: 'Por qué importa seguir el plan', im_sub: 'Las dosis olvidadas o confundidas son uno de los problemas de salud más comunes y más fáciles de prevenir. Esto es lo que muestra la investigación.',
             s1: 'de los medicamentos para afecciones de largo plazo <b>no se toman como se recetan</b>.', s2: 'de las recetas <b>nunca se surten</b>.',
@@ -646,7 +662,7 @@
             typing: ['Ne manquez plus une dose, jour après jour.', 'Connaissez chaque comprimé que vous prenez.', 'Des rappels qui se lisent à voix haute.', 'La tranquillité pour vous et votre aidant.'],
             lead: "Suivre ses médicaments peut vite devenir compliqué. MedSnap transforme vos ordonnances en une routine quotidienne simple, avec des rappels parlés, le décompte des comprimés, le scan des étiquettes et des alertes à l'aidant, pour que vous, votre famille et vos aidants restiez sur la bonne voie en toute confiance.",
             st1: 'des médicaments au long cours ne sont pas pris comme prescrit', st2: 'des adultes de 65+ ans prennent 5 médicaments ou plus', st3: 'langues disponibles',
-            cta_out: 'Commencer — Connexion gratuite', cta_in: 'Ouvrir MedSnap',
+            cta_out: 'Commencer — Connexion gratuite', install: "Installer l'app", install_cta: "Installez l'app gratuite sur votre téléphone", cta_in: 'Ouvrir MedSnap',
             pv_title: "Programme du jour (exemple)", pv_streak: '🔥 Série santé de 7 jours !', pv_taken: "3 sur 4 prises aujourd'hui", pv_food: '🍽️ Prendre en mangeant', pv_ok: 'Pris', pv_bed: '🌙 Prendre au coucher', pv_refill: 'À renouveler : 4 jours restants',
             im_title: 'Pourquoi rester sur la bonne voie compte', im_sub: "Les doses oubliées ou confondues font partie des problèmes de santé les plus courants, et les plus évitables. Voici ce que montre la recherche.",
             s1: 'des médicaments pour maladies chroniques <b>ne sont pas pris comme prescrit</b>.', s2: 'des ordonnances <b>ne sont jamais délivrées</b>.',
@@ -697,7 +713,7 @@
             typing: ['一天一天，不再漏服。', '清楚每一粒药。', '会自己朗读的提醒。', '让您和照护人都安心。'],
             lead: '管理药物常常让人手忙脚乱。MedSnap 把您的处方变成简单的每日安排，提供语音提醒、药片计数、标签扫描和照护人提醒，让您、家人和照护人都能安心按计划服药。',
             st1: '的长期用药没有按医嘱服用', st2: '的 65 岁以上老人同时服用 5 种或更多处方药', st3: '种语言',
-            cta_out: '开始使用 — 免费登录', cta_in: '打开 MedSnap',
+            cta_out: '开始使用 — 免费登录', install: "安装应用", install_cta: "在手机上安装免费应用", cta_in: '打开 MedSnap',
             pv_title: '今日安排（示例）', pv_streak: '🔥 连续健康 7 天！', pv_taken: '今天已服 3/4', pv_food: '🍽️ 随餐服用', pv_ok: '已服用', pv_bed: '🌙 睡前服用', pv_refill: '请补药：剩 4 天',
             im_title: '为什么按时服药很重要', im_sub: '漏服和服错是日常健康中最常见、也最容易预防的问题之一。以下是研究结果。',
             s1: '的慢性病用药<b>没有按医嘱服用</b>。', s2: '的处方<b>从未取药</b>。',
@@ -737,6 +753,7 @@
             document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
             document.querySelectorAll('[data-i18n-html]').forEach(function (el) { el.innerHTML = t(el.dataset.i18nHtml); });
             document.querySelectorAll('[data-i18n-ph]').forEach(function (el) { el.placeholder = t(el.dataset.i18nPh); });
+            document.querySelectorAll('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
             $('a11yBtn').setAttribute('aria-label', t('a11y_btn'));
             $('a11yClose').setAttribute('aria-label', t('close'));
             var fb = document.querySelectorAll('[data-font]'); fb[0].setAttribute('aria-label', t('smaller')); fb[1].setAttribute('aria-label', t('normal_size')); fb[2].setAttribute('aria-label', t('larger'));

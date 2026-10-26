@@ -240,7 +240,91 @@ class StorageBusy(Exception):
     """A saved-data file exists but couldn't be read right now. Never treat it as empty."""
 
 
+# ==========================================================================
+# Permanent storage in a free Postgres database (e.g. Neon) when DATABASE_URL is set.
+# Render's free plan erases saved files on every restart, so accounts must live in a database there.
+# Without DATABASE_URL (e.g. on your own computer) everything is saved in files next to app.py.
+# ==========================================================================
+DATABASE_URL = normalize_secret(os.environ.get("DATABASE_URL"))
+_pg = None
+if DATABASE_URL:
+    try:
+        import psycopg as _pg
+    except ImportError:
+        raise SystemExit("\n[MedSnap] DATABASE_URL is set but the database driver is missing.\n"
+                         "Add this line to requirements.txt and deploy again:  psycopg[binary]\n")
+_db_conn = None
+_db_lock = threading.Lock()
+
+
+def _db_connect():
+    global _db_conn
+    _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=15)
+    _db_conn.execute("CREATE TABLE IF NOT EXISTS medsnap_kv ("
+                     "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
+
+
+def _db(sql, params=()):
+    """Run one query on a shared connection. Reconnects once if the database closed it
+    (free databases go to sleep when idle and drop old connections)."""
+    global _db_conn
+    with _db_lock:
+        for attempt in (1, 2):
+            try:
+                if _db_conn is None or getattr(_db_conn, "closed", False):
+                    _db_connect()
+                cur = _db_conn.execute(sql, params)
+                return cur.fetchone() if cur.description else None
+            except (_pg.OperationalError, _pg.InterfaceError) as exc:
+                print(f"[warn] Database connection problem ({exc}); reconnecting.")
+                try:
+                    _db_conn.close()
+                except Exception:
+                    pass
+                _db_conn = None
+                if attempt == 2:
+                    raise StorageBusy(str(exc))
+
+
+def _db_key(path):
+    return os.path.basename(path)          # "users.json" or "medications_data.json"
+
+
+def _db_load(path):
+    row = _db("SELECT v FROM medsnap_kv WHERE k = %s", (_db_key(path),))
+    if row:
+        return json.loads(row[0])
+    # First run with a database: bring over anything already saved in the local file.
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                _db_save(path, data)
+                print(f"[MedSnap] Copied {os.path.basename(path)} into the database.")
+                return data
+        except Exception as exc:
+            print(f"[warn] Could not import {path}: {exc}")
+    return None
+
+
+def _db_save(path, data):
+    _db("INSERT INTO medsnap_kv (k, v, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
+        "ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v, updated_at = CURRENT_TIMESTAMP",
+        (_db_key(path), json.dumps(data)))
+
+
+def storage_mode():
+    return "database" if DATABASE_URL else "files"
+
+
 def _load_json(path):
+    if DATABASE_URL:
+        return _db_load(path)
+    return _load_json_file(path)
+
+
+def _load_json_file(path):
     """Read a saved JSON file safely.
     - Missing file: returns None (nothing saved yet).
     - Briefly locked (OneDrive, antivirus, backup tools): retries for a moment.
@@ -282,6 +366,13 @@ def _load_json(path):
 
 
 def _save_json(path, data):
+    if DATABASE_URL:
+        _db_save(path, data)
+        return
+    _save_json_file(path, data)
+
+
+def _save_json_file(path, data):
     """Write atomically (never half-written) and keep the previous version as a .bak copy."""
     folder = os.path.dirname(path) or "."
     os.makedirs(folder, exist_ok=True)
@@ -618,6 +709,284 @@ def main_app():
     return page_response("index.html") or landing()
 
 
+# ==========================================================================
+# Installable app (PWA): manifest, icons, service worker, install helper
+# Everything is generated here, so no extra files or folders are needed.
+# ==========================================================================
+PWA_VERSION = "medsnap-v1"
+BRAND = (59, 98, 85)          # #3B6255, the MedSnap green
+BRAND_LIGHT = (203, 222, 211)  # #CBDED3
+
+
+def _make_icon(size, maskable=False, rounded=True):
+    """Draw the MedSnap icon: a white-and-mint capsule on the brand green."""
+    from PIL import ImageDraw
+    s = 4  # draw big, then shrink, for smooth edges
+    W = size * s
+    img = Image.new("RGBA", (W, W), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    if maskable or not rounded:
+        d.rectangle([0, 0, W, W], fill=BRAND + (255,))
+    else:
+        d.rounded_rectangle([0, 0, W - 1, W - 1], radius=int(W * 0.22), fill=BRAND + (255,))
+    # capsule, drawn flat then rotated 45 degrees
+    area = 0.62 if maskable else 0.70          # maskable icons keep a safe margin
+    cw, ch = int(W * area * 0.98), int(W * area * 0.40)
+    cap = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+    cd = ImageDraw.Draw(cap)
+    r = ch // 2
+    cd.rounded_rectangle([0, 0, cw - 1, ch - 1], radius=r, fill=(255, 255, 255, 255))
+    half = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+    hd = ImageDraw.Draw(half)
+    hd.rounded_rectangle([0, 0, cw - 1, ch - 1], radius=r, fill=BRAND_LIGHT + (255,))
+    mask = Image.new("L", (cw, ch), 0)
+    ImageDraw.Draw(mask).rectangle([cw // 2, 0, cw, ch], fill=255)
+    cap.paste(half, (0, 0), Image.composite(half.split()[3], mask, mask))
+    line = max(2, W // 90)
+    cd.line([(cw // 2, 0), (cw // 2, ch)], fill=BRAND + (255,), width=line)
+    cap = cap.rotate(45, resample=Image.BICUBIC, expand=True)
+    img.alpha_composite(cap, ((W - cap.width) // 2, (W - cap.height) // 2))
+    img = img.resize((size, size), Image.LANCZOS)
+    if not rounded and not maskable:
+        img = img.convert("RGB")  # Apple adds its own rounded corners
+    buf = io.BytesIO()
+    img.save(buf, "PNG", optimize=True)
+    return buf.getvalue()
+
+
+_ICON_SPECS = {
+    "icon-192.png": (192, False, True),
+    "icon-512.png": (512, False, True),
+    "maskable-512.png": (512, True, False),
+    "apple-touch-icon.png": (180, False, False),
+    "favicon-32.png": (32, False, True),
+}
+_icon_cache = {}
+
+
+@app.route("/icons/<name>")
+def pwa_icon(name):
+    if name not in _ICON_SPECS:
+        return Response("Not found", status=404)
+    if name not in _icon_cache:
+        _icon_cache[name] = _make_icon(*_ICON_SPECS[name])
+    resp = Response(_icon_cache[name], mimetype="image/png")
+    resp.headers["Cache-Control"] = "public, max-age=604800"
+    return resp
+
+
+@app.route("/apple-touch-icon.png")
+@app.route("/apple-touch-icon-precomposed.png")
+def apple_touch_icon():
+    return pwa_icon("apple-touch-icon.png")
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return pwa_icon("favicon-32.png")
+
+
+@app.route("/manifest.webmanifest")
+def pwa_manifest():
+    manifest = {
+        "id": "/app",
+        "name": "MedSnap",
+        "short_name": "MedSnap",
+        "description": "Medication reminders, pill check and a friendly AI helper.",
+        "start_url": "/app",
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "any",
+        "background_color": "#E9F1EC",
+        "theme_color": "#3B6255",
+        "categories": ["health", "medical", "lifestyle"],
+        "icons": [
+            {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+            {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+            {"src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+        ],
+        "shortcuts": [
+            {"name": "Today", "url": "/app#today", "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]},
+            {"name": "Pill check", "url": "/app#pillcheck", "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]},
+            {"name": "Calendar", "url": "/app#calendar", "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]},
+        ],
+    }
+    resp = Response(json.dumps(manifest), mimetype="application/manifest+json")
+    resp.headers["Cache-Control"] = "no-cache"
+    return resp
+
+
+SERVICE_WORKER_JS = r"""
+// MedSnap service worker: lets the installed app open fast and work offline.
+// Your data (/api/...) is never stored here; it always comes from the server.
+const CACHE = '__VERSION__';
+const CORE = ['/', '/app', '/pwa.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => Promise.all(CORE.map((u) => c.add(u).catch(() => {})))).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+
+function offlinePage() {
+  return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>MedSnap</title><body style="font-family:system-ui,sans-serif;background:#E9F1EC;color:#1F3A30;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:1rem">' +
+    '<div><h1 style="color:#3B6255">MedSnap</h1><p>You are offline. Connect to the internet and try again.</p>' +
+    '<button onclick="location.reload()" style="font:inherit;padding:.7rem 1.4rem;border:0;border-radius:999px;background:#3B6255;color:#fff">Try again</button></div>',
+    { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+}
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;          // fonts, icons from other sites: browser handles them
+  if (url.pathname.startsWith('/api/') || url.pathname === '/healthz' || url.pathname === '/sw.js') return;
+
+  if (req.mode === 'navigate') {
+    // Pages: try the internet first. If the server is slow to wake up (Render free),
+    // show the saved copy after 4 seconds; the page then reconnects by itself.
+    const key = url.pathname === '/' ? '/' : (url.pathname.startsWith('/app') ? '/app' : url.pathname);
+    e.respondWith(new Promise((resolve) => {
+      let done = false;
+      const fromCache = () => caches.match(key).then((r) => r || caches.match(req));
+      const net = fetch(req).then((res) => {
+        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(key, copy)); }
+        if (!done) { done = true; resolve(res); }
+      }).catch(() => fromCache().then((r) => { if (!done) { done = true; resolve(r || offlinePage()); } }));
+      setTimeout(() => fromCache().then((r) => { if (r && !done) { done = true; resolve(r); } }), 4000);
+      e.waitUntil(net.catch(() => {}));
+    }));
+    return;
+  }
+
+  // Small files (icons, pwa.js, manifest): show the saved copy, refresh it in the background.
+  e.respondWith(caches.match(req).then((hit) => {
+    const net = fetch(req).then((res) => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); }
+      return res;
+    }).catch(() => hit);
+    return hit || net;
+  }));
+});
+"""
+
+
+@app.route("/sw.js")
+def service_worker():
+    resp = Response(SERVICE_WORKER_JS.replace("__VERSION__", PWA_VERSION), mimetype="application/javascript")
+    resp.headers["Cache-Control"] = "no-cache"
+    resp.headers["Service-Worker-Allowed"] = "/"
+    return resp
+
+
+PWA_JS = r"""
+/* MedSnap install helper: registers the service worker and runs the "Install app" buttons.
+   Any element with data-install becomes an install button. It hides itself once installed. */
+(function () {
+  var TXT = {
+    en: { btn: 'Install app', title: 'Install MedSnap', sub: 'Add MedSnap to your home screen. It opens like a normal app, for free.',
+          ios: ['Tap the <b>Share</b> button (the square with an arrow) at the bottom or top of Safari.', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Tap <b>Add</b>. MedSnap is now on your home screen.'],
+          iosOther: 'On iPhone and iPad, open this page in <b>Safari</b> first, then follow these steps.',
+          android: ['Tap the <b>⋮</b> menu at the top right of your browser.', 'Tap <b>Install app</b> or <b>Add to Home screen</b>.', 'Tap <b>Install</b>. MedSnap is now on your home screen.'],
+          desktop: ['In <b>Chrome</b> or <b>Edge</b>, click the install icon at the right end of the address bar, or open the <b>⋮</b> menu and choose <b>Install MedSnap</b>.', 'In <b>Safari</b> on a Mac, choose <b>File → Add to Dock</b>.', 'Firefox on a computer cannot install apps. Please use Chrome, Edge or Safari.'],
+          ok: 'Got it', done: 'MedSnap is installed! Look for it on your home screen.' },
+    es: { btn: 'Instalar app', title: 'Instalar MedSnap', sub: 'Añade MedSnap a tu pantalla de inicio. Se abre como una app normal, gratis.',
+          ios: ['Toca el botón <b>Compartir</b> (el cuadrado con una flecha) en Safari.', 'Desliza hacia abajo y toca <b>Agregar a inicio</b>.', 'Toca <b>Agregar</b>. MedSnap ya está en tu pantalla de inicio.'],
+          iosOther: 'En iPhone y iPad, primero abre esta página en <b>Safari</b> y luego sigue estos pasos.',
+          android: ['Toca el menú <b>⋮</b> arriba a la derecha del navegador.', 'Toca <b>Instalar aplicación</b> o <b>Agregar a la pantalla principal</b>.', 'Toca <b>Instalar</b>. MedSnap ya está en tu pantalla de inicio.'],
+          desktop: ['En <b>Chrome</b> o <b>Edge</b>, haz clic en el icono de instalar al final de la barra de direcciones, o abre el menú <b>⋮</b> y elige <b>Instalar MedSnap</b>.', 'En <b>Safari</b> en Mac, elige <b>Archivo → Añadir al Dock</b>.', 'Firefox en computadora no puede instalar apps. Usa Chrome, Edge o Safari.'],
+          ok: 'Entendido', done: '¡MedSnap está instalada! Búscala en tu pantalla de inicio.' },
+    fr: { btn: "Installer l'app", title: 'Installer MedSnap', sub: "Ajoutez MedSnap à votre écran d'accueil. Elle s'ouvre comme une vraie app, gratuitement.",
+          ios: ['Touchez le bouton <b>Partager</b> (le carré avec une flèche) dans Safari.', "Faites défiler et touchez <b>Sur l'écran d'accueil</b>.", "Touchez <b>Ajouter</b>. MedSnap est sur votre écran d'accueil."],
+          iosOther: "Sur iPhone et iPad, ouvrez d'abord cette page dans <b>Safari</b>, puis suivez ces étapes.",
+          android: ['Touchez le menu <b>⋮</b> en haut à droite du navigateur.', "Touchez <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</b>.", "Touchez <b>Installer</b>. MedSnap est sur votre écran d'accueil."],
+          desktop: ["Dans <b>Chrome</b> ou <b>Edge</b>, cliquez sur l'icône d'installation au bout de la barre d'adresse, ou ouvrez le menu <b>⋮</b> et choisissez <b>Installer MedSnap</b>.", 'Dans <b>Safari</b> sur Mac, choisissez <b>Fichier → Ajouter au Dock</b>.', 'Firefox sur ordinateur ne peut pas installer d’apps. Utilisez Chrome, Edge ou Safari.'],
+          ok: "J'ai compris", done: "MedSnap est installée ! Cherchez-la sur votre écran d'accueil." },
+    zh: { btn: '安装应用', title: '安装 MedSnap', sub: '把 MedSnap 添加到主屏幕，像普通应用一样打开，完全免费。',
+          ios: ['在 Safari 中点按<b>分享</b>按钮（带箭头的方框）。', '向下滑动，点按<b>添加到主屏幕</b>。', '点按<b>添加</b>。MedSnap 已在你的主屏幕上。'],
+          iosOther: '在 iPhone 和 iPad 上，请先用 <b>Safari</b> 打开此页面，再按以下步骤操作。',
+          android: ['点按浏览器右上角的 <b>⋮</b> 菜单。', '点按<b>安装应用</b>或<b>添加到主屏幕</b>。', '点按<b>安装</b>。MedSnap 已在你的主屏幕上。'],
+          desktop: ['在 <b>Chrome</b> 或 <b>Edge</b> 中，点击地址栏右侧的安装图标，或打开 <b>⋮</b> 菜单选择<b>安装 MedSnap</b>。', '在 Mac 的 <b>Safari</b> 中，选择<b>文件 → 添加到程序坞</b>。', '电脑上的 Firefox 无法安装应用，请使用 Chrome、Edge 或 Safari。'],
+          ok: '知道了', done: 'MedSnap 已安装！请在主屏幕上找到它。' }
+  };
+  function L() { var l = 'en'; try { l = localStorage.getItem('medsnap_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
+  var root = document.documentElement;
+  var deferred = null;
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|Chrome|Android/.test(ua);
+  var isAndroid = /Android/.test(ua);
+  function standalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
+
+  function refresh() {
+    if (standalone()) { root.classList.remove('can-install'); root.classList.add('is-installed'); }
+    else root.classList.add('can-install');
+  }
+
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {}); });
+  }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; refresh(); });
+  window.addEventListener('appinstalled', function () { deferred = null; root.classList.remove('can-install'); toast(L().done); });
+
+  function toast(msg) {
+    var d = document.createElement('div');
+    d.textContent = msg; d.setAttribute('role', 'status');
+    d.style.cssText = 'position:fixed;left:50%;bottom:1.4rem;transform:translateX(-50%);z-index:9999;background:#3B6255;color:#fff;padding:.8rem 1.2rem;border-radius:999px;font:600 1rem system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:calc(100vw - 2rem);text-align:center';
+    document.body.appendChild(d); setTimeout(function () { d.remove(); }, 4500);
+  }
+
+  function help() {
+    var t = L(), steps, note = '';
+    if (isIOS) { steps = t.ios; if (!isSafari) note = t.iosOther; }
+    else if (isAndroid) steps = t.android;
+    else steps = t.desktop;
+    var dark = root.getAttribute('data-theme') === 'dark';
+    var bg = dark ? '#17261F' : '#FFFFFF', ink = dark ? '#CBDED3' : '#1F3A30', mute = dark ? '#8BA49A' : '#3B6255';
+    var dlg = document.createElement('dialog');
+    dlg.setAttribute('aria-labelledby', 'pwaTitle');
+    dlg.style.cssText = 'margin:auto;inset:0;position:fixed;max-height:calc(100vh - 2rem);overflow:auto;border:0;border-radius:1.4rem;padding:0;width:min(28rem,calc(100vw - 2rem));background:' + bg + ';color:' + ink + ';box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:inherit';
+    dlg.innerHTML = '<div style="padding:1.5rem 1.5rem 1.2rem">' +
+      '<div style="display:flex;gap:.9rem;align-items:center;margin-bottom:.6rem"><img src="/icons/icon-192.png" alt="" width="52" height="52" style="border-radius:.9rem">' +
+      '<h2 id="pwaTitle" style="margin:0;font-size:1.35rem">' + t.title + '</h2></div>' +
+      '<p style="margin:.2rem 0 1rem;color:' + mute + '">' + t.sub + '</p>' +
+      (note ? '<p style="margin:0 0 .8rem;padding:.7rem .9rem;border-radius:.8rem;background:' + (dark ? '#22362C' : '#DCE7DF') + '">' + note + '</p>' : '') +
+      '<ol style="margin:0 0 1.2rem;padding-left:1.3rem;display:grid;gap:.55rem;line-height:1.45">' + steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' +
+      '<button type="button" style="width:100%;font:inherit;font-weight:700;padding:.8rem;border:0;border-radius:999px;background:#3B6255;color:#fff;cursor:pointer">' + t.ok + '</button></div>';
+    document.body.appendChild(dlg);
+    dlg.querySelector('button').addEventListener('click', function () { dlg.close(); });
+    dlg.addEventListener('close', function () { dlg.remove(); });
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-install]');
+    if (!b) return;
+    e.preventDefault();
+    if (deferred) {
+      var p = deferred; deferred = null;
+      p.prompt();
+      p.userChoice.then(function () { refresh(); }).catch(function () {});
+    } else help();
+  });
+
+  window.MedSnapPWA = { refresh: refresh, help: help };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh); else refresh();
+})();
+"""
+
+
+@app.route("/pwa.js")
+def pwa_js():
+    resp = Response(PWA_JS, mimetype="application/javascript")
+    resp.headers["Cache-Control"] = "no-cache"
+    return resp
+
+
 @app.route("/healthz")
 def healthz():
     return jsonify({
@@ -627,6 +996,8 @@ def healthz():
         "ai_enabled": client is not None,
         "email_alerts": EMAIL_CONFIGURED,
         "sms_alerts": SMS_CONFIGURED,
+        "storage": storage_mode(),
+        "accounts_saved_permanently": bool(DATABASE_URL) or not os.environ.get("RENDER"),
     })
 
 
@@ -1197,6 +1568,12 @@ def start_alert_worker():
 
 start_alert_worker()
 
+if os.environ.get("RENDER") and not DATABASE_URL:
+    print("\n" + "!" * 78 + "\n[MedSnap] WARNING: no DATABASE_URL is set. Render's free plan erases saved files on every"
+          "\nrestart, so ALL ACCOUNTS AND MEDICINES WILL BE LOST. Add a free Neon database and set DATABASE_URL in Render's Environment tab.\n" + "!" * 78 + "\n")
+elif DATABASE_URL:
+    print("[MedSnap] Saving accounts and medicines in the database (DATABASE_URL).")
+
 
 # ==========================================================================
 # AI: pill search, interactions, chat, translation, label scan
@@ -1568,7 +1945,8 @@ if __name__ == "__main__":
     print(f"\nMedSnap running at http://127.0.0.1:{port}")
     try:
         n = len(_read_users()["users"])
-        print(f"Accounts are saved in: {USERS_FILE} ({n} account{'s' if n != 1 else ''})\n")
+        where = "the database (DATABASE_URL)" if DATABASE_URL else USERS_FILE
+        print(f"Accounts are saved in: {where} ({n} account{'s' if n != 1 else ''})\n")
     except Exception as exc:
         print(f"[warn] Could not read the accounts file yet: {exc}\n")
     if not os.environ.get("RENDER"):

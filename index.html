@@ -4,11 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MedSnap</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#3B6255">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MedSnap">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script src="/pwa.js" defer></script>
 <script>
   try {
     document.documentElement.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light');
     document.documentElement.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1');
     if (localStorage.getItem('medsnap_dyslexia') === '1') document.documentElement.classList.add('dyslexic');
+    if (localStorage.getItem('medsnap_contrast') === '1') document.documentElement.classList.add('hc');
   } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +77,8 @@ a { color: inherit; text-decoration: none; }
 .nav a.active { background: var(--active); color: var(--ink); font-weight: 600; }
 .nav a .dot { width: .4rem; height: .4rem; border-radius: 50%; background: var(--muted); margin-left: auto; }
 .side-foot { margin-top: auto; }
+[data-install] { display: none !important; }
+html.can-install .help-card[data-install] { display: flex !important; }
 .help-card { width: 100%; display: flex; gap: .85rem; align-items: flex-start; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 1rem; padding: 1rem; cursor: pointer; margin-bottom: 1rem; }
 .help-card .ic { width: 2.3rem; height: 2.3rem; border-radius: .7rem; background: var(--soft); color: var(--ink-2); display: grid; place-items: center; flex: none; }
 .help-card b { display: block; font-size: .85rem; font-weight: 600; }
@@ -109,6 +121,9 @@ a { color: inherit; text-decoration: none; }
 .btn:hover { filter: brightness(1.1); }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
 .btn-light { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+.btn-danger-soft { background: var(--miss-bg); color: var(--miss-ink); border: 1px solid var(--miss-line); }
+.btn-danger { background: var(--miss-ink); color: #fff; }
+.settings .row .btn { flex: none; margin-left: 1rem; }
 .btn-sm { font-size: .85rem; padding: .6rem 1.1rem; }
 .link-btn { border: 0; background: none; cursor: pointer; font-weight: 600; color: var(--ink); display: inline-flex; align-items: center; gap: .45rem; font-size: .85rem; padding: .3rem; border-radius: .4rem; }
 .icon-btn { border: 0; background: none; cursor: pointer; color: var(--ink-2); width: 2.6rem; height: 2.6rem; border-radius: .7rem; display: grid; place-items: center; }
@@ -157,6 +172,8 @@ textarea.input { min-height: 5.6rem; resize: vertical; }
 .dose.taken { background: color-mix(in srgb, var(--done-bg) 55%, transparent); }
 .banner { display: flex; align-items: center; gap: 1rem; background: var(--sand-bg); border: 1px solid var(--sand-line); color: var(--ink); border-radius: 1.1rem; padding: 1.1rem 1.4rem; margin-bottom: 1.4rem; font-size: .9rem; }
 .banner .i { color: var(--sand-ink); }
+.spin { width: 1.15rem; height: 1.15rem; border-radius: 50%; border: 2.5px solid var(--sand-line); border-top-color: var(--sand-ink); animation: spin .8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .banner a { margin-left: auto; font-weight: 600; display: flex; align-items: center; gap: .3rem; }
 
 /* ---------- calendar ---------- */
@@ -365,6 +382,30 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 [data-theme="dark"] .em-call { color: #2a110e; }
 
 /* ---------- buddy ---------- */
+/* ---------- accessibility button + panel (same settings as the landing page) ---------- */
+.a11y-btn { position: fixed; left: calc(19.25rem + 1.4rem); bottom: 1.6rem; z-index: 40; width: 3.8rem; height: 3.8rem; border-radius: 50%; border: 0; background: var(--brand); color: var(--brand-ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand) 16%, transparent), 0 8px 24px rgba(36,69,58,.3); }
+.a11y-panel { position: fixed; left: calc(19.25rem + 1.4rem); bottom: 6.6rem; z-index: 70; width: min(21rem, calc(100vw - 2rem)); max-height: calc(100vh - 7.6rem); overflow-y: auto; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 1.4rem; box-shadow: 0 24px 60px rgba(36,69,58,.22); padding: 1.5rem 1.4rem 1.1rem; }
+.a11y-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
+.a11y-head h2 { font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: .5rem; }
+.a11y-sec { padding: 1rem 0 1.05rem; border-bottom: 1px solid var(--line); }
+.a11y-sec:last-child { border-bottom: 0; }
+.a11y-k { font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); margin-bottom: .65rem; }
+.a11y-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .98rem; padding: .35rem 0; cursor: pointer; }
+.a11y-wide { width: 100%; margin-top: .55rem; border-radius: .9rem; padding: .72rem; font-weight: 700; font-size: .92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; }
+.a11y-wide.read { background: var(--card-2); border: 1px solid var(--line-2); color: var(--ink); }
+.a11y-wide.stop { background: var(--miss-bg); border: 1px solid var(--miss-line); color: var(--miss-ink); }
+.sz3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .55rem; }
+.sz3 button { padding: .72rem 0; border-radius: .9rem; border: 1px solid var(--line); background: var(--card-2); color: var(--ink); font-weight: 800; font-size: 1rem; cursor: pointer; }
+.sz3 button:disabled { opacity: .4; cursor: default; }
+@media (max-width: 900px) { .a11y-btn { left: 1rem; bottom: 1rem; width: 3.3rem; height: 3.3rem; } .a11y-panel { left: .5rem; bottom: 5rem; max-height: calc(100vh - 6rem); } }
+
+/* ---------- high contrast mode ---------- */
+html.hc { --bg: #fff; --sidebar: #fff; --card: #fff; --card-2: #F2F2F2; --field: #fff; --line: #222; --line-2: #000; --ink: #000; --ink-2: #111; --muted: #222; --faint: #444;
+  --brand: #12332A; --brand-ink: #fff; --brand-2: #12332A; --active: #DDEBE2; --soft: #E8F0EB; --shadow: none; }
+html.hc[data-theme="dark"] { --bg: #000; --sidebar: #000; --card: #000; --card-2: #111; --field: #000; --line: #ddd; --line-2: #fff; --ink: #fff; --ink-2: #f2f2f2; --muted: #e6e6e6; --faint: #ccc;
+  --brand: #CFEBDC; --brand-ink: #000; --brand-2: #CFEBDC; --active: #1d2a24; --soft: #16221c; }
+html.hc .card, html.hc .day, html.hc .tile-day, html.hc .input, html.hc .btn-light { border-width: 2px; }
+html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
 .buddy-fab { position: fixed; right: 2rem; bottom: 1.6rem; z-index: 40; display: flex; align-items: center; gap: .6rem; background: var(--brand); color: var(--brand-ink); border: 0; border-radius: 999px; padding: 1rem 1.4rem; font-weight: 600; font-size: 1rem; cursor: pointer; box-shadow: 0 8px 24px rgba(36,69,58,.28); }
 .buddy { position: fixed; right: 2rem; bottom: 6.4rem; z-index: 41; width: min(27.6rem, calc(100vw - 2rem)); height: min(21.5rem, calc(100vh - 8rem)); min-height: 21.5rem; background: var(--card); border: 1px solid var(--line); border-radius: 1.4rem; box-shadow: 0 20px 60px rgba(36,69,58,.18); display: flex; flex-direction: column; overflow: hidden; }
 .buddy.grown { height: min(34rem, calc(100vh - 8rem)); }
@@ -374,7 +415,14 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 .bd-head .icon-btn { margin-left: auto; }
 .bd-msgs { flex: 1; overflow-y: auto; padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: .7rem; }
 .bd-intro { margin: auto 0; font-size: .85rem; color: var(--ink-2); line-height: 1.6; }
-.msg { max-width: 88%; padding: .7rem .9rem; border-radius: 1rem; font-size: .88rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg { max-width: 88%; padding: .7rem .9rem; border-radius: 1rem; font-size: .92rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.bot { white-space: normal; }
+.msg.bot p { margin: 0 0 .55rem; }
+.msg.bot p:last-child, .msg.bot ul:last-child, .msg.bot ol:last-child { margin-bottom: 0; }
+.msg.bot ul, .msg.bot ol { margin: .1rem 0 .6rem; padding-left: 1.25rem; }
+.msg.bot li { margin-bottom: .35rem; }
+.msg.bot li::marker { color: var(--brand); }
+.msg.bot b { font-weight: 700; }
 .msg.user { align-self: flex-end; background: var(--brand); color: var(--brand-ink); border-bottom-right-radius: .3rem; }
 .msg.bot { align-self: flex-start; background: var(--card-2); border-bottom-left-radius: .3rem; }
 .msg.err { background: var(--miss-bg); color: var(--miss-ink); }
@@ -396,6 +444,11 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 .tabs button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 .gate .err { background: var(--miss-bg); color: var(--miss-ink); border-radius: .8rem; padding: .75rem 1rem; font-size: .85rem; font-weight: 600; margin-bottom: 1.2rem; }
 .gate .btn-wide { margin-top: .6rem; }
+.pw-wrap { position: relative; }
+.pw-wrap .input { padding-right: 3.2rem; }
+.pw-eye { position: absolute; right: .35rem; top: 50%; transform: translateY(-50%); width: 2.5rem; height: 2.5rem; border: 0; background: none; color: var(--ink-2); border-radius: .6rem; display: grid; place-items: center; cursor: pointer; }
+.pw-eye:hover { background: var(--card-2); color: var(--ink); }
+.gate .err .link-btn { display: block; margin-top: .45rem; padding: 0; color: inherit; text-decoration: underline; font-weight: 700; }
 .toast { position: fixed; left: 50%; bottom: 2rem; transform: translateX(-50%); z-index: 100; background: var(--ink); color: var(--bg); padding: .85rem 1.3rem; border-radius: .9rem; font-weight: 600; font-size: .9rem; box-shadow: 0 10px 30px rgba(0,0,0,.2); max-width: calc(100vw - 2rem); }
 .toast.err { background: var(--miss-ink); color: #fff; }
 
@@ -457,10 +510,13 @@ dialog::backdrop { background: rgba(20, 35, 28, .4); }
 
 <button class="buddy-fab" id="buddyFab" data-act="buddy-toggle" aria-expanded="false"></button>
 <section class="buddy" id="buddy" hidden aria-label="MedSnap Buddy"></section>
+<button class="a11y-btn" id="a11yBtn" data-act="a11y-toggle" aria-expanded="false" aria-controls="a11yPanel"></button>
+<section class="a11y-panel" id="a11yPanel" hidden role="dialog" aria-labelledby="a11yTitle"></section>
 
 <dialog id="medDlg"></dialog>
 <dialog id="stockDlg" style="width:min(28rem, calc(100vw - 2rem))"></dialog>
 <dialog id="emDlg"></dialog>
+<dialog id="delDlg" style="width:min(30rem, calc(100vw - 2rem))"></dialog>
 <div class="gate" id="gate" hidden></div>
 <div id="toastBox" aria-live="polite"></div>
 
@@ -480,6 +536,7 @@ const IC = {
   search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
   heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  download: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
   help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
   logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
   phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
@@ -500,6 +557,9 @@ const IC = {
   switchcam: '<path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/><circle cx="12" cy="12" r="3"/><path d="m18 22-3-3 3-3M6 2l3 3-3 3"/>',
   upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>',
   menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  access: '<circle cx="12" cy="4.5" r="2"/><path d="M5 8.5c2.3.7 4.6 1 7 1s4.7-.3 7-1M12 9.5v4.5m0 0-3 7m3-7 3 7"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff: '<path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19M6.6 6.6A18.4 18.4 0 0 0 2 12s3.5 8 10 8a9.7 9.7 0 0 0 5.4-1.6M14.12 14.12a3 3 0 1 1-4.24-4.24M2 2l20 20"/>',
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
 };
 function ic(name, size = 20, sw = 1.7) {
@@ -513,9 +573,14 @@ en: {
   sc_btn:'Scan label', sc_hide:'Close scanner', sc_title:'Scan a prescription or bottle', sc_sub:'Take a photo of the label and MedSnap fills in this form for you. Add up to 3 photos, like the prescription and the bottle.', sc_hint:'Hold the label flat, close up and in good light.', sc_take_more:'Take another photo', sc_read:'Read label', sc_reading:'Reading the label…', sc_photos:'{n} of 3 photos', sc_photo_n:'Photo {n}', sc_remove:'Remove photo', sc_max:'That is the 3-photo limit. Press Read label.', sc_need:'Take or upload a photo first.', sc_done_t:'Filled in from the label:', sc_done:'{f}. The filled boxes are outlined.', sc_times:'The label says {n} times a day. MedSnap keeps one dose time per medication, so after saving, add it again for each other time of day.', sc_check:'Please check every detail against your label before saving, and fill in anything it didn’t show, like which days to take it.', sc_pc_t:'New prescription?', sc_pc_s:'Scan the label or bottle to add it to your medications, inventory and calendar.',
   pc_main_title:'Scan it in. Check it twice.', pc_main_sub:'Scan a prescription or bottle to add a medication, or compare a pill in your hand with your list.', pc_mode_scan:'Scan a label', pc_mode_check:'Check a pill', sc_main_t:'Scan label to fill this in', sc_main_s:'Photograph your prescription label or medicine bottle. MedSnap reads it and fills in a new medication for you to check and save.', how_k:'How it works', how_t:'Add a medicine in three steps', how1_t:'Take up to 3 photos', how1:'The prescription and the bottle together give MedSnap the most to read.', how2_t:'MedSnap reads the label', how2:'Name, dose, directions, how many pills came in the bottle, and food or timing notes.', how3_t:'Check it and save', how3:'It then shows up on your Medications, Inventory and Calendar pages.', sc_safe_t:'You check before anything is saved', sc_safe_p:'MedSnap only fills in what is printed on the label. Nothing is added until you look it over and press Save.', sc_to_check_t:'Have a pill in your hand?', sc_to_check:'Compare its shape, color and imprint with the medicines you have saved.',
   al_sub:'Tick everything you are allergic to.', al_other:'Other', al_other_q:'What other allergies do you have?', al_other_ph:'e.g. cats, strawberries (separate with commas)', al_penicillin:'Penicillin', al_sulfa:'Sulfa drugs', al_aspirin:'Aspirin', al_nsaids:'Ibuprofen / NSAIDs', al_codeine:'Codeine / opioids', al_latex:'Latex', al_contrast:'Contrast dye (iodine)', al_peanuts:'Peanuts', al_tree_nuts:'Tree nuts', al_shellfish:'Shellfish', al_fish:'Fish', al_eggs:'Eggs', al_milk:'Milk / dairy', al_soy:'Soy', al_wheat:'Wheat / gluten', al_bee_stings:'Bee stings',
+  acc_title:'Account', acc_sub:'You stay signed in on this device until you log out.', acc_logout:'Log out', acc_logout_s:'Sign out on this device. Your medicines stay saved.', acc_delete:'Delete account', acc_delete_s:'Permanently erase your account and everything in it.', del_title:'Delete your account?', del_sub:'This cannot be undone.', del_warn_t:'Everything will be erased', del_warn:'Your profile, medications, inventory, calendar history, streak and caregiver details will be permanently deleted.', del_pw:'Type your password to confirm', del_btn:'Delete my account',
+  conn_t:'Connecting to MedSnap…', conn:'This can take up to a minute if the server was asleep. You stay signed in.', still_trying:'MedSnap keeps trying and will connect by itself as soon as the server is running.', reconnected:'Connected. Welcome back!',
+  show_pw:'Show password', hide_pw:'Hide password', g_make_acc:'Create an account with this email →',
+  a11y:'Accessibility', a11y_btn:'Accessibility options', tts:'Text to speech', auto_read:'Auto-read AI responses', read_page:'Read this page aloud', stop_audio:'Stop audio', readability:'Readability', visibility:'Visibility', hc:'High contrast mode', normal_size:'Normal text size',
+  smaller:'Smaller text', larger:'Larger text', dark_mode:'Dark mode',
   your_space:'Your space', your_details:'Your details', n_today:'Today', n_calendar:'Calendar', n_streaks:'Streaks', n_meds:'Medications',
   n_inventory:'Inventory', n_pillcheck:'Pill check', n_caregiver:'Caregiver', n_profile:'Profile & preferences',
-  need_hand:'Need a hand?', need_hand_sub:'Your routine, one step at a time.', your_care:'Your care', personal_account:'Personal account', sign_out:'Sign out', menu:'Menu',
+  install_app:"Install app", install_sub:"Add MedSnap to your home screen.", need_hand:'Need a hand?', need_hand_sub:'Your routine, one step at a time.', your_care:'Your care', personal_account:'Personal account', sign_out:'Sign out', menu:'Menu',
   emergency:'Emergency · Call 911', private:'Your information is private', language:'Language', foot_tag:'Here to make the everyday a little easier.',
   td_eyebrow:'Today', g_morning:'Good morning', g_afternoon:'Good afternoon', g_evening:'Good evening', td_title:"Here's your day.",
   td_sub:"Everything planned for today. Mark each dose once you've taken it.", td_read:'Read today aloud', td_doses:'Doses today', td_of:'{a} of {b} taken',
@@ -586,9 +651,14 @@ es: {
   sc_btn:'Escanear etiqueta', sc_hide:'Cerrar escáner', sc_title:'Escanea una receta o un frasco', sc_sub:'Toma una foto de la etiqueta y MedSnap completará este formulario. Hasta 3 fotos, por ejemplo la receta y el frasco.', sc_hint:'Sostén la etiqueta plana, de cerca y con buena luz.', sc_take_more:'Tomar otra foto', sc_read:'Leer etiqueta', sc_reading:'Leyendo la etiqueta…', sc_photos:'{n} de 3 fotos', sc_photo_n:'Foto {n}', sc_remove:'Quitar foto', sc_max:'Ese es el límite de 3 fotos. Pulsa Leer etiqueta.', sc_need:'Primero toma o sube una foto.', sc_done_t:'Completado desde la etiqueta:', sc_done:'{f}. Los campos completados están resaltados.', sc_times:'La etiqueta dice {n} veces al día. MedSnap guarda una hora por medicamento, así que después de guardar, agrégalo otra vez para cada hora.', sc_check:'Revisa cada dato con tu etiqueta antes de guardar y completa lo que no aparezca, como los días.', sc_pc_t:'¿Receta nueva?', sc_pc_s:'Escanea la etiqueta o el frasco para agregarlo a tus medicamentos, inventario y calendario.',
   pc_main_title:'Escanéalo. Revísalo dos veces.', pc_main_sub:'Escanea una receta o un frasco para agregar un medicamento, o compara una pastilla con tu lista.', pc_mode_scan:'Escanear etiqueta', pc_mode_check:'Verificar pastilla', sc_main_t:'Escanea la etiqueta para completarlo', sc_main_s:'Fotografía la etiqueta de tu receta o el frasco. MedSnap la lee y completa un nuevo medicamento para que lo revises y guardes.', how_k:'Cómo funciona', how_t:'Agrega un medicamento en tres pasos', how1_t:'Toma hasta 3 fotos', how1:'La receta y el frasco juntos le dan a MedSnap más información.', how2_t:'MedSnap lee la etiqueta', how2:'Nombre, dosis, indicaciones, cuántas pastillas trae el frasco y notas de comidas u horarios.', how3_t:'Revísalo y guárdalo', how3:'Luego aparece en tus páginas de Medicamentos, Inventario y Calendario.', sc_safe_t:'Tú revisas antes de guardar', sc_safe_p:'MedSnap solo completa lo que está impreso en la etiqueta. Nada se agrega hasta que lo revises y pulses Guardar.', sc_to_check_t:'¿Tienes una pastilla en la mano?', sc_to_check:'Compara su forma, color y grabado con tus medicamentos guardados.',
   al_sub:'Marca todo aquello a lo que eres alérgico.', al_other:'Otra', al_other_q:'¿Qué otras alergias tienes?', al_other_ph:'ej. gatos, fresas (separa con comas)', al_penicillin:'Penicilina', al_sulfa:'Sulfamidas', al_aspirin:'Aspirina', al_nsaids:'Ibuprofeno / AINE', al_codeine:'Codeína / opioides', al_latex:'Látex', al_contrast:'Contraste (yodo)', al_peanuts:'Cacahuates', al_tree_nuts:'Frutos secos', al_shellfish:'Mariscos', al_fish:'Pescado', al_eggs:'Huevo', al_milk:'Leche / lácteos', al_soy:'Soya', al_wheat:'Trigo / gluten', al_bee_stings:'Picaduras de abeja',
+  acc_title:'Cuenta', acc_sub:'Seguirás con la sesión iniciada en este dispositivo hasta que la cierres.', acc_logout:'Cerrar sesión', acc_logout_s:'Sal en este dispositivo. Tus medicamentos se quedan guardados.', acc_delete:'Eliminar cuenta', acc_delete_s:'Borra para siempre tu cuenta y todo su contenido.', del_title:'¿Eliminar tu cuenta?', del_sub:'Esto no se puede deshacer.', del_warn_t:'Se borrará todo', del_warn:'Tu perfil, medicamentos, inventario, historial, racha y datos del cuidador se eliminarán para siempre.', del_pw:'Escribe tu contraseña para confirmar', del_btn:'Eliminar mi cuenta',
+  conn_t:'Conectando con MedSnap…', conn:'Puede tardar hasta un minuto si el servidor estaba dormido. Tu sesión sigue iniciada.', still_trying:'MedSnap sigue intentándolo y se conectará solo en cuanto el servidor esté en marcha.', reconnected:'Conectado. ¡Bienvenido de nuevo!',
+  show_pw:'Mostrar contraseña', hide_pw:'Ocultar contraseña', g_make_acc:'Crear una cuenta con este correo →',
+  a11y:'Accesibilidad', a11y_btn:'Opciones de accesibilidad', tts:'Texto a voz', auto_read:'Leer en voz alta las respuestas de la IA', read_page:'Leer esta página en voz alta', stop_audio:'Detener audio', readability:'Legibilidad', visibility:'Visibilidad', hc:'Modo de alto contraste', normal_size:'Tamaño normal',
+  smaller:'Texto más pequeño', larger:'Texto más grande', dark_mode:'Modo oscuro',
   your_space:'Tu espacio', your_details:'Tus datos', n_today:'Hoy', n_calendar:'Calendario', n_streaks:'Rachas', n_meds:'Medicamentos',
   n_inventory:'Inventario', n_pillcheck:'Verificar pastilla', n_caregiver:'Cuidador', n_profile:'Perfil y preferencias',
-  need_hand:'¿Necesitas ayuda?', need_hand_sub:'Tu rutina, paso a paso.', your_care:'Tu cuidado', personal_account:'Cuenta personal', sign_out:'Salir', menu:'Menú',
+  install_app:"Instalar app", install_sub:"Añade MedSnap a tu pantalla de inicio.", need_hand:'¿Necesitas ayuda?', need_hand_sub:'Tu rutina, paso a paso.', your_care:'Tu cuidado', personal_account:'Cuenta personal', sign_out:'Salir', menu:'Menú',
   emergency:'Emergencia · Llamar al 911', private:'Tu información es privada', language:'Idioma', foot_tag:'Para hacer el día a día un poco más fácil.',
   td_eyebrow:'Hoy', g_morning:'Buenos días', g_afternoon:'Buenas tardes', g_evening:'Buenas noches', td_title:'Este es tu día.',
   td_sub:'Todo lo planeado para hoy. Marca cada dosis cuando la tomes.', td_read:'Leer el día en voz alta', td_doses:'Dosis de hoy', td_of:'{a} de {b} tomadas',
@@ -659,9 +729,14 @@ fr: {
   sc_btn:"Scanner l'étiquette", sc_hide:'Fermer le scanner', sc_title:'Scanner une ordonnance ou un flacon', sc_sub:"Prenez l'étiquette en photo et MedSnap remplit ce formulaire. Jusqu'à 3 photos, par exemple l'ordonnance et le flacon.", sc_hint:"Tenez l'étiquette à plat, de près et bien éclairée.", sc_take_more:'Prendre une autre photo', sc_read:"Lire l'étiquette", sc_reading:"Lecture de l'étiquette…", sc_photos:'{n} photo(s) sur 3', sc_photo_n:'Photo {n}', sc_remove:'Retirer la photo', sc_max:"Limite de 3 photos atteinte. Appuyez sur Lire l'étiquette.", sc_need:"Prenez ou importez d'abord une photo.", sc_done_t:"Rempli depuis l'étiquette :", sc_done:'{f}. Les champs remplis sont entourés.', sc_times:"L'étiquette indique {n} fois par jour. MedSnap garde une heure par médicament : après l'enregistrement, ajoutez-le pour chaque autre heure.", sc_check:"Vérifiez chaque détail avec l'étiquette avant d'enregistrer, et complétez ce qui manque, comme les jours.", sc_pc_t:'Nouvelle ordonnance ?', sc_pc_s:"Scannez l'étiquette ou le flacon pour l'ajouter à vos médicaments, votre stock et votre calendrier.",
   pc_main_title:'Scannez-le. Vérifiez-le deux fois.', pc_main_sub:'Scannez une ordonnance ou un flacon pour ajouter un médicament, ou comparez un comprimé avec votre liste.', pc_mode_scan:"Scanner l'étiquette", pc_mode_check:'Vérifier un comprimé', sc_main_t:"Scanner l'étiquette pour remplir", sc_main_s:"Photographiez l'étiquette de l'ordonnance ou le flacon. MedSnap la lit et remplit un nouveau médicament à vérifier et enregistrer.", how_k:'Comment ça marche', how_t:'Ajoutez un médicament en trois étapes', how1_t:"Prenez jusqu'à 3 photos", how1:"L'ordonnance et le flacon ensemble donnent le plus d'informations.", how2_t:"MedSnap lit l'étiquette", how2:'Nom, dose, posologie, nombre de comprimés dans le flacon et conseils de repas ou d\'horaire.', how3_t:'Vérifiez et enregistrez', how3:'Il apparaît ensuite dans Médicaments, Stock et Calendrier.', sc_safe_t:'Vous vérifiez avant tout enregistrement', sc_safe_p:"MedSnap ne remplit que ce qui est imprimé. Rien n'est ajouté avant que vous vérifiiez et appuyiez sur Enregistrer.", sc_to_check_t:'Un comprimé dans la main ?', sc_to_check:'Comparez sa forme, sa couleur et son inscription avec vos médicaments enregistrés.',
   al_sub:'Cochez tout ce à quoi vous êtes allergique.', al_other:'Autre', al_other_q:'Quelles autres allergies avez-vous ?', al_other_ph:'ex. chats, fraises (séparez par des virgules)', al_penicillin:'Pénicilline', al_sulfa:'Sulfamides', al_aspirin:'Aspirine', al_nsaids:'Ibuprofène / AINS', al_codeine:'Codéine / opioïdes', al_latex:'Latex', al_contrast:'Produit de contraste (iode)', al_peanuts:'Arachides', al_tree_nuts:'Fruits à coque', al_shellfish:'Fruits de mer', al_fish:'Poisson', al_eggs:'Œufs', al_milk:'Lait / produits laitiers', al_soy:'Soja', al_wheat:'Blé / gluten', al_bee_stings:"Piqûres d'abeille",
+  acc_title:'Compte', acc_sub:"Vous restez connecté sur cet appareil jusqu'à la déconnexion.", acc_logout:'Se déconnecter', acc_logout_s:'Déconnexion sur cet appareil. Vos médicaments restent enregistrés.', acc_delete:'Supprimer le compte', acc_delete_s:'Efface définitivement votre compte et tout son contenu.', del_title:'Supprimer votre compte ?', del_sub:'Cette action est irréversible.', del_warn_t:'Tout sera effacé', del_warn:"Votre profil, vos médicaments, votre stock, votre historique, votre série et les informations de l'aidant seront définitivement supprimés.", del_pw:'Saisissez votre mot de passe pour confirmer', del_btn:'Supprimer mon compte',
+  conn_t:'Connexion à MedSnap…', conn:"Cela peut prendre jusqu'à une minute si le serveur était en veille. Vous restez connecté.", still_trying:'MedSnap continue d\'essayer et se connectera tout seul dès que le serveur tournera.', reconnected:'Connecté. Bon retour !',
+  show_pw:'Afficher le mot de passe', hide_pw:'Masquer le mot de passe', g_make_acc:'Créer un compte avec cet e-mail →',
+  a11y:'Accessibilité', a11y_btn:"Options d'accessibilité", tts:'Synthèse vocale', auto_read:"Lire à voix haute les réponses de l'IA", read_page:'Lire cette page à voix haute', stop_audio:"Arrêter l'audio", readability:'Lisibilité', visibility:'Visibilité', hc:'Mode contraste élevé', normal_size:'Taille normale',
+  smaller:'Texte plus petit', larger:'Texte plus grand', dark_mode:'Mode sombre',
   your_space:'Votre espace', your_details:'Vos informations', n_today:"Aujourd'hui", n_calendar:'Calendrier', n_streaks:'Séries', n_meds:'Médicaments',
   n_inventory:'Stock', n_pillcheck:'Vérifier un comprimé', n_caregiver:'Aidant', n_profile:'Profil et préférences',
-  need_hand:"Besoin d'aide ?", need_hand_sub:'Votre routine, pas à pas.', your_care:'Vos soins', personal_account:'Compte personnel', sign_out:'Quitter', menu:'Menu',
+  install_app:"Installer l'app", install_sub:"Ajoutez MedSnap à votre écran d'accueil.", need_hand:"Besoin d'aide ?", need_hand_sub:'Votre routine, pas à pas.', your_care:'Vos soins', personal_account:'Compte personnel', sign_out:'Quitter', menu:'Menu',
   emergency:'Urgence · Appeler le 911', private:'Vos informations sont privées', language:'Langue', foot_tag:'Pour rendre le quotidien un peu plus simple.',
   td_eyebrow:"Aujourd'hui", g_morning:'Bonjour', g_afternoon:'Bon après-midi', g_evening:'Bonsoir', td_title:'Voici votre journée.',
   td_sub:"Tout ce qui est prévu aujourd'hui. Notez chaque prise une fois faite.", td_read:'Lire la journée', td_doses:"Prises aujourd'hui", td_of:'{a} sur {b} prises',
@@ -732,9 +807,14 @@ zh: {
   sc_btn:'扫描标签', sc_hide:'关闭扫描', sc_title:'扫描处方或药瓶', sc_sub:'拍下标签，MedSnap 会帮您填写此表。最多 3 张照片，例如处方和药瓶。', sc_hint:'将标签放平，靠近拍摄，光线要充足。', sc_take_more:'再拍一张', sc_read:'读取标签', sc_reading:'正在读取标签…', sc_photos:'已拍 {n}/3 张', sc_photo_n:'照片 {n}', sc_remove:'删除照片', sc_max:'已达 3 张上限，请点“读取标签”。', sc_need:'请先拍照或上传照片。', sc_done_t:'已根据标签填写：', sc_done:'{f}。已填写的项目带有边框。', sc_times:'标签写着每天 {n} 次。MedSnap 每种药只记录一个时间，保存后请为其他时间再添加一次。', sc_check:'保存前请对照标签检查每一项，并补充标签上没有的信息，例如服药日期。', sc_pc_t:'有新处方？', sc_pc_s:'扫描标签或药瓶，即可添加到药物、库存和日历中。',
   pc_main_title:'扫一扫，再核对。', pc_main_sub:'扫描处方或药瓶来添加药物，或将手中的药片与您的清单比对。', pc_mode_scan:'扫描标签', pc_mode_check:'核对药片', sc_main_t:'扫描标签自动填写', sc_main_s:'拍下处方标签或药瓶，MedSnap 会读取并填写新药物，供您检查后保存。', how_k:'使用方法', how_t:'三步添加药物', how1_t:'最多拍 3 张照片', how1:'同时拍处方和药瓶，MedSnap 能读到的信息最多。', how2_t:'MedSnap 读取标签', how2:'名称、剂量、用法、瓶中药片数量，以及饮食或时间提示。', how3_t:'检查并保存', how3:'之后会出现在药物、库存和日历页面。', sc_safe_t:'保存前由您确认', sc_safe_p:'MedSnap 只填写标签上印的内容。您检查并点“保存”之前，不会添加任何东西。', sc_to_check_t:'手里有一粒药？', sc_to_check:'将它的形状、颜色和刻印与已保存的药物比对。',
   al_sub:'勾选所有您过敏的项目。', al_other:'其他', al_other_q:'您还有哪些过敏？', al_other_ph:'例如：猫、草莓（用逗号分隔）', al_penicillin:'青霉素', al_sulfa:'磺胺类药物', al_aspirin:'阿司匹林', al_nsaids:'布洛芬 / 非甾体抗炎药', al_codeine:'可待因 / 阿片类', al_latex:'乳胶', al_contrast:'造影剂（碘）', al_peanuts:'花生', al_tree_nuts:'坚果', al_shellfish:'贝类海鲜', al_fish:'鱼', al_eggs:'鸡蛋', al_milk:'牛奶 / 乳制品', al_soy:'大豆', al_wheat:'小麦 / 麸质', al_bee_stings:'蜂蜇',
+  acc_title:'账户', acc_sub:'在您退出登录之前，此设备会一直保持登录。', acc_logout:'退出登录', acc_logout_s:'在此设备上退出。您的药物信息仍会保存。', acc_delete:'删除账户', acc_delete_s:'永久删除您的账户及其中所有内容。', del_title:'删除您的账户？', del_sub:'此操作无法撤销。', del_warn_t:'所有内容都会被删除', del_warn:'您的资料、药物、库存、日历记录、连续记录和照护人信息将被永久删除。', del_pw:'输入密码以确认', del_btn:'删除我的账户',
+  conn_t:'正在连接 MedSnap…', conn:'如果服务器刚才在休眠，可能需要一分钟。您仍保持登录。', still_trying:'MedSnap 会一直尝试，服务器一启动就会自动连接。', reconnected:'已连接，欢迎回来！',
+  show_pw:'显示密码', hide_pw:'隐藏密码', g_make_acc:'用这个邮箱创建账户 →',
+  a11y:'无障碍', a11y_btn:'无障碍选项', tts:'语音朗读', auto_read:'自动朗读 AI 回复', read_page:'朗读本页内容', stop_audio:'停止朗读', readability:'易读性', visibility:'可视性', hc:'高对比度模式', normal_size:'正常大小',
+  smaller:'缩小文字', larger:'放大文字', dark_mode:'深色模式',
   your_space:'我的空间', your_details:'我的信息', n_today:'今天', n_calendar:'日历', n_streaks:'连续记录', n_meds:'药物',
   n_inventory:'库存', n_pillcheck:'药片核对', n_caregiver:'照护人', n_profile:'个人资料与偏好',
-  need_hand:'需要帮助吗？', need_hand_sub:'您的日常，一步一步来。', your_care:'我的照护', personal_account:'个人账户', sign_out:'退出', menu:'菜单',
+  install_app:"安装应用", install_sub:"把 MedSnap 添加到主屏幕。", need_hand:'需要帮助吗？', need_hand_sub:'您的日常，一步一步来。', your_care:'我的照护', personal_account:'个人账户', sign_out:'退出', menu:'菜单',
   emergency:'紧急情况 · 拨打 911', private:'您的信息是私密的', language:'语言', foot_tag:'让每一天都更轻松一点。',
   td_eyebrow:'今天', g_morning:'早上好', g_afternoon:'下午好', g_evening:'晚上好', td_title:'这是您今天的安排。',
   td_sub:'今天计划的所有剂量。服用后请逐一标记。', td_read:'朗读今天的安排', td_doses:'今日剂量', td_of:'已服 {a} / {b}',
@@ -855,10 +935,14 @@ async function api(path, options) {
   if (!data) throw new Error(t('err_offline'));
   if (res.status === 401 && data.auth === false) {
     setToken('');
-    showGate('signin');
+    showGate(gateMode === 'signup' || location.hash === '#signup' ? 'signup' : 'signin');
     const err = new Error(data.error); err.auth = true; throw err;
   }
-  if (!res.ok || data.success === false) throw new Error(data.error || (t('err_server') + ' (' + res.status + ')'));
+  if (!res.ok || data.success === false) {
+    const err = new Error(data.error || (t('err_server') + ' (' + res.status + ')'));
+    err.noAccount = !!data.no_account;
+    throw err;
+  }
   return data;
 }
 function jsonOptions(method, body) { return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }; }
@@ -936,14 +1020,27 @@ async function connect() {
   API_BASE = bases[0];
   return null;
 }
+let offlineSince = 0, retryTimer = null;
 async function refresh() {
+  clearTimeout(retryTimer);
   const d = await connect();
-  if (d === 'auth') return;   // the sign-in screen is showing
-  if (d) { offline = false; hideGate(); applyState(d); return; }
-  offline = true;
-  loaded = true;   // still show every page, with a banner explaining how to start the server
-  render(true);
+  if (d === 'auth') { offline = false; return; }   // the sign-in screen is showing
+  if (d) {
+    const wasOffline = offline;
+    offline = false; hideGate(); applyState(d);
+    if (wasOffline) showToast(t('reconnected'));
+    return;
+  }
+  // Couldn't reach app.py (still starting, Render waking up, or not running).
+  // Keep trying by ourselves and connect as soon as it answers; your saved sign-in is never erased here.
+  const firstTime = !offline;
+  if (firstTime) offlineSince = Date.now();
+  const longWait = Date.now() - offlineSince > 20000;
+  offline = true; loaded = true;
+  if (firstTime || (longWait && !offlineLong)) { offlineLong = longWait; render(true); }
+  retryTimer = setTimeout(refresh, longWait ? 5000 : 2500);
 }
+let offlineLong = false;
 
 /* ---------- routing ---------- */
 const ROUTES = ['today', 'calendar', 'streaks', 'medications', 'inventory', 'pillcheck', 'caregiver', 'profile'];
@@ -982,6 +1079,7 @@ function renderSidebar() {
     <div class="nav-label">${esc(t('your_details'))}</div>
     <nav class="nav">${link('caregiver', 'heart', 'n_caregiver')}${link('profile', 'user', 'n_profile')}</nav>
     <div class="side-foot">
+      <button class="help-card" data-install><span class="ic">${ic('download', 20, 1.6)}</span><span><b>${esc(t('install_app'))}</b><small>${esc(t('install_sub'))}</small></span></button>
       <button class="help-card" data-act="buddy-open"><span class="ic">${ic('help', 20, 1.6)}</span><span><b>${esc(t('need_hand'))}</b><small>${esc(t('need_hand_sub'))}</small></span></button>
       <div class="me"><span class="avatar">${esc(initial())}</span><div><b>${esc(S.profile.name || t('your_care'))}</b><small>${esc(t('personal_account'))}</small></div>
         <a href="#" data-act="sign-out" title="${esc(t('sign_out'))}" aria-label="${esc(t('sign_out'))}">${ic('logout', 20, 1.6)}</a></div>
@@ -1540,6 +1638,13 @@ function viewProfile() {
     <div class="row"><span>${esc(t('text_size'))}</span><span class="sz"><button data-act="font" data-dir="-1" aria-label="A-">A−</button><button data-act="font" data-dir="1" aria-label="A+">A+</button></span></div>
     <label class="row" style="cursor:pointer"><span>${esc(t('dyslexia'))}</span><input type="checkbox" data-change="dyslexia" ${dys ? 'checked' : ''}></label>
     <div class="row"><label for="themeSel">${esc(t('theme'))}</label><select class="input" id="themeSel" data-change="theme"><option value="light" ${!dark ? 'selected' : ''}>${esc(t('light'))}</option><option value="dark" ${dark ? 'selected' : ''}>${esc(t('dark'))}</option></select></div>
+  </section>
+  <section class="card pad settings" style="margin-top:1.6rem">
+    <div class="card-head" style="margin-bottom:0"><span class="tile">${ic('user', 22, 1.6)}</span><div><h2>${esc(t('acc_title'))}</h2><p>${esc(t('acc_sub'))}</p></div></div>
+    <div class="row"><span><b style="font-weight:600">${esc(t('acc_logout'))}</b><br><small class="muted" style="font-size:.78rem">${esc(t('acc_logout_s'))}</small></span>
+      <button class="btn btn-light btn-sm" data-act="sign-out">${ic('logout', 16, 1.8)}${esc(t('acc_logout'))}</button></div>
+    <div class="row"><span><b style="font-weight:600;color:var(--miss-ink)">${esc(t('acc_delete'))}</b><br><small class="muted" style="font-size:.78rem">${esc(t('acc_delete_s'))}</small></span>
+      <button class="btn btn-sm btn-danger-soft" data-act="delete-account">${ic('trash', 16, 1.8)}${esc(t('acc_delete'))}</button></div>
   </section>`;
 }
 /* Allergies are saved as plain text, e.g. "Penicillin, Shellfish, Cats" (English names, so they read
@@ -1580,6 +1685,34 @@ function allergiesFromForm(f) {
   }
   return [...new Set(parts)].join(', ').slice(0, 500);
 }
+/* ---------- accessibility panel: shares its saved settings with the landing page ---------- */
+let a11yOpen = false;
+const getSetting = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const putSetting = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+function renderA11y() {
+  const btn = $('#a11yBtn'), panel = $('#a11yPanel');
+  btn.innerHTML = ic('access', 26, 1.8);
+  btn.setAttribute('aria-label', t('a11y_btn')); btn.setAttribute('aria-expanded', a11yOpen);
+  panel.hidden = !a11yOpen;
+  if (!a11yOpen) return;
+  const root = document.documentElement;
+  const scale = parseFloat(getComputedStyle(root).getPropertyValue('--scale')) || 1;
+  const sw = (id, on) => `<input type="checkbox" class="switch" data-change="${id}" ${on ? 'checked' : ''}>`;
+  panel.innerHTML = `
+    <div class="a11y-head"><h2 id="a11yTitle"><span aria-hidden="true">♿</span> ${esc(t('a11y'))}</h2>
+      <button class="icon-btn" data-act="a11y-close" aria-label="${esc(t('close'))}">${ic('x', 18, 1.9)}</button></div>
+    <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔊</span> ${esc(t('tts'))}</div>
+      <label class="a11y-row"><span>${esc(t('auto_read'))}</span>${sw('a11y-auto', getSetting('medsnap_autoread') === '1')}</label>
+      <button class="a11y-wide read" data-act="a11y-read">${ic('volume', 17, 1.8)}${esc(t('read_page'))}</button>
+      <button class="a11y-wide stop" data-act="a11y-stop">■ ${esc(t('stop_audio'))}</button></div>
+    <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔤</span> ${esc(t('text_size'))}</div>
+      <div class="sz3"><button data-act="font" data-dir="-1" aria-label="${esc(t('smaller'))}">A−</button><button data-act="font-reset" ${Math.abs(scale - 1) < 0.01 ? 'disabled' : ''} aria-label="${esc(t('normal_size'))}">A</button><button data-act="font" data-dir="1" aria-label="${esc(t('larger'))}">A+</button></div></div>
+    <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">📖</span> ${esc(t('readability'))}</div>
+      <label class="a11y-row"><span>${esc(t('dyslexia'))}</span>${sw('a11y-dys', root.classList.contains('dyslexic'))}</label></div>
+    <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">👁️</span> ${esc(t('visibility'))}</div>
+      <label class="a11y-row"><span>${esc(t('hc'))}</span>${sw('a11y-hc', root.classList.contains('hc'))}</label>
+      <label class="a11y-row"><span>${esc(t('dark_mode'))}</span>${sw('a11y-dark', root.getAttribute('data-theme') === 'dark')}</label></div>`;
+}
 const SCALES = [0.85, 0.92, 1, 1.1, 1.2, 1.32, 1.45, 1.6];
 function stepFont(dir) {
   const cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scale')) || 1;
@@ -1590,7 +1723,35 @@ function stepFont(dir) {
 }
 
 /* ---------- read aloud ---------- */
+/* Turn Buddy's answer into tidy, readable HTML: **bold**, bullet and numbered lists, short paragraphs.
+   Everything is escaped first, so the AI can never inject HTML. */
+function formatAnswer(text) {
+  const inline = str => esc(str)
+    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+    .replace(/__(.+?)__/g, '<b>$1</b>')
+    .replace(/(^|[^*])\*(?!\s)([^*]+?)\*(?!\*)/g, '$1<em>$2</em>');
+  const lines = String(text || '').replace(/\r/g, '').split('\n');
+  let html = '', list = null;
+  const close = () => { if (list) { html += `</${list}>`; list = null; } };
+  for (let raw of lines) {
+    const line = raw.trim();
+    if (!line) { close(); continue; }
+    let m;
+    if ((m = line.match(/^[*\-•]\s+(.*)$/))) { if (list !== 'ul') { close(); html += '<ul>'; list = 'ul'; } html += `<li>${inline(m[1])}</li>`; continue; }
+    if ((m = line.match(/^\d+[.)]\s+(.*)$/))) { if (list !== 'ol') { close(); html += '<ol>'; list = 'ol'; } html += `<li>${inline(m[1])}</li>`; continue; }
+    close();
+    if ((m = line.match(/^#{1,6}\s+(.*)$/))) { html += `<p><b>${inline(m[1])}</b></p>`; continue; }   // headings become a bold line
+    html += `<p>${inline(line)}</p>`;
+  }
+  close();
+  return html;
+}
+/* Plain text for reading aloud: no asterisks, hashes or list symbols. */
+function plainText(text) {
+  return String(text || '').replace(/\*\*|__|#{1,6}\s|^[*\-•]\s+|^\d+[.)]\s+/gm, '').replace(/\*/g, '');
+}
 function speak(text) {
+  text = plainText(text);
   if (!('speechSynthesis' in window)) { showToast(t('tts_unsupported'), 'error'); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
@@ -1619,7 +1780,7 @@ function renderBuddy() {
   panel.classList.toggle('grown', chatHistory.length > 0);
   panel.innerHTML = `
     <div class="bd-head"><div><h2>${esc(t('bd_title'))}</h2><small>${esc(t('bd_sub'))}</small></div><button class="icon-btn" data-act="buddy-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
-    <div class="bd-msgs" id="bdMsgs" aria-live="polite">${chatHistory.length ? chatHistory.map(m => `<div class="msg ${m.role === 'user' ? 'user' : 'bot'} ${m.error ? 'err' : ''}">${esc(m.content)}</div>`).join('') + (chatBusy ? '<div class="msg bot typing"><span></span><span></span><span></span></div>' : '')
+    <div class="bd-msgs" id="bdMsgs" aria-live="polite">${chatHistory.length ? chatHistory.map(m => `<div class="msg ${m.role === 'user' ? 'user' : 'bot'} ${m.error ? 'err' : ''}">${m.role === 'user' ? esc(m.content) : formatAnswer(m.content)}</div>`).join('') + (chatBusy ? '<div class="msg bot typing"><span></span><span></span><span></span></div>' : '')
       : `<p class="bd-intro">${esc(t('bd_intro'))}</p>`}</div>
     <p class="bd-note">${esc(t('bd_note'))}</p>
     <form class="bd-form" data-form="buddy"><label class="sr" for="bdInput">${esc(t('bd_ph'))}</label>
@@ -1636,6 +1797,7 @@ async function sendChat(text) {
     const msgs = chatHistory.filter(m => !m.error).map(m => ({ role: m.role, content: m.content }));
     const data = await api('/api/chat', jsonOptions('POST', { messages: msgs, language: lang, medications: S.meds.map(m => m.name) }));
     chatHistory.push({ role: 'assistant', content: data.answer });
+    if (getSetting('medsnap_autoread') === '1') speak(data.answer);
   } catch (e) {
     chatHistory.push({ role: 'assistant', content: '⚠️ ' + e.message, error: true });
   }
@@ -1657,7 +1819,7 @@ function openEmergency() {
 }
 
 /* ---------- sign in / create account ---------- */
-let gateMode = 'signin', gateError = '';
+let gateMode = 'signin', gateError = '', gateNoAccount = false, gateEmail = '';
 function showGate(mode) {
   gateMode = mode || gateMode;
   const g = $('#gate'); g.hidden = false;
@@ -1669,11 +1831,11 @@ function showGate(mode) {
       <button type="button" role="tab" aria-selected="${!up}" data-act="gate-mode" data-v="signin">${esc(t('g_signin'))}</button>
       <button type="button" role="tab" aria-selected="${up}" data-act="gate-mode" data-v="signup">${esc(t('g_signup'))}</button>
     </div>
-    ${gateError ? `<div class="err" role="alert">${esc(gateError)}</div>` : ''}
+    ${gateError ? `<div class="err" role="alert">${esc(gateError)}${gateNoAccount && !up ? `<button type="button" class="link-btn" data-act="gate-to-signup">${esc(t('g_make_acc'))}</button>` : ''}</div>` : ''}
     <form data-form="gate">
       ${up ? `<div class="field"><label for="gName">${esc(t('f_pname'))}</label><input class="input" id="gName" name="name" required maxlength="60" autocomplete="name"></div>` : ''}
       <div class="field"><label for="gEmail">${esc(t('cg_email'))}</label><input class="input" id="gEmail" name="email" type="email" required autocomplete="email"></div>
-      <div class="field"><label for="gPw">${esc(t('g_password'))}</label><input class="input" id="gPw" name="password" type="password" required ${up ? 'minlength="8" autocomplete="new-password"' : 'autocomplete="current-password"'}>
+      <div class="field"><label for="gPw">${esc(t('g_password'))}</label><div class="pw-wrap"><input class="input" id="gPw" name="password" type="password" required ${up ? 'minlength="8" autocomplete="new-password"' : 'autocomplete="current-password"'}><button type="button" class="pw-eye" data-act="pw-eye" data-target="gPw" aria-label="${esc(t('show_pw'))}">${ic('eye', 19, 1.7)}</button></div>
         ${up ? `<p class="hint">${esc(t('g_pw_hint'))}</p>` : ''}</div>
       ${up ? `<div class="field"><label for="gAge">${esc(t('f_age'))}</label><input class="input" id="gAge" name="age" inputmode="numeric" maxlength="3" placeholder="${esc(t('optional'))}"></div>
       <div class="field"><label for="gAll">${esc(t('f_allergies'))}</label><textarea class="input" id="gAll" name="allergies" maxlength="500" placeholder="${esc(t('optional'))}"></textarea></div>` : ''}
@@ -1694,7 +1856,36 @@ async function submitGate(form) {
     hideGate();
     await refresh();
   } catch (e) {
-    gateError = e.message; showGate(gateMode);
+    gateError = e.message; gateNoAccount = !!e.noAccount; gateEmail = f.email || '';
+    showGate(gateMode);
+    if (gateEmail && $('#gEmail')) $('#gEmail').value = gateEmail;
+  }
+}
+function openDeleteAccount() {
+  const dlg = $('#delDlg');
+  dlg.innerHTML = `<form data-form="delete-account">
+    <div class="dlg-head"><span class="tile" style="background:var(--miss-bg);color:var(--miss-ink)">${ic('trash', 22, 1.7)}</span><div><h2>${esc(t('del_title'))}</h2><p>${esc(t('del_sub'))}</p></div>
+      <button type="button" class="icon-btn" data-act="del-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
+    <div class="dlg-body" style="padding-bottom:1rem">
+      <div class="caution" style="margin-bottom:1.3rem">${ic('alert', 22, 1.6)}<div><b>${esc(t('del_warn_t'))}</b><p>${esc(t('del_warn'))}</p></div></div>
+      <div class="field"><label for="delPw">${esc(t('del_pw'))}</label><div class="pw-wrap"><input class="input" id="delPw" name="password" type="password" required autocomplete="current-password"><button type="button" class="pw-eye" data-act="pw-eye" data-target="delPw" aria-label="${esc(t('show_pw'))}">${ic('eye', 19, 1.7)}</button></div></div>
+      <div class="scan-msg-box" id="delErr"></div>
+    </div>
+    <div class="dlg-foot"><button type="button" class="btn btn-light" data-act="del-close">${esc(t('cancel'))}</button>
+      <button type="submit" class="btn btn-danger">${ic('trash', 18, 1.8)}${esc(t('del_btn'))}</button></div>
+  </form>`;
+  dlg.showModal(); $('#delPw').focus();
+}
+async function deleteAccount(form) {
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true;
+  try {
+    await api('/api/auth/delete', jsonOptions('POST', { password: new FormData(form).get('password') }));
+    setToken('');
+    try { localStorage.removeItem('medsnap_client_id'); } catch (e) {}
+    location.href = API_BASE ? 'landing.html' : '/';
+  } catch (e) {
+    $('#delErr').innerHTML = `<div class="scan-msg err" role="alert">${esc(e.message)}</div>`;
+    btn.disabled = false;
   }
 }
 async function signOut() {
@@ -1715,14 +1906,16 @@ function renderPage(force) {
     try { html = VIEWS[route](); }
     catch (err) { console.error(err); html = `<div class="card pad empty"><p>${esc(t('err_page'))}</p></div>`; }
   }
-  const banner = offline ? `<div class="banner" role="alert">${ic('alert', 20, 1.7)}<span><b>${esc(t('off_banner_t'))}</b> ${esc(t('off_banner'))}</span><a href="#" data-act="retry">${esc(t('retry'))}${ic('arrow', 16, 1.8)}</a></div>` : '';
+  const banner = !offline ? '' : !offlineLong
+    ? `<div class="banner" role="status"><span class="spin" aria-hidden="true"></span><span><b>${esc(t('conn_t'))}</b> ${esc(t('conn'))}</span></div>`
+    : `<div class="banner" role="alert">${ic('alert', 20, 1.7)}<span><b>${esc(t('off_banner_t'))}</b> ${esc(t('off_banner'))} ${esc(t('still_trying'))}</span><a href="#" data-act="retry">${esc(t('retry'))}${ic('arrow', 16, 1.8)}</a></div>`;
   $('#view').innerHTML = banner + html;
   if (route === 'pillcheck' && camStream) { const v = $('#camVideo'); if (v) { v.srcObject = camStream; v.play().catch(() => {}); } }
   if (route === 'pillcheck' && pcMode === 'scan' && loaded && !$('#medDlg').open) { scanHost = 'page'; scanOpen = true; renderScan(); }
 }
 function render(force) {
   document.documentElement.lang = lang;
-  renderSidebar(); renderTopbar(); renderFooter(); renderPage(force); renderBuddy();
+  renderSidebar(); renderTopbar(); renderFooter(); renderPage(force); renderBuddy(); renderA11y();
 }
 
 /* ---------- events ---------- */
@@ -1731,12 +1924,24 @@ async function run(promise, okMsg) {
   catch (e) { showToast(e.message, 'error'); return null; }
 }
 document.addEventListener('click', async e => {
+  if (a11yOpen && !e.target.closest('#a11yPanel, #a11yBtn')) { a11yOpen = false; renderA11y(); }
   const el = e.target.closest('[data-act]'); if (!el) return;
   const id = el.dataset.id ? Number(el.dataset.id) : null;
   switch (el.dataset.act) {
     case 'retry': e.preventDefault(); refresh(); break;
-    case 'gate-mode': gateError = ''; showGate(el.dataset.v); break;
+    case 'gate-mode': gateError = ''; gateNoAccount = false; showGate(el.dataset.v); break;
+    case 'gate-to-signup': { const em = gateEmail; gateError = ''; gateNoAccount = false; showGate('signup'); $('#gEmail').value = em; $('#gName').focus(); break; }
+    case 'pw-eye': {
+      const input = $('#' + el.dataset.target); if (!input) break;
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      el.innerHTML = ic(show ? 'eyeoff' : 'eye', 19, 1.7);
+      el.setAttribute('aria-label', show ? t('hide_pw') : t('show_pw'));
+      input.focus(); break;
+    }
     case 'sign-out': e.preventDefault(); signOut(); break;
+    case 'delete-account': openDeleteAccount(); break;
+    case 'del-close': $('#delDlg').close(); break;
     case 'open-nav': document.body.classList.add('nav-open'); break;
     case 'close-nav': document.body.classList.remove('nav-open'); break;
     case 'take': el.disabled = true; await run(api(`/api/medications/${id}/take`, { method: 'POST' })); break;
@@ -1782,7 +1987,12 @@ document.addEventListener('click', async e => {
       catch (err) { showToast(err.message, 'error'); }
       el.disabled = false; break;
     }
-    case 'font': stepFont(Number(el.dataset.dir)); break;
+    case 'font': stepFont(Number(el.dataset.dir)); renderA11y(); break;
+    case 'font-reset': document.documentElement.style.setProperty('--scale', 1); putSetting('medsnap_scale', '1'); renderA11y(); break;
+    case 'a11y-toggle': a11yOpen = !a11yOpen; renderA11y(); break;
+    case 'a11y-close': a11yOpen = false; renderA11y(); $('#a11yBtn').focus(); break;
+    case 'a11y-read': speak(($('#view').innerText || '').replace(/\s+/g, ' ').slice(0, 4000)); break;
+    case 'a11y-stop': if ('speechSynthesis' in window) speechSynthesis.cancel(); break;
     case 'emergency': openEmergency(); break;
     case 'em-close': $('#emDlg').close(); break;
     case 'em-alert': {
@@ -1804,6 +2014,10 @@ document.addEventListener('change', e => {
     if (e.target.checked) $('#pAllOther').focus();
   }
   if (c === 'theme') { document.documentElement.setAttribute('data-theme', e.target.value); try { localStorage.setItem('medsnap_theme', e.target.value); } catch (err) {} }
+  if (c === 'a11y-auto') putSetting('medsnap_autoread', e.target.checked ? '1' : '0');
+  if (c === 'a11y-dys') { document.documentElement.classList.toggle('dyslexic', e.target.checked); putSetting('medsnap_dyslexia', e.target.checked ? '1' : '0'); if (route === 'profile') renderPage(true); }
+  if (c === 'a11y-hc') { document.documentElement.classList.toggle('hc', e.target.checked); putSetting('medsnap_contrast', e.target.checked ? '1' : '0'); }
+  if (c === 'a11y-dark') { document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light'); putSetting('medsnap_theme', e.target.checked ? 'dark' : 'light'); if (route === 'profile') renderPage(true); }
   if (c === 'dyslexia') { document.documentElement.classList.toggle('dyslexic', e.target.checked); try { localStorage.setItem('medsnap_dyslexia', e.target.checked ? '1' : '0'); } catch (err) {} }
   if (c === 'scan-file') { [...e.target.files].slice(0, 3 - scanShots.length).forEach(addShot); e.target.value = ''; renderScan(); }
   if (c === 'cam-file') { const f = e.target.files[0]; if (f) { stopCamera(); setShot(f); renderPage(true); } }
@@ -1844,18 +2058,19 @@ document.addEventListener('submit', async e => {
     if (d) { showToast(d.delivery === 'sending' ? t('cg_saved_on', { name: payload.name || t('your_caregiver') }) : t('cg_saved')); renderPage(true); }
   }
   if (kind === 'gate') { submitGate(form); return; }
+  if (kind === 'delete-account') { deleteAccount(form); return; }
   if (kind === 'buddy') { const inp = $('#bdInput'); const v = inp.value; inp.value = ''; sendChat(v); }
 });
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && a11yOpen) { a11yOpen = false; renderA11y(); }
   if (e.key === 'Escape' && buddyOpen && !document.querySelector('dialog[open]')) { buddyOpen = false; renderBuddy(); }
 });
 
 /* ---------- start ---------- */
 render(true);
-if (getToken()) refresh();
-else showGate(location.hash === '#signup' ? 'signup' : 'signin');
+refresh();   // signs in with the saved token or the remember-me cookie; shows the sign-in screen only if neither works
 // Keep "due"/"missed" accurate and pick up changes made on another device.
-setInterval(() => { if (getToken() && $('#gate').hidden && !document.querySelector('dialog[open]') && !chatBusy) api('/api/state').then(d => { applyState(d); }).catch(() => {}); }, 60000);
+setInterval(() => { if (!offline && loaded && $('#gate').hidden && !document.querySelector('dialog[open]') && !chatBusy) api('/api/state').then(d => { applyState(d); }).catch(() => {}); }, 60000);
 </script>
 </body>
 </html>
