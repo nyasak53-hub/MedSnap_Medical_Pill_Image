@@ -1,6 +1,0 @@
-.env
-.vscode/
-__pycache__/
-.venv/
-medications_data.json
-*.tmp

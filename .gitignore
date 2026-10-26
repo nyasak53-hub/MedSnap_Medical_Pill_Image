@@ -1,0 +1,7 @@
+.env
+users.json
+users.json.bak
+medications_data.json
+medications_data.json.bak
+venv/
+__pycache__/

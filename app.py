@@ -98,8 +98,7 @@ ALL_DAYS = [0, 1, 2, 3, 4, 5, 6]  # Monday = 0 ... Sunday = 6
 MISSED_GRACE_MINUTES = int(os.environ.get("MISSED_DOSE_GRACE_MINUTES", "30"))
 VALID_SHAPES = {"", "round", "oval", "capsule", "oblong", "square", "diamond", "triangle", "hexagon"}
 VALID_COLORS = {"", "white", "yellow", "orange", "pink", "red", "brown", "green", "blue", "purple", "gray"}
-LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Simplified Chinese",
-                  "hi": "Hindi (Devanagari script)", "te": "Telugu (Telugu script)"}
+LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Simplified Chinese"}
 TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,255}\.[^@\s]{2,}$")
 PHONE_RE = re.compile(r"^\+[1-9]\d{7,14}$")
@@ -842,7 +841,7 @@ def main_app():
 # Installable app (PWA): manifest, icons, service worker, install helper
 # Everything is generated here, so no extra files or folders are needed.
 # ==========================================================================
-PWA_VERSION = "veradose-v5"
+PWA_VERSION = "veradose-v3"
 BRAND = (59, 98, 85)          # #3B6255, the VeraDose green
 BRAND_LIGHT = (203, 222, 211)  # #CBDED3
 
@@ -1049,19 +1048,7 @@ PWA_JS = r"""
           iosOther: '在 iPhone 和 iPad 上，请先用 <b>Safari</b> 打开此页面，再按以下步骤操作。',
           android: ['点按浏览器右上角的 <b>⋮</b> 菜单。', '点按<b>安装应用</b>或<b>添加到主屏幕</b>。', '点按<b>安装</b>。VeraDose 已在你的主屏幕上。'],
           desktop: ['在 <b>Chrome</b> 或 <b>Edge</b> 中，点击地址栏右侧的安装图标，或打开 <b>⋮</b> 菜单选择<b>安装 VeraDose</b>。', '在 Mac 的 <b>Safari</b> 中，选择<b>文件 → 添加到程序坞</b>。', '电脑上的 Firefox 无法安装应用，请使用 Chrome、Edge 或 Safari。'],
-          ok: '知道了', done: 'VeraDose 已安装！请在主屏幕上找到它。' },
-    hi: { btn: 'ऐप इंस्टॉल करें', title: 'VeraDose इंस्टॉल करें', sub: 'VeraDose को अपनी होम स्क्रीन पर जोड़ें। यह सामान्य ऐप की तरह खुलता है, मुफ़्त में।',
-          ios: ['Safari में <b>शेयर</b> बटन (तीर वाला चौकोर) टैप करें।', 'नीचे स्क्रॉल करें और <b>होम स्क्रीन में जोड़ें</b> टैप करें।', '<b>जोड़ें</b> टैप करें। VeraDose अब आपकी होम स्क्रीन पर है।'],
-          iosOther: 'iPhone और iPad पर पहले यह पेज <b>Safari</b> में खोलें, फिर ये चरण अपनाएँ।',
-          android: ['ब्राउज़र में ऊपर दाईं ओर <b>⋮</b> मेनू टैप करें।', '<b>ऐप इंस्टॉल करें</b> या <b>होम स्क्रीन में जोड़ें</b> टैप करें।', '<b>इंस्टॉल करें</b> टैप करें। VeraDose अब आपकी होम स्क्रीन पर है।'],
-          desktop: ['<b>Chrome</b> या <b>Edge</b> में पता बार के दाईं ओर इंस्टॉल आइकन पर क्लिक करें, या <b>⋮</b> मेनू खोलकर <b>VeraDose इंस्टॉल करें</b> चुनें।', 'Mac पर <b>Safari</b> में <b>File → Add to Dock</b> चुनें।', 'कंप्यूटर पर Firefox ऐप इंस्टॉल नहीं कर सकता। कृपया Chrome, Edge या Safari इस्तेमाल करें।'],
-          ok: 'समझ गया', done: 'VeraDose इंस्टॉल हो गया! इसे अपनी होम स्क्रीन पर देखें।' },
-    te: { btn: 'యాప్ ఇన్‌స్టాల్ చేయండి', title: 'VeraDose ఇన్‌స్టాల్ చేయండి', sub: 'VeraDose ను మీ హోమ్ స్క్రీన్‌కు జోడించండి. ఇది సాధారణ యాప్‌లా తెరుచుకుంటుంది, ఉచితంగా.',
-          ios: ['Safari లో <b>షేర్</b> బటన్ (బాణం ఉన్న చతురస్రం) నొక్కండి.', 'కిందికి స్క్రోల్ చేసి <b>హోమ్ స్క్రీన్‌కు జోడించు</b> నొక్కండి.', '<b>జోడించు</b> నొక్కండి. VeraDose ఇప్పుడు మీ హోమ్ స్క్రీన్‌పై ఉంది.'],
-          iosOther: 'iPhone మరియు iPad లో ముందుగా ఈ పేజీని <b>Safari</b> లో తెరిచి, తర్వాత ఈ దశలు పాటించండి.',
-          android: ['బ్రౌజర్ పైభాగంలో కుడివైపు <b>⋮</b> మెనూ నొక్కండి.', '<b>యాప్ ఇన్‌స్టాల్ చేయండి</b> లేదా <b>హోమ్ స్క్రీన్‌కు జోడించు</b> నొక్కండి.', '<b>ఇన్‌స్టాల్</b> నొక్కండి. VeraDose ఇప్పుడు మీ హోమ్ స్క్రీన్‌పై ఉంది.'],
-          desktop: ['<b>Chrome</b> లేదా <b>Edge</b> లో అడ్రస్ బార్ కుడి చివర ఉన్న ఇన్‌స్టాల్ ఐకాన్ నొక్కండి, లేదా <b>⋮</b> మెనూ తెరిచి <b>VeraDose ఇన్‌స్టాల్ చేయండి</b> ఎంచుకోండి.', 'Mac లో <b>Safari</b> లో <b>File → Add to Dock</b> ఎంచుకోండి.', 'కంప్యూటర్‌లో Firefox యాప్‌లను ఇన్‌స్టాల్ చేయలేదు. దయచేసి Chrome, Edge లేదా Safari వాడండి.'],
-          ok: 'అర్థమైంది', done: 'VeraDose ఇన్‌స్టాల్ అయింది! మీ హోమ్ స్క్రీన్‌పై చూడండి.' }
+          ok: '知道了', done: 'VeraDose 已安装！请在主屏幕上找到它。' }
   };
   function L() { var l = 'en'; try { l = localStorage.getItem('medsnap_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
   var root = document.documentElement;
@@ -1138,28 +1125,8 @@ def pwa_js():
     return resp
 
 
-_ai_check = {"at": 0, "result": None}
-
-
-def check_ai_now():
-    """Ask Groq one tiny question (only when /healthz?check_ai=1 is opened) and report the result."""
-    if not client:
-        return "not set: add GROQ_API_KEY"
-    if time.time() - _ai_check["at"] < 120 and _ai_check["result"]:
-        return _ai_check["result"]
-    try:
-        ai_complete([{"role": "user", "content": "Reply with the word OK."}], max_tokens=20)
-        result = "working"
-    except Exception as exc:
-        result = "error: " + ai_error_message(exc)
-    _ai_check.update(at=time.time(), result=result)
-    return result
-
-
 @app.route("/healthz")
 def healthz():
-    if request.args.get("check_ai"):
-        return jsonify({"ai": check_ai_now(), "models_tried": TEXT_MODELS})
     return jsonify({
         "status": "ok",
         "index_html_found": os.path.isfile(os.path.join(BASE_DIR, "index.html")),
@@ -1803,8 +1770,7 @@ def ai_error_message(exc):
     status = getattr(exc, "status_code", None)
     name = type(exc).__name__
     if status == 401:
-        return ("Groq rejected the AI key. Make a new key at console.groq.com/keys and paste it as GROQ_API_KEY "
-                "(on Render: Environment tab; on your computer: the .env file), with no quotes or spaces.")
+        return "Groq rejected the API key. Check GROQ_API_KEY in your .env file (no quotes or spaces), then restart app.py."
     if status == 403:
         return "Groq refused the request (403). Check that your Groq account and key are active."
     if status == 429:
@@ -1813,7 +1779,7 @@ def ai_error_message(exc):
         return ("The AI model isn't available. Set GROQ_TEXT_MODEL in .env to a current model from "
                 "console.groq.com/docs/models, then restart app.py.")
     if "Connection" in name or "Timeout" in name:
-        return "The server couldn't connect to Groq. Please try again in a moment."
+        return "The server couldn't connect to Groq. Check this computer's internet connection and try again."
     return f"The AI service had a problem: {str(exc)[:160]}"
 
 
