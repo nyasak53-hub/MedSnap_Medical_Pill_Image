@@ -713,7 +713,7 @@ def main_app():
 # Installable app (PWA): manifest, icons, service worker, install helper
 # Everything is generated here, so no extra files or folders are needed.
 # ==========================================================================
-PWA_VERSION = "veradose-v2"
+PWA_VERSION = "veradose-v3"
 BRAND = (59, 98, 85)          # #3B6255, the VeraDose green
 BRAND_LIGHT = (203, 222, 211)  # #CBDED3
 
@@ -837,6 +837,16 @@ function offlinePage() {
     '<button onclick="location.reload()" style="font:inherit;padding:.7rem 1.4rem;border:0;border-radius:999px;background:#3B6255;color:#fff">Try again</button></div>',
     { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
 }
+
+// Tapping an alarm notification opens (or brings back) VeraDose.
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/app#alarms';
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    for (const c of list) { if (new URL(c.url).pathname.startsWith('/app')) { c.focus(); return; } }
+    return self.clients.openWindow(url);
+  }));
+});
 
 self.addEventListener('fetch', (e) => {
   const req = e.request;
