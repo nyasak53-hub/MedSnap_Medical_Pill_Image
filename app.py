@@ -251,7 +251,7 @@ if DATABASE_URL:
     try:
         import psycopg as _pg
     except ImportError:
-        raise SystemExit("\n[MedSnap] DATABASE_URL is set but the database driver is missing.\n"
+        raise SystemExit("\n[VeraDose] DATABASE_URL is set but the database driver is missing.\n"
                          "Add this line to requirements.txt and deploy again:  psycopg[binary]\n")
 _db_conn = None
 _db_lock = threading.Lock()
@@ -260,7 +260,7 @@ _db_lock = threading.Lock()
 def _db_connect():
     global _db_conn
     _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=15)
-    _db_conn.execute("CREATE TABLE IF NOT EXISTS medsnap_kv ("
+    _db_conn.execute("CREATE TABLE IF NOT EXISTS veradose_kv ("
                      "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
 
 
@@ -291,7 +291,7 @@ def _db_key(path):
 
 
 def _db_load(path):
-    row = _db("SELECT v FROM medsnap_kv WHERE k = %s", (_db_key(path),))
+    row = _db("SELECT v FROM veradose_kv WHERE k = %s", (_db_key(path),))
     if row:
         return json.loads(row[0])
     # First run with a database: bring over anything already saved in the local file.
@@ -301,7 +301,7 @@ def _db_load(path):
                 data = json.load(f)
             if isinstance(data, dict):
                 _db_save(path, data)
-                print(f"[MedSnap] Copied {os.path.basename(path)} into the database.")
+                print(f"[VeraDose] Copied {os.path.basename(path)} into the database.")
                 return data
         except Exception as exc:
             print(f"[warn] Could not import {path}: {exc}")
@@ -309,7 +309,7 @@ def _db_load(path):
 
 
 def _db_save(path, data):
-    _db("INSERT INTO medsnap_kv (k, v, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
+    _db("INSERT INTO veradose_kv (k, v, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
         "ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v, updated_at = CURRENT_TIMESTAMP",
         (_db_key(path), json.dumps(data)))
 
@@ -465,7 +465,7 @@ def account_for_token(token):
         return data["users"].get(entry["email"])
 
 
-AUTH_COOKIE = "medsnap_token"
+AUTH_COOKIE = "veradose_token"
 REMEMBER_SECONDS = 400 * 24 * 3600  # stay signed in (browsers cap cookies at about 400 days)
 
 
@@ -698,7 +698,7 @@ def landing():
         page_response("landing.html")
         or page_response("index.html")
         or Response(
-            "<h1>MedSnap is running</h1><p>The server started, but <code>index.html</code> was not "
+            "<h1>VeraDose is running</h1><p>The server started, but <code>index.html</code> was not "
             "found next to <code>app.py</code>. Make sure it is committed and pushed to GitHub.</p>",
             status=500, mimetype="text/html")
     )
@@ -713,13 +713,13 @@ def main_app():
 # Installable app (PWA): manifest, icons, service worker, install helper
 # Everything is generated here, so no extra files or folders are needed.
 # ==========================================================================
-PWA_VERSION = "medsnap-v1"
-BRAND = (59, 98, 85)          # #3B6255, the MedSnap green
+PWA_VERSION = "veradose-v1"
+BRAND = (59, 98, 85)          # #3B6255, the VeraDose green
 BRAND_LIGHT = (203, 222, 211)  # #CBDED3
 
 
 def _make_icon(size, maskable=False, rounded=True):
-    """Draw the MedSnap icon: a white-and-mint capsule on the brand green."""
+    """Draw the VeraDose icon: a white-and-mint capsule on the brand green."""
     from PIL import ImageDraw
     s = 4  # draw big, then shrink, for smooth edges
     W = size * s
@@ -790,8 +790,8 @@ def favicon():
 def pwa_manifest():
     manifest = {
         "id": "/app",
-        "name": "MedSnap",
-        "short_name": "MedSnap",
+        "name": "VeraDose",
+        "short_name": "VeraDose",
         "description": "Medication reminders, pill check and a friendly AI helper.",
         "start_url": "/app",
         "scope": "/",
@@ -817,7 +817,7 @@ def pwa_manifest():
 
 
 SERVICE_WORKER_JS = r"""
-// MedSnap service worker: lets the installed app open fast and work offline.
+// VeraDose service worker: lets the installed app open fast and work offline.
 // Your data (/api/...) is never stored here; it always comes from the server.
 const CACHE = '__VERSION__';
 const CORE = ['/', '/app', '/pwa.js', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
@@ -832,8 +832,8 @@ self.addEventListener('activate', (e) => {
 
 function offlinePage() {
   return new Response('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<title>MedSnap</title><body style="font-family:system-ui,sans-serif;background:#E9F1EC;color:#1F3A30;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:1rem">' +
-    '<div><h1 style="color:#3B6255">MedSnap</h1><p>You are offline. Connect to the internet and try again.</p>' +
+    '<title>VeraDose</title><body style="font-family:system-ui,sans-serif;background:#E9F1EC;color:#1F3A30;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:1rem">' +
+    '<div><h1 style="color:#3B6255">VeraDose</h1><p>You are offline. Connect to the internet and try again.</p>' +
     '<button onclick="location.reload()" style="font:inherit;padding:.7rem 1.4rem;border:0;border-radius:999px;background:#3B6255;color:#fff">Try again</button></div>',
     { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
 }
@@ -883,36 +883,36 @@ def service_worker():
 
 
 PWA_JS = r"""
-/* MedSnap install helper: registers the service worker and runs the "Install app" buttons.
+/* VeraDose install helper: registers the service worker and runs the "Install app" buttons.
    Any element with data-install becomes an install button. It hides itself once installed. */
 (function () {
   var TXT = {
-    en: { btn: 'Install app', title: 'Install MedSnap', sub: 'Add MedSnap to your home screen. It opens like a normal app, for free.',
-          ios: ['Tap the <b>Share</b> button (the square with an arrow) at the bottom or top of Safari.', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Tap <b>Add</b>. MedSnap is now on your home screen.'],
+    en: { btn: 'Install app', title: 'Install VeraDose', sub: 'Add VeraDose to your home screen. It opens like a normal app, for free.',
+          ios: ['Tap the <b>Share</b> button (the square with an arrow) at the bottom or top of Safari.', 'Scroll down and tap <b>Add to Home Screen</b>.', 'Tap <b>Add</b>. VeraDose is now on your home screen.'],
           iosOther: 'On iPhone and iPad, open this page in <b>Safari</b> first, then follow these steps.',
-          android: ['Tap the <b>⋮</b> menu at the top right of your browser.', 'Tap <b>Install app</b> or <b>Add to Home screen</b>.', 'Tap <b>Install</b>. MedSnap is now on your home screen.'],
-          desktop: ['In <b>Chrome</b> or <b>Edge</b>, click the install icon at the right end of the address bar, or open the <b>⋮</b> menu and choose <b>Install MedSnap</b>.', 'In <b>Safari</b> on a Mac, choose <b>File → Add to Dock</b>.', 'Firefox on a computer cannot install apps. Please use Chrome, Edge or Safari.'],
-          ok: 'Got it', done: 'MedSnap is installed! Look for it on your home screen.' },
-    es: { btn: 'Instalar app', title: 'Instalar MedSnap', sub: 'Añade MedSnap a tu pantalla de inicio. Se abre como una app normal, gratis.',
-          ios: ['Toca el botón <b>Compartir</b> (el cuadrado con una flecha) en Safari.', 'Desliza hacia abajo y toca <b>Agregar a inicio</b>.', 'Toca <b>Agregar</b>. MedSnap ya está en tu pantalla de inicio.'],
+          android: ['Tap the <b>⋮</b> menu at the top right of your browser.', 'Tap <b>Install app</b> or <b>Add to Home screen</b>.', 'Tap <b>Install</b>. VeraDose is now on your home screen.'],
+          desktop: ['In <b>Chrome</b> or <b>Edge</b>, click the install icon at the right end of the address bar, or open the <b>⋮</b> menu and choose <b>Install VeraDose</b>.', 'In <b>Safari</b> on a Mac, choose <b>File → Add to Dock</b>.', 'Firefox on a computer cannot install apps. Please use Chrome, Edge or Safari.'],
+          ok: 'Got it', done: 'VeraDose is installed! Look for it on your home screen.' },
+    es: { btn: 'Instalar app', title: 'Instalar VeraDose', sub: 'Añade VeraDose a tu pantalla de inicio. Se abre como una app normal, gratis.',
+          ios: ['Toca el botón <b>Compartir</b> (el cuadrado con una flecha) en Safari.', 'Desliza hacia abajo y toca <b>Agregar a inicio</b>.', 'Toca <b>Agregar</b>. VeraDose ya está en tu pantalla de inicio.'],
           iosOther: 'En iPhone y iPad, primero abre esta página en <b>Safari</b> y luego sigue estos pasos.',
-          android: ['Toca el menú <b>⋮</b> arriba a la derecha del navegador.', 'Toca <b>Instalar aplicación</b> o <b>Agregar a la pantalla principal</b>.', 'Toca <b>Instalar</b>. MedSnap ya está en tu pantalla de inicio.'],
-          desktop: ['En <b>Chrome</b> o <b>Edge</b>, haz clic en el icono de instalar al final de la barra de direcciones, o abre el menú <b>⋮</b> y elige <b>Instalar MedSnap</b>.', 'En <b>Safari</b> en Mac, elige <b>Archivo → Añadir al Dock</b>.', 'Firefox en computadora no puede instalar apps. Usa Chrome, Edge o Safari.'],
-          ok: 'Entendido', done: '¡MedSnap está instalada! Búscala en tu pantalla de inicio.' },
-    fr: { btn: "Installer l'app", title: 'Installer MedSnap', sub: "Ajoutez MedSnap à votre écran d'accueil. Elle s'ouvre comme une vraie app, gratuitement.",
-          ios: ['Touchez le bouton <b>Partager</b> (le carré avec une flèche) dans Safari.', "Faites défiler et touchez <b>Sur l'écran d'accueil</b>.", "Touchez <b>Ajouter</b>. MedSnap est sur votre écran d'accueil."],
+          android: ['Toca el menú <b>⋮</b> arriba a la derecha del navegador.', 'Toca <b>Instalar aplicación</ b> o < b > Agregar a la pantalla principal </ b > .', 'Toca < b > Instalar </ b > . VeraDose ya está en tu pantalla de inicio.'],
+          desktop: ['En < b > Chrome </ b > o < b > Edge </ b > , haz clic en el icono de instalar al final de la barra de direcciones, o abre el menú < b > ⋮ </ b > y elige < b > Instalar VeraDose </ b > .', 'En < b > Safari </ b > en Mac, elige < b > Archivo → Añadir al Dock </ b > .', 'Firefox en computadora no puede instalar apps. Usa Chrome, Edge o Safari.']
+          ok: 'Entendido', done: '¡VeraDose está instalada! Búscala en tu pantalla de inicio.' },
+    fr: { btn: "Installer l'app", title: 'Installer VeraDose', sub: "Ajoutez VeraDose à votre écran d'accueil. Elle s'ouvre comme une vraie app, gratuitement.",
+          ios: ['Touchez le bouton <b>Partager</b> (le carré avec une flèche) dans Safari.', "Faites défiler et touchez <b>Sur l'écran d'accueil</b>.", "Touchez <b>Ajouter</b>. VeraDose est sur votre écran d'accueil."],
           iosOther: "Sur iPhone et iPad, ouvrez d'abord cette page dans <b>Safari</b>, puis suivez ces étapes.",
-          android: ['Touchez le menu <b>⋮</b> en haut à droite du navigateur.', "Touchez <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</b>.", "Touchez <b>Installer</b>. MedSnap est sur votre écran d'accueil."],
-          desktop: ["Dans <b>Chrome</b> ou <b>Edge</b>, cliquez sur l'icône d'installation au bout de la barre d'adresse, ou ouvrez le menu <b>⋮</b> et choisissez <b>Installer MedSnap</b>.", 'Dans <b>Safari</b> sur Mac, choisissez <b>Fichier → Ajouter au Dock</b>.', 'Firefox sur ordinateur ne peut pas installer d’apps. Utilisez Chrome, Edge ou Safari.'],
-          ok: "J'ai compris", done: "MedSnap est installée ! Cherchez-la sur votre écran d'accueil." },
-    zh: { btn: '安装应用', title: '安装 MedSnap', sub: '把 MedSnap 添加到主屏幕，像普通应用一样打开，完全免费。',
-          ios: ['在 Safari 中点按<b>分享</b>按钮（带箭头的方框）。', '向下滑动，点按<b>添加到主屏幕</b>。', '点按<b>添加</b>。MedSnap 已在你的主屏幕上。'],
+          android: ['Touchez le menu <b>⋮</b> en haut à droite du navigateur.', "Touchez <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</ b>.", "Touchez < b > Installer </ b > . VeraDose est sur votre écran d'accueil."],
+          desktop: ["Dans <b>Chrome</b> ou <b>Edge</b>, cliquez sur l'icône d'installation au bout de la barre d'adresse, ou ouvrez le menu <b>⋮</b> et choisissez <b>Installer VeraDose</b>.", 'Dans <b>Safari</b> sur Mac, choisissez <b>Fichier → Ajouter au Dock</b>.', 'Firefox sur ordinateur ne peut pas installer d’apps. Utilisez Chrome, Edge ou Safari.'],
+          ok: "J'ai compris", done: "VeraDose est installée ! Cherchez-la sur votre écran d'accueil." },
+    zh: { btn: '安装应用', title: '安装 VeraDose', sub: '把 VeraDose 添加到主屏幕，像普通应用一样打开，完全免费。',
+          ios: ['在 Safari 中点按<b>分享</b>按钮（带箭头的方框）。', '向下滑动，点按<b>添加到主屏幕</b>。', '点按<b>添加</b>。VeraDose 已在你的主屏幕上。'],
           iosOther: '在 iPhone 和 iPad 上，请先用 <b>Safari</b> 打开此页面，再按以下步骤操作。',
-          android: ['点按浏览器右上角的 <b>⋮</b> 菜单。', '点按<b>安装应用</b>或<b>添加到主屏幕</b>。', '点按<b>安装</b>。MedSnap 已在你的主屏幕上。'],
-          desktop: ['在 <b>Chrome</b> 或 <b>Edge</b> 中，点击地址栏右侧的安装图标，或打开 <b>⋮</b> 菜单选择<b>安装 MedSnap</b>。', '在 Mac 的 <b>Safari</b> 中，选择<b>文件 → 添加到程序坞</b>。', '电脑上的 Firefox 无法安装应用，请使用 Chrome、Edge 或 Safari。'],
-          ok: '知道了', done: 'MedSnap 已安装！请在主屏幕上找到它。' }
+          android: ['点按浏览器右上角的 <b>⋮</b> 菜单。', '点按<b>安装应用</b>或<b>添加到主屏幕</b>。', '点按<b>安装</b>。VeraDose 已在你的主屏幕上。'],
+          desktop: ['在 <b>Chrome</b> 或 <b>Edge</b> 中，点击地址栏右侧的安装图标，或打开 <b>⋮</b> 菜单选择<b>安装 VeraDose</b>。', '在 Mac 的 <b>Safari</b> 中，选择<b>文件 → 添加到程序坞</b>。', '电脑上的 Firefox 无法安装应用，请使用 Chrome、Edge 或 Safari。'],
+          ok: '知道了', done: 'VeraDose 已安装！请在主屏幕上找到它。' }
   };
-  function L() { var l = 'en'; try { l = localStorage.getItem('medsnap_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
+  function L() { var l = 'en'; try { l = localStorage.getItem('veradose_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
   var root = document.documentElement;
   var deferred = null;
   var ua = navigator.userAgent || '';
@@ -974,7 +974,7 @@ PWA_JS = r"""
     } else help();
   });
 
-  window.MedSnapPWA = { refresh: refresh, help: help };
+  window.VeraDosePWA = { refresh: refresh, help: help };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', refresh); else refresh();
 })();
 """
@@ -1057,7 +1057,7 @@ def auth_login():
         user = users["users"].get(email)
         if not user:
             return jsonify({"success": False, "no_account": True,
-                            "error": f"There's no MedSnap account for {email} on this server yet. "
+                            "error": f"There's no VeraDose account for {email} on this server yet. "
                                      "Check the spelling, or choose Sign up to create one."}), 401
         if not check_password_hash(user["hash"], password):
             return jsonify({"success": False, "error": "That password isn't right. Tap the eye icon to see what's "
@@ -1413,11 +1413,11 @@ def save_caregiver(cid):
 def send_welcome(caregiver):
     if not global_send_allowed():
         return
-    who = caregiver.get("patient_name") or "A MedSnap user"
+    who = caregiver.get("patient_name") or "A VeraDose user"
     greet = f"Hi {caregiver['name']}, " if caregiver.get("name") else "Hi, "
-    body = (f"{greet}{who} added you as their caregiver in MedSnap. You'll get a message right away "
+    body = (f"{greet}{who} added you as their caregiver in VeraDose. You'll get a message right away "
             f"if they miss a dose or their pills are running low. No action is needed now.")
-    deliver_alert(caregiver, "You're now a MedSnap caregiver", body)
+    deliver_alert(caregiver, "You're now a VeraDose caregiver", body)
 
 
 @app.route("/api/caregiver/emergency", methods=["POST"])
@@ -1430,8 +1430,8 @@ def emergency_caregiver(cid):
         return jsonify({"success": False, "error": "Turn on caregiver alerts and save their contact first."}), 400
     if not global_send_allowed():
         return jsonify({"success": False, "error": "Server message limit reached. Call them directly."}), 429
-    who = caregiver.get("patient_name") or "A MedSnap user"
-    body = (f"EMERGENCY: {who} pressed the Emergency button in MedSnap. Please contact them right away. "
+    who = caregiver.get("patient_name") or "A VeraDose user"
+    body = (f"EMERGENCY: {who} pressed the Emergency button in VeraDose. Please contact them right away. "
             f"If you can't reach them, call 911.")
     delivered = deliver_alert(caregiver, f"EMERGENCY: {who} needs help", body)
     if not delivered:
@@ -1453,10 +1453,10 @@ def test_caregiver(cid):
     if not global_send_allowed():
         return jsonify({"success": False, "error": "Server message limit reached. Try again later."}), 429
 
-    who = caregiver.get("patient_name") or "A MedSnap user"
-    body = (f"MedSnap test message: {who} listed you as a caregiver and will send you a note "
+    who = caregiver.get("patient_name") or "A VeraDose user"
+    body = (f"VeraDose test message: {who} listed you as a caregiver and will send you a note "
             f"if a critical medication isn't marked as taken. No action is needed.")
-    delivered = deliver_alert(caregiver, "MedSnap test message", body)
+    delivered = deliver_alert(caregiver, "VeraDose test message", body)
     if not delivered:
         return jsonify({"success": False, "error": "The message could not be sent. Check the server logs."}), 502
     return jsonify({"success": True, "delivered": delivered})
@@ -1479,7 +1479,7 @@ def check_missed_doses():
             tzname = valid_tz(state["profile"].get("timezone")) or valid_tz(state.get("tz")) or "UTC"
             now = datetime.now(ZoneInfo(tzname))
             rec = ensure_today(state, now.date())
-            who = cg.get("patient_name") or state["profile"].get("name") or "A MedSnap user"
+            who = cg.get("patient_name") or state["profile"].get("name") or "A VeraDose user"
             greet = f"Hi {cg['name']}, " if cg.get("name") else ""
 
             for med in state["meds"]:
@@ -1494,9 +1494,9 @@ def check_missed_doses():
                     important = " This is marked as an important medication." if med.get("critical") else ""
                     body = (f"{greet}{who} has not marked {med['name']} ({med['dosage'] or str(med['daily_dose']) + ' pill(s)'}) "
                             f"as taken. It was scheduled for {med['scheduled_time']}.{important} Please check in with them. "
-                            f"(Sent by MedSnap because you were listed as a caregiver.)")
+                            f"(Sent by VeraDose because you were listed as a caregiver.)")
                     pending.append(("dose", cid, med["id"], now.date().isoformat(), dict(cg),
-                                    f"MedSnap: missed dose of {med['name']}", body))
+                                    f"VeraDose: missed dose of {med['name']}", body))
 
             for med in state["meds"]:
                 key = str(med["id"])
@@ -1506,9 +1506,9 @@ def check_missed_doses():
                     left = days_left(med)
                     body = (f"{greet}{who} is running low on {med['name']}: {med['stock']} pill(s) left, "
                             f"about {left:.0f} day(s) of doses. Please help them arrange a refill. "
-                            f"(Sent by MedSnap because you were listed as a caregiver.)")
+                            f"(Sent by VeraDose because you were listed as a caregiver.)")
                     pending.append(("low", cid, med["id"], None, dict(cg),
-                                    f"MedSnap: {med['name']} is running low", body))
+                                    f"VeraDose: {med['name']} is running low", body))
                 else:  # refilled: allow a new alert next time it runs low
                     if med["id"] in state["low_alerted"]:
                         state["low_alerted"].remove(med["id"])
@@ -1569,10 +1569,10 @@ def start_alert_worker():
 start_alert_worker()
 
 if os.environ.get("RENDER") and not DATABASE_URL:
-    print("\n" + "!" * 78 + "\n[MedSnap] WARNING: no DATABASE_URL is set. Render's free plan erases saved files on every"
+    print("\n" + "!" * 78 + "\n[VeraDose] WARNING: no DATABASE_URL is set. Render's free plan erases saved files on every"
           "\nrestart, so ALL ACCOUNTS AND MEDICINES WILL BE LOST. Add a free Neon database and set DATABASE_URL in Render's Environment tab.\n" + "!" * 78 + "\n")
 elif DATABASE_URL:
-    print("[MedSnap] Saving accounts and medicines in the database (DATABASE_URL).")
+    print("[VeraDose] Saving accounts and medicines in the database (DATABASE_URL).")
 
 
 # ==========================================================================
@@ -1755,7 +1755,7 @@ def chat():
         return jsonify({"success": False, "error": "The AI assistant isn't configured on this server (missing GROQ_API_KEY)."}), 503
 
     system_prompt = (
-        "You are Buddy, MedSnap's friendly medication helper. Many users are older adults, so keep every reply "
+        "You are Buddy, VeraDose's friendly medication helper. Many users are older adults, so keep every reply "
         "calm, warm and easy to read. "
         "STYLE RULES: Keep answers under about 90 words. Start with one short, kind sentence that answers the question. "
         "Then give at most 3 short bullet points, each one simple sentence. Use plain everyday words, not medical jargon "
@@ -1882,7 +1882,7 @@ def analyze(cid):
 
     data = extract_json(raw)
     if not data or data.get("readable") is False or not clean_text(data.get("name"), "", 80):
-        return jsonify({"success": False, "error": "MedSnap couldn't read a medication label in that photo. "
+        return jsonify({"success": False, "error": "VeraDose couldn't read a medication label in that photo. "
                         "Try again closer, in good light, with the label flat and in focus."}), 422
     time_str = str(data.get("time") or "").strip()
     pill = clean_pill(data)
@@ -1908,7 +1908,7 @@ def analyze(cid):
 # ==========================================================================
 @app.errorhandler(StorageBusy)
 def handle_storage_busy(_err):
-    return jsonify({"success": False, "error": "MedSnap couldn't open its saved data for a moment. "
+    return jsonify({"success": False, "error": "VeraDose couldn't open its saved data for a moment. "
                                                "Nothing was lost. Please try again."}), 503
 
 
@@ -1926,7 +1926,7 @@ def too_large(_):
 def not_found(_):
     if request.path.startswith("/api/"):
         return jsonify({"success": False, "error": "Not found"}), 404
-    return Response("<h1>Page not found</h1><p><a href='/'>Back to MedSnap</a></p>", status=404, mimetype="text/html")
+    return Response("<h1>Page not found</h1><p><a href='/'>Back to VeraDose</a></p>", status=404, mimetype="text/html")
 
 
 @app.errorhandler(500)
@@ -1942,7 +1942,7 @@ def server_error(_):
 if __name__ == "__main__":
     host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", 5000))
-    print(f"\nMedSnap running at http://127.0.0.1:{port}")
+    print(f"\nVeraDose running at http://127.0.0.1:{port}")
     try:
         n = len(_read_users()["users"])
         where = "the database (DATABASE_URL)" if DATABASE_URL else USERS_FILE
@@ -1957,7 +1957,7 @@ if __name__ == "__main__":
     try:
         app.run(host=host, port=port, debug=False)
     except OSError as exc:
-        print(f"\n[MedSnap] Could not start on port {port}: {exc}")
-        print("  - Is MedSnap already running in another terminal? Close that one (Ctrl+C) and try again.")
+        print(f"\n[VeraDose] Could not start on port {port}: {exc}")
+        print("  - Is VeraDose already running in another terminal? Close that one (Ctrl+C) and try again.")
         print("  - On a Mac, turn off System Settings > General > AirDrop & Handoff > AirPlay Receiver (it uses port 5000).")
-        print("  - Or start MedSnap on another port, e.g.  PORT=5050 python app.py\n")
+        print("  - Or start VeraDose on another port, e.g.  PORT=5050 python app.py\n")

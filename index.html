@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MedSnap</title>
+<title>VeraDose</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#3B6255">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="MedSnap">
+<meta name="apple-mobile-web-app-title" content="VeraDose">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script src="/pwa.js" defer></script>
 <script>
   try {
-    document.documentElement.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light');
-    document.documentElement.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1');
-    if (localStorage.getItem('medsnap_dyslexia') === '1') document.documentElement.classList.add('dyslexic');
-    if (localStorage.getItem('medsnap_contrast') === '1') document.documentElement.classList.add('hc');
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('veradose_theme') || 'light');
+    document.documentElement.style.setProperty('--scale', localStorage.getItem('veradose_scale') || '1');
+    if (localStorage.getItem('veradose_dyslexia') === '1') document.documentElement.classList.add('dyslexic');
+    if (localStorage.getItem('veradose_contrast') === '1') document.documentElement.classList.add('hc');
   } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -509,7 +509,7 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
 </div>
 
 <button class="buddy-fab" id="buddyFab" data-act="buddy-toggle" aria-expanded="false"></button>
-<section class="buddy" id="buddy" hidden aria-label="MedSnap Buddy"></section>
+<section class="buddy" id="buddy" hidden aria-label="VeraDose Buddy"></section>
 <button class="a11y-btn" id="a11yBtn" data-act="a11y-toggle" aria-expanded="false" aria-controls="a11yPanel"></button>
 <section class="a11y-panel" id="a11yPanel" hidden role="dialog" aria-labelledby="a11yTitle"></section>
 
@@ -522,7 +522,7 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
 
 <script>
 /* =====================================================================
-   MedSnap front end
+   VeraDose front end
    ===================================================================== */
 
 /* ---------- icons (outline style) ---------- */
@@ -570,22 +570,22 @@ function ic(name, size = 20, sw = 1.7) {
 const I18N = {
 en: {
   g_signin:'Sign in', g_signup:'Create account', g_in_title:'Welcome back', g_in_sub:'Sign in to see your medicines and routine.', g_up_title:"Let's get you set up", g_up_sub:'Your account keeps your medicines safe on any device. Age and allergies are optional.', g_password:'Password', g_pw_hint:'At least 8 characters.', g_signin_btn:'Sign in', g_signup_btn:'Create my account',
-  sc_btn:'Scan label', sc_hide:'Close scanner', sc_title:'Scan a prescription or bottle', sc_sub:'Take a photo of the label and MedSnap fills in this form for you. Add up to 3 photos, like the prescription and the bottle.', sc_hint:'Hold the label flat, close up and in good light.', sc_take_more:'Take another photo', sc_read:'Read label', sc_reading:'Reading the label…', sc_photos:'{n} of 3 photos', sc_photo_n:'Photo {n}', sc_remove:'Remove photo', sc_max:'That is the 3-photo limit. Press Read label.', sc_need:'Take or upload a photo first.', sc_done_t:'Filled in from the label:', sc_done:'{f}. The filled boxes are outlined.', sc_times:'The label says {n} times a day. MedSnap keeps one dose time per medication, so after saving, add it again for each other time of day.', sc_check:'Please check every detail against your label before saving, and fill in anything it didn’t show, like which days to take it.', sc_pc_t:'New prescription?', sc_pc_s:'Scan the label or bottle to add it to your medications, inventory and calendar.',
-  pc_main_title:'Scan it in. Check it twice.', pc_main_sub:'Scan a prescription or bottle to add a medication, or compare a pill in your hand with your list.', pc_mode_scan:'Scan a label', pc_mode_check:'Check a pill', sc_main_t:'Scan label to fill this in', sc_main_s:'Photograph your prescription label or medicine bottle. MedSnap reads it and fills in a new medication for you to check and save.', how_k:'How it works', how_t:'Add a medicine in three steps', how1_t:'Take up to 3 photos', how1:'The prescription and the bottle together give MedSnap the most to read.', how2_t:'MedSnap reads the label', how2:'Name, dose, directions, how many pills came in the bottle, and food or timing notes.', how3_t:'Check it and save', how3:'It then shows up on your Medications, Inventory and Calendar pages.', sc_safe_t:'You check before anything is saved', sc_safe_p:'MedSnap only fills in what is printed on the label. Nothing is added until you look it over and press Save.', sc_to_check_t:'Have a pill in your hand?', sc_to_check:'Compare its shape, color and imprint with the medicines you have saved.',
+  sc_btn:'Scan label', sc_hide:'Close scanner', sc_title:'Scan a prescription or bottle', sc_sub:'Take a photo of the label and VeraDose fills in this form for you. Add up to 3 photos, like the prescription and the bottle.', sc_hint:'Hold the label flat, close up and in good light.', sc_take_more:'Take another photo', sc_read:'Read label', sc_reading:'Reading the label…', sc_photos:'{n} of 3 photos', sc_photo_n:'Photo {n}', sc_remove:'Remove photo', sc_max:'That is the 3-photo limit. Press Read label.', sc_need:'Take or upload a photo first.', sc_done_t:'Filled in from the label:', sc_done:'{f}. The filled boxes are outlined.', sc_times:'The label says {n} times a day. VeraDose keeps one dose time per medication, so after saving, add it again for each other time of day.', sc_check:'Please check every detail against your label before saving, and fill in anything it didn’t show, like which days to take it.', sc_pc_t:'New prescription?', sc_pc_s:'Scan the label or bottle to add it to your medications, inventory and calendar.',
+  pc_main_title:'Scan it in. Check it twice.', pc_main_sub:'Scan a prescription or bottle to add a medication, or compare a pill in your hand with your list.', pc_mode_scan:'Scan a label', pc_mode_check:'Check a pill', sc_main_t:'Scan label to fill this in', sc_main_s:'Photograph your prescription label or medicine bottle. VeraDose reads it and fills in a new medication for you to check and save.', how_k:'How it works', how_t:'Add a medicine in three steps', how1_t:'Take up to 3 photos', how1:'The prescription and the bottle together give VeraDose the most to read.', how2_t:'VeraDose reads the label', how2:'Name, dose, directions, how many pills came in the bottle, and food or timing notes.', how3_t:'Check it and save', how3:'It then shows up on your Medications, Inventory and Calendar pages.', sc_safe_t:'You check before anything is saved', sc_safe_p:'VeraDose only fills in what is printed on the label. Nothing is added until you look it over and press Save.', sc_to_check_t:'Have a pill in your hand?', sc_to_check:'Compare its shape, color and imprint with the medicines you have saved.',
   al_sub:'Tick everything you are allergic to.', al_other:'Other', al_other_q:'What other allergies do you have?', al_other_ph:'e.g. cats, strawberries (separate with commas)', al_penicillin:'Penicillin', al_sulfa:'Sulfa drugs', al_aspirin:'Aspirin', al_nsaids:'Ibuprofen / NSAIDs', al_codeine:'Codeine / opioids', al_latex:'Latex', al_contrast:'Contrast dye (iodine)', al_peanuts:'Peanuts', al_tree_nuts:'Tree nuts', al_shellfish:'Shellfish', al_fish:'Fish', al_eggs:'Eggs', al_milk:'Milk / dairy', al_soy:'Soy', al_wheat:'Wheat / gluten', al_bee_stings:'Bee stings',
   acc_title:'Account', acc_sub:'You stay signed in on this device until you log out.', acc_logout:'Log out', acc_logout_s:'Sign out on this device. Your medicines stay saved.', acc_delete:'Delete account', acc_delete_s:'Permanently erase your account and everything in it.', del_title:'Delete your account?', del_sub:'This cannot be undone.', del_warn_t:'Everything will be erased', del_warn:'Your profile, medications, inventory, calendar history, streak and caregiver details will be permanently deleted.', del_pw:'Type your password to confirm', del_btn:'Delete my account',
-  conn_t:'Connecting to MedSnap…', conn:'This can take up to a minute if the server was asleep. You stay signed in.', still_trying:'MedSnap keeps trying and will connect by itself as soon as the server is running.', reconnected:'Connected. Welcome back!',
+  conn_t:'Connecting to VeraDose…', conn:'This can take up to a minute if the server was asleep. You stay signed in.', still_trying:'VeraDose keeps trying and will connect by itself as soon as the server is running.', reconnected:'Connected. Welcome back!',
   show_pw:'Show password', hide_pw:'Hide password', g_make_acc:'Create an account with this email →',
   a11y:'Accessibility', a11y_btn:'Accessibility options', tts:'Text to speech', auto_read:'Auto-read AI responses', read_page:'Read this page aloud', stop_audio:'Stop audio', readability:'Readability', visibility:'Visibility', hc:'High contrast mode', normal_size:'Normal text size',
   smaller:'Smaller text', larger:'Larger text', dark_mode:'Dark mode',
   your_space:'Your space', your_details:'Your details', n_today:'Today', n_calendar:'Calendar', n_streaks:'Streaks', n_meds:'Medications',
   n_inventory:'Inventory', n_pillcheck:'Pill check', n_caregiver:'Caregiver', n_profile:'Profile & preferences',
-  install_app:"Install app", install_sub:"Add MedSnap to your home screen.", need_hand:'Need a hand?', need_hand_sub:'Your routine, one step at a time.', your_care:'Your care', personal_account:'Personal account', sign_out:'Sign out', menu:'Menu',
+  install_app:"Install app", install_sub:"Add VeraDose to your home screen.", need_hand:'Need a hand?', need_hand_sub:'Your routine, one step at a time.', your_care:'Your care', personal_account:'Personal account', sign_out:'Sign out', menu:'Menu',
   emergency:'Emergency · Call 911', private:'Your information is private', language:'Language', foot_tag:'Here to make the everyday a little easier.',
   td_eyebrow:'Today', g_morning:'Good morning', g_afternoon:'Good afternoon', g_evening:'Good evening', td_title:"Here's your day.",
   td_sub:"Everything planned for today. Mark each dose once you've taken it.", td_read:'Read today aloud', td_doses:'Doses today', td_of:'{a} of {b} taken',
   td_streak:'Current streak', td_next:'Next dose', td_next_none:'All done for today', td_none_title:'Nothing planned today', td_none_sub:'Enjoy your day. Upcoming doses will show up here.',
-  empty_title:"Let's add your first medication", empty_sub:'Add a medication and MedSnap will build your daily routine, calendar and streak.',
+  empty_title:"Let's add your first medication", empty_sub:'Add a medication and VeraDose will build your daily routine, calendar and streak.',
   st_taken:'Taken', st_due:'Due now', st_missed:'Missed', st_upcoming:'Upcoming', mark_taken:'Mark taken', undo:'Undo', read_aloud:'Read aloud',
   low_text:'{names}: fewer than {n} days left. Time to refill.', go_inventory:'Inventory',
   cal_eyebrow:'Calendar', cal_title:'Your week, at a glance.', cal_sub:'See what is scheduled, day by day. Mark each dose as you go.', add_a_med:'Add a medication',
@@ -621,7 +621,7 @@ en: {
   cam_denied:"Camera access was blocked. Allow the camera in your browser's address bar, then try again.", cam_none:'No camera was found on this device. Use “Upload a photo” instead.',
   cam_err:'The camera could not start: {e}', compare:'Compare with my list', comparing:'Checking the photo…', need_photo:'Take or upload a photo first.',
   helpful:'A helpful check', match_title:'Match details you recognize', ref_title:'Only a reference for your list',
-  ref_text:'This tool compares against medications you have saved in MedSnap. It cannot identify an unknown pill or confirm what is safe to take.',
+  ref_text:'This tool compares against medications you have saved in VeraDose. It cannot identify an unknown pill or confirm what is safe to take.',
   saw:'What the camera saw', unknown:'not sure', m_strong:'Looks like a match', m_partial:'Partly matches', m_none:"Doesn't match", matched_on:'Matched on: {w}', matched_none:'nothing',
   no_saved:"None of your medications have a shape, color or imprint saved yet. Add them in Medications so photos can be compared.", w_shape:'shape', w_color:'color', w_imprint:'imprint',
   cg_eyebrow:'Caregiver', cg_title:'A caregiver, if you choose.', cg_sub_on:'Contact delivery is connected. Once you save a caregiver, they are alerted right away when a dose is missed or your pills run low.',
@@ -630,40 +630,40 @@ en: {
   cg_name:'Caregiver name', cg_email:'Email', cg_email_ph:'name@example.com', cg_phone:'Phone', cg_phone_ph:'+14155550123', cg_consent:"I have permission to save this person's contact details.",
   on_title:'Contact delivery is connected.', on_text:'Alerts go out by {ch} as soon as a dose is {m} minutes late, or when a medication falls below your low-stock notice.',
   ch_email:'email', ch_sms:'text message', ch_and:' and ', off_title:"Contact delivery isn't set up on the server yet.",
-  off_text:'Add your email (SMTP) or Twilio details to the .env file and restart MedSnap. Your caregiver details are saved in the meantime.',
+  off_text:'Add your email (SMTP) or Twilio details to the .env file and restart VeraDose. Your caregiver details are saved in the meantime.',
   save_prefs:'Save preferences', send_test:'Send a test', cs_k:'Your choice, your pace', cs_t:'Care works best when it feels right to you.',
   cs_p:'You can update or remove these details whenever you like. Alerts only go to the person you save here.',
   cg_saved_on:'Saved. {name} has been told they are your caregiver and will be alerted right away.', cg_saved:'Caregiver preferences saved.', test_sent:'Test message sent.',
-  pf_eyebrow:'Profile & preferences', pf_title:'A profile that fits you.', pf_sub:'Your profile helps MedSnap make the routine feel more personal.',
-  pd_title:'Personal details', pd_sub:'Your profile helps MedSnap make the routine feel more personal.', f_pname:'Name', optional:'Optional', f_age:'Age',
+  pf_eyebrow:'Profile & preferences', pf_title:'A profile that fits you.', pf_sub:'Your profile helps VeraDose make the routine feel more personal.',
+  pd_title:'Personal details', pd_sub:'Your profile helps VeraDose make the routine feel more personal.', f_pname:'Name', optional:'Optional', f_age:'Age',
   f_allergies:'Allergies', f_tz:'Time zone', f_low:'Low-stock notice (days)', not_stored:'Your profile and allergy details are not stored in browser storage.',
-  save_profile:'Save profile', ps_t:'Your profile helps MedSnap make the routine feel more personal.', ps_p:'Medication names and instructions stay as entered; MedSnap does not translate prescription directions.',
+  save_profile:'Save profile', ps_t:'Your profile helps VeraDose make the routine feel more personal.', ps_p:'Medication names and instructions stay as entered; VeraDose does not translate prescription directions.',
   ds_title:'Display settings', ds_sub:'Text size', text_size:'Text size', dyslexia:'Dyslexia-friendly font', theme:'Theme', light:'Light', dark:'Dark', profile_saved:'Profile saved.',
-  buddy:'Buddy', bd_title:'MedSnap Buddy', bd_sub:'General help, not medical advice', bd_intro:'Ask about using MedSnap or getting organized. For medication decisions, check with a pharmacist or clinician.',
+  buddy:'Buddy', bd_title:'VeraDose Buddy', bd_sub:'General help, not medical advice', bd_intro:'Ask about using VeraDose or getting organized. For medication decisions, check with a pharmacist or clinician.',
   bd_note:'Your question is sent to Groq. Avoid names or personal medical details.', bd_ph:'What can I help with?', bd_send:'Send', close:'Close',
   em_title:'Emergency', em_body:'If you or someone near you is in danger, call 911 now.', em_call:'Call 911', em_desktop:'On a computer? Dial 911 from any phone.',
   em_alert:'Alert my caregiver', em_sent:'Your caregiver has been alerted.',
   tts_dose:'{name}, {dose}. Take {n} at {time}.', tts_intro:'Your medicines for today.', tts_none:'Nothing is planned today.', tts_unsupported:"Read aloud isn't supported in this browser.",
-  err_server:'Could not reach the server.', err_offline:"MedSnap can't reach its server (app.py). Make sure it's running.", err_page:'This page hit a problem. Please refresh.', retry:'Try again', off_banner_t:"MedSnap can't reach its server.", off_banner:'In the VS Code terminal run: python app.py — then open http://127.0.0.1:5000/app', tz_hint:'For example America/New_York',
+  err_server:'Could not reach the server.', err_offline:"VeraDose can't reach its server (app.py). Make sure it's running.", err_page:'This page hit a problem. Please refresh.', retry:'Try again', off_banner_t:"VeraDose can't reach its server.", off_banner:'In the VS Code terminal run: python app.py — then open http://127.0.0.1:5000/app', tz_hint:'For example America/New_York',
 },
 es: {
   g_signin:'Iniciar sesión', g_signup:'Crear cuenta', g_in_title:'Hola de nuevo', g_in_sub:'Inicia sesión para ver tus medicamentos y tu rutina.', g_up_title:'Vamos a prepararte', g_up_sub:'Tu cuenta guarda tus medicamentos en cualquier dispositivo. La edad y las alergias son opcionales.', g_password:'Contraseña', g_pw_hint:'Al menos 8 caracteres.', g_signin_btn:'Iniciar sesión', g_signup_btn:'Crear mi cuenta',
-  sc_btn:'Escanear etiqueta', sc_hide:'Cerrar escáner', sc_title:'Escanea una receta o un frasco', sc_sub:'Toma una foto de la etiqueta y MedSnap completará este formulario. Hasta 3 fotos, por ejemplo la receta y el frasco.', sc_hint:'Sostén la etiqueta plana, de cerca y con buena luz.', sc_take_more:'Tomar otra foto', sc_read:'Leer etiqueta', sc_reading:'Leyendo la etiqueta…', sc_photos:'{n} de 3 fotos', sc_photo_n:'Foto {n}', sc_remove:'Quitar foto', sc_max:'Ese es el límite de 3 fotos. Pulsa Leer etiqueta.', sc_need:'Primero toma o sube una foto.', sc_done_t:'Completado desde la etiqueta:', sc_done:'{f}. Los campos completados están resaltados.', sc_times:'La etiqueta dice {n} veces al día. MedSnap guarda una hora por medicamento, así que después de guardar, agrégalo otra vez para cada hora.', sc_check:'Revisa cada dato con tu etiqueta antes de guardar y completa lo que no aparezca, como los días.', sc_pc_t:'¿Receta nueva?', sc_pc_s:'Escanea la etiqueta o el frasco para agregarlo a tus medicamentos, inventario y calendario.',
-  pc_main_title:'Escanéalo. Revísalo dos veces.', pc_main_sub:'Escanea una receta o un frasco para agregar un medicamento, o compara una pastilla con tu lista.', pc_mode_scan:'Escanear etiqueta', pc_mode_check:'Verificar pastilla', sc_main_t:'Escanea la etiqueta para completarlo', sc_main_s:'Fotografía la etiqueta de tu receta o el frasco. MedSnap la lee y completa un nuevo medicamento para que lo revises y guardes.', how_k:'Cómo funciona', how_t:'Agrega un medicamento en tres pasos', how1_t:'Toma hasta 3 fotos', how1:'La receta y el frasco juntos le dan a MedSnap más información.', how2_t:'MedSnap lee la etiqueta', how2:'Nombre, dosis, indicaciones, cuántas pastillas trae el frasco y notas de comidas u horarios.', how3_t:'Revísalo y guárdalo', how3:'Luego aparece en tus páginas de Medicamentos, Inventario y Calendario.', sc_safe_t:'Tú revisas antes de guardar', sc_safe_p:'MedSnap solo completa lo que está impreso en la etiqueta. Nada se agrega hasta que lo revises y pulses Guardar.', sc_to_check_t:'¿Tienes una pastilla en la mano?', sc_to_check:'Compara su forma, color y grabado con tus medicamentos guardados.',
+  sc_btn:'Escanear etiqueta', sc_hide:'Cerrar escáner', sc_title:'Escanea una receta o un frasco', sc_sub:'Toma una foto de la etiqueta y VeraDose completará este formulario. Hasta 3 fotos, por ejemplo la receta y el frasco.', sc_hint:'Sostén la etiqueta plana, de cerca y con buena luz.', sc_take_more:'Tomar otra foto', sc_read:'Leer etiqueta', sc_reading:'Leyendo la etiqueta…', sc_photos:'{n} de 3 fotos', sc_photo_n:'Foto {n}', sc_remove:'Quitar foto', sc_max:'Ese es el límite de 3 fotos. Pulsa Leer etiqueta.', sc_need:'Primero toma o sube una foto.', sc_done_t:'Completado desde la etiqueta:', sc_done:'{f}. Los campos completados están resaltados.', sc_times:'La etiqueta dice {n} veces al día. VeraDose guarda una hora por medicamento, así que después de guardar, agrégalo otra vez para cada hora.', sc_check:'Revisa cada dato con tu etiqueta antes de guardar y completa lo que no aparezca, como los días.', sc_pc_t:'¿Receta nueva?', sc_pc_s:'Escanea la etiqueta o el frasco para agregarlo a tus medicamentos, inventario y calendario.',
+  pc_main_title:'Escanéalo. Revísalo dos veces.', pc_main_sub:'Escanea una receta o un frasco para agregar un medicamento, o compara una pastilla con tu lista.', pc_mode_scan:'Escanear etiqueta', pc_mode_check:'Verificar pastilla', sc_main_t:'Escanea la etiqueta para completarlo', sc_main_s:'Fotografía la etiqueta de tu receta o el frasco. VeraDose la lee y completa un nuevo medicamento para que lo revises y guardes.', how_k:'Cómo funciona', how_t:'Agrega un medicamento en tres pasos', how1_t:'Toma hasta 3 fotos', how1:'La receta y el frasco juntos le dan a VeraDose más información.', how2_t:'VeraDose lee la etiqueta', how2:'Nombre, dosis, indicaciones, cuántas pastillas trae el frasco y notas de comidas u horarios.', how3_t:'Revísalo y guárdalo', how3:'Luego aparece en tus páginas de Medicamentos, Inventario y Calendario.', sc_safe_t:'Tú revisas antes de guardar', sc_safe_p:'VeraDose solo completa lo que está impreso en la etiqueta. Nada se agrega hasta que lo revises y pulses Guardar.', sc_to_check_t:'¿Tienes una pastilla en la mano?', sc_to_check:'Compara su forma, color y grabado con tus medicamentos guardados.',
   al_sub:'Marca todo aquello a lo que eres alérgico.', al_other:'Otra', al_other_q:'¿Qué otras alergias tienes?', al_other_ph:'ej. gatos, fresas (separa con comas)', al_penicillin:'Penicilina', al_sulfa:'Sulfamidas', al_aspirin:'Aspirina', al_nsaids:'Ibuprofeno / AINE', al_codeine:'Codeína / opioides', al_latex:'Látex', al_contrast:'Contraste (yodo)', al_peanuts:'Cacahuates', al_tree_nuts:'Frutos secos', al_shellfish:'Mariscos', al_fish:'Pescado', al_eggs:'Huevo', al_milk:'Leche / lácteos', al_soy:'Soya', al_wheat:'Trigo / gluten', al_bee_stings:'Picaduras de abeja',
   acc_title:'Cuenta', acc_sub:'Seguirás con la sesión iniciada en este dispositivo hasta que la cierres.', acc_logout:'Cerrar sesión', acc_logout_s:'Sal en este dispositivo. Tus medicamentos se quedan guardados.', acc_delete:'Eliminar cuenta', acc_delete_s:'Borra para siempre tu cuenta y todo su contenido.', del_title:'¿Eliminar tu cuenta?', del_sub:'Esto no se puede deshacer.', del_warn_t:'Se borrará todo', del_warn:'Tu perfil, medicamentos, inventario, historial, racha y datos del cuidador se eliminarán para siempre.', del_pw:'Escribe tu contraseña para confirmar', del_btn:'Eliminar mi cuenta',
-  conn_t:'Conectando con MedSnap…', conn:'Puede tardar hasta un minuto si el servidor estaba dormido. Tu sesión sigue iniciada.', still_trying:'MedSnap sigue intentándolo y se conectará solo en cuanto el servidor esté en marcha.', reconnected:'Conectado. ¡Bienvenido de nuevo!',
+  conn_t:'Conectando con VeraDose…', conn:'Puede tardar hasta un minuto si el servidor estaba dormido. Tu sesión sigue iniciada.', still_trying:'VeraDose sigue intentándolo y se conectará solo en cuanto el servidor esté en marcha.', reconnected:'Conectado. ¡Bienvenido de nuevo!',
   show_pw:'Mostrar contraseña', hide_pw:'Ocultar contraseña', g_make_acc:'Crear una cuenta con este correo →',
   a11y:'Accesibilidad', a11y_btn:'Opciones de accesibilidad', tts:'Texto a voz', auto_read:'Leer en voz alta las respuestas de la IA', read_page:'Leer esta página en voz alta', stop_audio:'Detener audio', readability:'Legibilidad', visibility:'Visibilidad', hc:'Modo de alto contraste', normal_size:'Tamaño normal',
   smaller:'Texto más pequeño', larger:'Texto más grande', dark_mode:'Modo oscuro',
   your_space:'Tu espacio', your_details:'Tus datos', n_today:'Hoy', n_calendar:'Calendario', n_streaks:'Rachas', n_meds:'Medicamentos',
   n_inventory:'Inventario', n_pillcheck:'Verificar pastilla', n_caregiver:'Cuidador', n_profile:'Perfil y preferencias',
-  install_app:"Instalar app", install_sub:"Añade MedSnap a tu pantalla de inicio.", need_hand:'¿Necesitas ayuda?', need_hand_sub:'Tu rutina, paso a paso.', your_care:'Tu cuidado', personal_account:'Cuenta personal', sign_out:'Salir', menu:'Menú',
+  install_app:"Instalar app", install_sub:"Añade VeraDose a tu pantalla de inicio.", need_hand:'¿Necesitas ayuda?', need_hand_sub:'Tu rutina, paso a paso.', your_care:'Tu cuidado', personal_account:'Cuenta personal', sign_out:'Salir', menu:'Menú',
   emergency:'Emergencia · Llamar al 911', private:'Tu información es privada', language:'Idioma', foot_tag:'Para hacer el día a día un poco más fácil.',
   td_eyebrow:'Hoy', g_morning:'Buenos días', g_afternoon:'Buenas tardes', g_evening:'Buenas noches', td_title:'Este es tu día.',
   td_sub:'Todo lo planeado para hoy. Marca cada dosis cuando la tomes.', td_read:'Leer el día en voz alta', td_doses:'Dosis de hoy', td_of:'{a} de {b} tomadas',
   td_streak:'Racha actual', td_next:'Próxima dosis', td_next_none:'Todo listo por hoy', td_none_title:'Nada planeado hoy', td_none_sub:'Disfruta tu día. Las próximas dosis aparecerán aquí.',
-  empty_title:'Agreguemos tu primer medicamento', empty_sub:'Agrega un medicamento y MedSnap armará tu rutina, calendario y racha.',
+  empty_title:'Agreguemos tu primer medicamento', empty_sub:'Agrega un medicamento y VeraDose armará tu rutina, calendario y racha.',
   st_taken:'Tomada', st_due:'Es la hora', st_missed:'Olvidada', st_upcoming:'Próxima', mark_taken:'Marcar tomada', undo:'Deshacer', read_aloud:'Leer en voz alta',
   low_text:'{names}: quedan menos de {n} días. Es hora de reabastecer.', go_inventory:'Inventario',
   cal_eyebrow:'Calendario', cal_title:'Tu semana, de un vistazo.', cal_sub:'Mira lo programado, día por día. Marca cada dosis a medida que avanzas.', add_a_med:'Agregar un medicamento',
@@ -699,7 +699,7 @@ es: {
   cam_denied:'Se bloqueó el acceso a la cámara. Permítelo en la barra de direcciones y vuelve a intentarlo.', cam_none:'No se encontró una cámara. Usa “Subir una foto”.',
   cam_err:'La cámara no pudo iniciar: {e}', compare:'Comparar con mi lista', comparing:'Revisando la foto…', need_photo:'Primero toma o sube una foto.',
   helpful:'Una revisión útil', match_title:'Compara detalles que reconoces', ref_title:'Solo una referencia para tu lista',
-  ref_text:'Esta herramienta compara con los medicamentos guardados en MedSnap. No puede identificar una pastilla desconocida ni confirmar qué es seguro tomar.',
+  ref_text:'Esta herramienta compara con los medicamentos guardados en VeraDose. No puede identificar una pastilla desconocida ni confirmar qué es seguro tomar.',
   saw:'Lo que vio la cámara', unknown:'no seguro', m_strong:'Parece coincidir', m_partial:'Coincide en parte', m_none:'No coincide', matched_on:'Coincide en: {w}', matched_none:'nada',
   no_saved:'Ningún medicamento tiene forma, color o grabado guardado. Agrégalos en Medicamentos para comparar fotos.', w_shape:'forma', w_color:'color', w_imprint:'grabado',
   cg_eyebrow:'Cuidador', cg_title:'Un cuidador, si lo eliges.', cg_sub_on:'El envío está conectado. Al guardar un cuidador, recibirá un aviso de inmediato si olvidas una dosis o se acaban tus pastillas.',
@@ -708,40 +708,40 @@ es: {
   cg_name:'Nombre del cuidador', cg_email:'Correo', cg_email_ph:'nombre@ejemplo.com', cg_phone:'Teléfono', cg_phone_ph:'+14155550123', cg_consent:'Tengo permiso para guardar los datos de contacto de esta persona.',
   on_title:'El envío está conectado.', on_text:'Los avisos se envían por {ch} cuando una dosis lleva {m} minutos de retraso o un medicamento baja de tu aviso de existencias.',
   ch_email:'correo', ch_sms:'mensaje de texto', ch_and:' y ', off_title:'El envío aún no está configurado en el servidor.',
-  off_text:'Agrega tus datos de correo (SMTP) o de Twilio en el archivo .env y reinicia MedSnap. Mientras tanto, los datos se guardan.',
+  off_text:'Agrega tus datos de correo (SMTP) o de Twilio en el archivo .env y reinicia VeraDose. Mientras tanto, los datos se guardan.',
   save_prefs:'Guardar preferencias', send_test:'Enviar prueba', cs_k:'Tu decisión, a tu ritmo', cs_t:'El cuidado funciona mejor cuando te sientes cómodo.',
   cs_p:'Puedes cambiar o quitar estos datos cuando quieras. Los avisos solo van a la persona que guardes aquí.',
   cg_saved_on:'Guardado. Avisamos a {name} que es tu cuidador; recibirá alertas de inmediato.', cg_saved:'Preferencias guardadas.', test_sent:'Mensaje de prueba enviado.',
-  pf_eyebrow:'Perfil y preferencias', pf_title:'Un perfil a tu medida.', pf_sub:'Tu perfil ayuda a que MedSnap haga la rutina más personal.',
-  pd_title:'Datos personales', pd_sub:'Tu perfil ayuda a que MedSnap haga la rutina más personal.', f_pname:'Nombre', optional:'Opcional', f_age:'Edad',
+  pf_eyebrow:'Perfil y preferencias', pf_title:'Un perfil a tu medida.', pf_sub:'Tu perfil ayuda a que VeraDose haga la rutina más personal.',
+  pd_title:'Datos personales', pd_sub:'Tu perfil ayuda a que VeraDose haga la rutina más personal.', f_pname:'Nombre', optional:'Opcional', f_age:'Edad',
   f_allergies:'Alergias', f_tz:'Zona horaria', f_low:'Aviso de existencias bajas (días)', not_stored:'Tu perfil y tus alergias no se guardan en el navegador.',
-  save_profile:'Guardar perfil', ps_t:'Tu perfil ayuda a que MedSnap haga la rutina más personal.', ps_p:'Los nombres e instrucciones de los medicamentos quedan como los escribiste; MedSnap no traduce indicaciones de recetas.',
+  save_profile:'Guardar perfil', ps_t:'Tu perfil ayuda a que VeraDose haga la rutina más personal.', ps_p:'Los nombres e instrucciones de los medicamentos quedan como los escribiste; VeraDose no traduce indicaciones de recetas.',
   ds_title:'Ajustes de pantalla', ds_sub:'Tamaño del texto', text_size:'Tamaño del texto', dyslexia:'Fuente para dislexia', theme:'Tema', light:'Claro', dark:'Oscuro', profile_saved:'Perfil guardado.',
-  buddy:'Buddy', bd_title:'MedSnap Buddy', bd_sub:'Ayuda general, no consejo médico', bd_intro:'Pregunta sobre cómo usar MedSnap u organizarte. Para decisiones sobre medicamentos, consulta a un farmacéutico o médico.',
+  buddy:'Buddy', bd_title:'VeraDose Buddy', bd_sub:'Ayuda general, no consejo médico', bd_intro:'Pregunta sobre cómo usar VeraDose u organizarte. Para decisiones sobre medicamentos, consulta a un farmacéutico o médico.',
   bd_note:'Tu pregunta se envía a Groq. Evita nombres o datos médicos personales.', bd_ph:'¿En qué te ayudo?', bd_send:'Enviar', close:'Cerrar',
   em_title:'Emergencia', em_body:'Si tú o alguien cerca está en peligro, llama al 911 ahora.', em_call:'Llamar al 911', em_desktop:'¿En una computadora? Marca el 911 desde cualquier teléfono.',
   em_alert:'Avisar a mi cuidador', em_sent:'Tu cuidador recibió el aviso.',
   tts_dose:'{name}, {dose}. Toma {n} a las {time}.', tts_intro:'Tus medicamentos de hoy.', tts_none:'No hay nada planeado hoy.', tts_unsupported:'Este navegador no puede leer en voz alta.',
-  err_server:'No se pudo conectar con el servidor.', err_offline:'MedSnap no puede conectar con su servidor (app.py). Asegúrate de que esté en marcha.', err_page:'Esta página tuvo un problema. Actualiza.', retry:'Reintentar', off_banner_t:'MedSnap no puede conectar con su servidor.', off_banner:'En la terminal de VS Code ejecuta: python app.py — luego abre http://127.0.0.1:5000/app', tz_hint:'Por ejemplo America/New_York',
+  err_server:'No se pudo conectar con el servidor.', err_offline:'VeraDose no puede conectar con su servidor (app.py). Asegúrate de que esté en marcha.', err_page:'Esta página tuvo un problema. Actualiza.', retry:'Reintentar', off_banner_t:'VeraDose no puede conectar con su servidor.', off_banner:'En la terminal de VS Code ejecuta: python app.py — luego abre http://127.0.0.1:5000/app', tz_hint:'Por ejemplo America/New_York',
 },
 fr: {
   g_signin:'Se connecter', g_signup:'Créer un compte', g_in_title:'Bon retour', g_in_sub:'Connectez-vous pour voir vos médicaments et votre routine.', g_up_title:'Créons votre compte', g_up_sub:"Votre compte garde vos médicaments sur tous vos appareils. L'âge et les allergies sont facultatifs.", g_password:'Mot de passe', g_pw_hint:'Au moins 8 caractères.', g_signin_btn:'Se connecter', g_signup_btn:'Créer mon compte',
-  sc_btn:"Scanner l'étiquette", sc_hide:'Fermer le scanner', sc_title:'Scanner une ordonnance ou un flacon', sc_sub:"Prenez l'étiquette en photo et MedSnap remplit ce formulaire. Jusqu'à 3 photos, par exemple l'ordonnance et le flacon.", sc_hint:"Tenez l'étiquette à plat, de près et bien éclairée.", sc_take_more:'Prendre une autre photo', sc_read:"Lire l'étiquette", sc_reading:"Lecture de l'étiquette…", sc_photos:'{n} photo(s) sur 3', sc_photo_n:'Photo {n}', sc_remove:'Retirer la photo', sc_max:"Limite de 3 photos atteinte. Appuyez sur Lire l'étiquette.", sc_need:"Prenez ou importez d'abord une photo.", sc_done_t:"Rempli depuis l'étiquette :", sc_done:'{f}. Les champs remplis sont entourés.', sc_times:"L'étiquette indique {n} fois par jour. MedSnap garde une heure par médicament : après l'enregistrement, ajoutez-le pour chaque autre heure.", sc_check:"Vérifiez chaque détail avec l'étiquette avant d'enregistrer, et complétez ce qui manque, comme les jours.", sc_pc_t:'Nouvelle ordonnance ?', sc_pc_s:"Scannez l'étiquette ou le flacon pour l'ajouter à vos médicaments, votre stock et votre calendrier.",
-  pc_main_title:'Scannez-le. Vérifiez-le deux fois.', pc_main_sub:'Scannez une ordonnance ou un flacon pour ajouter un médicament, ou comparez un comprimé avec votre liste.', pc_mode_scan:"Scanner l'étiquette", pc_mode_check:'Vérifier un comprimé', sc_main_t:"Scanner l'étiquette pour remplir", sc_main_s:"Photographiez l'étiquette de l'ordonnance ou le flacon. MedSnap la lit et remplit un nouveau médicament à vérifier et enregistrer.", how_k:'Comment ça marche', how_t:'Ajoutez un médicament en trois étapes', how1_t:"Prenez jusqu'à 3 photos", how1:"L'ordonnance et le flacon ensemble donnent le plus d'informations.", how2_t:"MedSnap lit l'étiquette", how2:'Nom, dose, posologie, nombre de comprimés dans le flacon et conseils de repas ou d\'horaire.', how3_t:'Vérifiez et enregistrez', how3:'Il apparaît ensuite dans Médicaments, Stock et Calendrier.', sc_safe_t:'Vous vérifiez avant tout enregistrement', sc_safe_p:"MedSnap ne remplit que ce qui est imprimé. Rien n'est ajouté avant que vous vérifiiez et appuyiez sur Enregistrer.", sc_to_check_t:'Un comprimé dans la main ?', sc_to_check:'Comparez sa forme, sa couleur et son inscription avec vos médicaments enregistrés.',
+  sc_btn:"Scanner l'étiquette", sc_hide:'Fermer le scanner', sc_title:'Scanner une ordonnance ou un flacon', sc_sub:"Prenez l'étiquette en photo et VeraDose remplit ce formulaire. Jusqu'à 3 photos, par exemple l'ordonnance et le flacon.", sc_hint:"Tenez l'étiquette à plat, de près et bien éclairée.", sc_take_more:'Prendre une autre photo', sc_read:"Lire l'étiquette", sc_reading:"Lecture de l'étiquette…", sc_photos:'{n} photo(s) sur 3', sc_photo_n:'Photo {n}', sc_remove:'Retirer la photo', sc_max:"Limite de 3 photos atteinte. Appuyez sur Lire l'étiquette.", sc_need:"Prenez ou importez d'abord une photo.", sc_done_t:"Rempli depuis l'étiquette :", sc_done:'{f}. Les champs remplis sont entourés.', sc_times:"L'étiquette indique {n} fois par jour. VeraDose garde une heure par médicament : après l'enregistrement, ajoutez-le pour chaque autre heure.", sc_check:"Vérifiez chaque détail avec l'étiquette avant d'enregistrer, et complétez ce qui manque, comme les jours.", sc_pc_t:'Nouvelle ordonnance ?', sc_pc_s:"Scannez l'étiquette ou le flacon pour l'ajouter à vos médicaments, votre stock et votre calendrier.",
+  pc_main_title:'Scannez-le. Vérifiez-le deux fois.', pc_main_sub:'Scannez une ordonnance ou un flacon pour ajouter un médicament, ou comparez un comprimé avec votre liste.', pc_mode_scan:"Scanner l'étiquette", pc_mode_check:'Vérifier un comprimé', sc_main_t:"Scanner l'étiquette pour remplir", sc_main_s:"Photographiez l'étiquette de l'ordonnance ou le flacon. VeraDose la lit et remplit un nouveau médicament à vérifier et enregistrer.", how_k:'Comment ça marche', how_t:'Ajoutez un médicament en trois étapes', how1_t:"Prenez jusqu'à 3 photos", how1:"L'ordonnance et le flacon ensemble donnent le plus d'informations.", how2_t:"VeraDose lit l'étiquette", how2:'Nom, dose, posologie, nombre de comprimés dans le flacon et conseils de repas ou d\'horaire.', how3_t:'Vérifiez et enregistrez', how3:'Il apparaît ensuite dans Médicaments, Stock et Calendrier.', sc_safe_t:'Vous vérifiez avant tout enregistrement', sc_safe_p:"VeraDose ne remplit que ce qui est imprimé. Rien n'est ajouté avant que vous vérifiiez et appuyiez sur Enregistrer.", sc_to_check_t:'Un comprimé dans la main ?', sc_to_check:'Comparez sa forme, sa couleur et son inscription avec vos médicaments enregistrés.',
   al_sub:'Cochez tout ce à quoi vous êtes allergique.', al_other:'Autre', al_other_q:'Quelles autres allergies avez-vous ?', al_other_ph:'ex. chats, fraises (séparez par des virgules)', al_penicillin:'Pénicilline', al_sulfa:'Sulfamides', al_aspirin:'Aspirine', al_nsaids:'Ibuprofène / AINS', al_codeine:'Codéine / opioïdes', al_latex:'Latex', al_contrast:'Produit de contraste (iode)', al_peanuts:'Arachides', al_tree_nuts:'Fruits à coque', al_shellfish:'Fruits de mer', al_fish:'Poisson', al_eggs:'Œufs', al_milk:'Lait / produits laitiers', al_soy:'Soja', al_wheat:'Blé / gluten', al_bee_stings:"Piqûres d'abeille",
   acc_title:'Compte', acc_sub:"Vous restez connecté sur cet appareil jusqu'à la déconnexion.", acc_logout:'Se déconnecter', acc_logout_s:'Déconnexion sur cet appareil. Vos médicaments restent enregistrés.', acc_delete:'Supprimer le compte', acc_delete_s:'Efface définitivement votre compte et tout son contenu.', del_title:'Supprimer votre compte ?', del_sub:'Cette action est irréversible.', del_warn_t:'Tout sera effacé', del_warn:"Votre profil, vos médicaments, votre stock, votre historique, votre série et les informations de l'aidant seront définitivement supprimés.", del_pw:'Saisissez votre mot de passe pour confirmer', del_btn:'Supprimer mon compte',
-  conn_t:'Connexion à MedSnap…', conn:"Cela peut prendre jusqu'à une minute si le serveur était en veille. Vous restez connecté.", still_trying:'MedSnap continue d\'essayer et se connectera tout seul dès que le serveur tournera.', reconnected:'Connecté. Bon retour !',
+  conn_t:'Connexion à VeraDose…', conn:"Cela peut prendre jusqu'à une minute si le serveur était en veille. Vous restez connecté.", still_trying:'VeraDose continue d\'essayer et se connectera tout seul dès que le serveur tournera.', reconnected:'Connecté. Bon retour !',
   show_pw:'Afficher le mot de passe', hide_pw:'Masquer le mot de passe', g_make_acc:'Créer un compte avec cet e-mail →',
   a11y:'Accessibilité', a11y_btn:"Options d'accessibilité", tts:'Synthèse vocale', auto_read:"Lire à voix haute les réponses de l'IA", read_page:'Lire cette page à voix haute', stop_audio:"Arrêter l'audio", readability:'Lisibilité', visibility:'Visibilité', hc:'Mode contraste élevé', normal_size:'Taille normale',
   smaller:'Texte plus petit', larger:'Texte plus grand', dark_mode:'Mode sombre',
   your_space:'Votre espace', your_details:'Vos informations', n_today:"Aujourd'hui", n_calendar:'Calendrier', n_streaks:'Séries', n_meds:'Médicaments',
   n_inventory:'Stock', n_pillcheck:'Vérifier un comprimé', n_caregiver:'Aidant', n_profile:'Profil et préférences',
-  install_app:"Installer l'app", install_sub:"Ajoutez MedSnap à votre écran d'accueil.", need_hand:"Besoin d'aide ?", need_hand_sub:'Votre routine, pas à pas.', your_care:'Vos soins', personal_account:'Compte personnel', sign_out:'Quitter', menu:'Menu',
+  install_app:"Installer l'app", install_sub:"Ajoutez VeraDose à votre écran d'accueil.", need_hand:"Besoin d'aide ?", need_hand_sub:'Votre routine, pas à pas.', your_care:'Vos soins', personal_account:'Compte personnel', sign_out:'Quitter', menu:'Menu',
   emergency:'Urgence · Appeler le 911', private:'Vos informations sont privées', language:'Langue', foot_tag:'Pour rendre le quotidien un peu plus simple.',
   td_eyebrow:"Aujourd'hui", g_morning:'Bonjour', g_afternoon:'Bon après-midi', g_evening:'Bonsoir', td_title:'Voici votre journée.',
   td_sub:"Tout ce qui est prévu aujourd'hui. Notez chaque prise une fois faite.", td_read:'Lire la journée', td_doses:"Prises aujourd'hui", td_of:'{a} sur {b} prises',
   td_streak:'Série actuelle', td_next:'Prochaine prise', td_next_none:"Tout est fait pour aujourd'hui", td_none_title:"Rien de prévu aujourd'hui", td_none_sub:'Bonne journée. Les prochaines prises apparaîtront ici.',
-  empty_title:'Ajoutons votre premier médicament', empty_sub:'Ajoutez un médicament et MedSnap créera votre routine, votre calendrier et votre série.',
+  empty_title:'Ajoutons votre premier médicament', empty_sub:'Ajoutez un médicament et VeraDose créera votre routine, votre calendrier et votre série.',
   st_taken:'Pris', st_due:"C'est l'heure", st_missed:'Oublié', st_upcoming:'À venir', mark_taken:'Marquer pris', undo:'Annuler', read_aloud:'Lire à voix haute',
   low_text:'{names} : moins de {n} jours restants. Pensez à renouveler.', go_inventory:'Stock',
   cal_eyebrow:'Calendrier', cal_title:"Votre semaine, d'un coup d'œil.", cal_sub:'Voyez ce qui est prévu, jour par jour. Notez chaque prise au fur et à mesure.', add_a_med:'Ajouter un médicament',
@@ -777,7 +777,7 @@ fr: {
   cam_denied:"L'accès à la caméra est bloqué. Autorisez-le dans la barre d'adresse puis réessayez.", cam_none:'Aucune caméra trouvée. Utilisez « Importer une photo ».',
   cam_err:"La caméra n'a pas pu démarrer : {e}", compare:'Comparer avec ma liste', comparing:'Analyse de la photo…', need_photo:"Prenez ou importez d'abord une photo.",
   helpful:'Une vérification utile', match_title:'Comparez les détails reconnus', ref_title:'Seulement une référence pour votre liste',
-  ref_text:"Cet outil compare avec les médicaments enregistrés dans MedSnap. Il ne peut pas identifier un comprimé inconnu ni confirmer ce qui est sûr.",
+  ref_text:"Cet outil compare avec les médicaments enregistrés dans VeraDose. Il ne peut pas identifier un comprimé inconnu ni confirmer ce qui est sûr.",
   saw:'Ce que la caméra a vu', unknown:'incertain', m_strong:'Semble correspondre', m_partial:'Correspond en partie', m_none:'Ne correspond pas', matched_on:'Correspond : {w}', matched_none:'rien',
   no_saved:"Aucun médicament n'a de forme, couleur ou inscription enregistrée. Ajoutez-les dans Médicaments pour comparer.", w_shape:'forme', w_color:'couleur', w_imprint:'inscription',
   cg_eyebrow:'Aidant', cg_title:'Un aidant, si vous le souhaitez.', cg_sub_on:"L'envoi est connecté. Une fois enregistré, votre aidant est prévenu immédiatement en cas d'oubli ou de stock bas.",
@@ -786,40 +786,40 @@ fr: {
   cg_name:"Nom de l'aidant", cg_email:'E-mail', cg_email_ph:'nom@exemple.com', cg_phone:'Téléphone', cg_phone_ph:'+14155550123', cg_consent:"J'ai la permission d'enregistrer les coordonnées de cette personne.",
   on_title:"L'envoi est connecté.", on_text:"Les alertes partent par {ch} dès qu'une prise a {m} minutes de retard, ou quand un médicament passe sous votre seuil de stock.",
   ch_email:'e-mail', ch_sms:'SMS', ch_and:' et ', off_title:"L'envoi n'est pas encore configuré sur le serveur.",
-  off_text:'Ajoutez vos informations e-mail (SMTP) ou Twilio dans le fichier .env puis redémarrez MedSnap. Les coordonnées sont enregistrées en attendant.',
+  off_text:'Ajoutez vos informations e-mail (SMTP) ou Twilio dans le fichier .env puis redémarrez VeraDose. Les coordonnées sont enregistrées en attendant.',
   save_prefs:'Enregistrer', send_test:'Envoyer un test', cs_k:'Votre choix, votre rythme', cs_t:'Les soins fonctionnent mieux quand vous êtes à l\'aise.',
   cs_p:'Vous pouvez modifier ou retirer ces informations à tout moment. Les alertes ne vont qu\'à la personne enregistrée ici.',
   cg_saved_on:'Enregistré. {name} a été informé et sera prévenu immédiatement.', cg_saved:'Préférences enregistrées.', test_sent:'Message test envoyé.',
-  pf_eyebrow:'Profil et préférences', pf_title:'Un profil qui vous ressemble.', pf_sub:'Votre profil rend la routine MedSnap plus personnelle.',
-  pd_title:'Informations personnelles', pd_sub:'Votre profil rend la routine MedSnap plus personnelle.', f_pname:'Nom', optional:'Facultatif', f_age:'Âge',
+  pf_eyebrow:'Profil et préférences', pf_title:'Un profil qui vous ressemble.', pf_sub:'Votre profil rend la routine VeraDose plus personnelle.',
+  pd_title:'Informations personnelles', pd_sub:'Votre profil rend la routine VeraDose plus personnelle.', f_pname:'Nom', optional:'Facultatif', f_age:'Âge',
   f_allergies:'Allergies', f_tz:'Fuseau horaire', f_low:'Alerte de stock bas (jours)', not_stored:'Votre profil et vos allergies ne sont pas stockés dans le navigateur.',
-  save_profile:'Enregistrer le profil', ps_t:'Votre profil rend la routine MedSnap plus personnelle.', ps_p:'Les noms et instructions restent tels que saisis ; MedSnap ne traduit pas les ordonnances.',
+  save_profile:'Enregistrer le profil', ps_t:'Votre profil rend la routine VeraDose plus personnelle.', ps_p:'Les noms et instructions restent tels que saisis ; VeraDose ne traduit pas les ordonnances.',
   ds_title:"Réglages d'affichage", ds_sub:'Taille du texte', text_size:'Taille du texte', dyslexia:'Police pour la dyslexie', theme:'Thème', light:'Clair', dark:'Sombre', profile_saved:'Profil enregistré.',
-  buddy:'Buddy', bd_title:'MedSnap Buddy', bd_sub:'Aide générale, pas un avis médical', bd_intro:"Posez vos questions sur MedSnap ou l'organisation. Pour les décisions sur les médicaments, consultez un pharmacien ou un médecin.",
+  buddy:'Buddy', bd_title:'VeraDose Buddy', bd_sub:'Aide générale, pas un avis médical', bd_intro:"Posez vos questions sur VeraDose ou l'organisation. Pour les décisions sur les médicaments, consultez un pharmacien ou un médecin.",
   bd_note:'Votre question est envoyée à Groq. Évitez les noms ou détails médicaux personnels.', bd_ph:'Comment puis-je aider ?', bd_send:'Envoyer', close:'Fermer',
   em_title:'Urgence', em_body:'Si vous ou une personne proche êtes en danger, appelez le 911 maintenant.', em_call:'Appeler le 911', em_desktop:"Sur un ordinateur ? Composez le 911 depuis n'importe quel téléphone.",
   em_alert:'Prévenir mon aidant', em_sent:'Votre aidant a été prévenu.',
   tts_dose:'{name}, {dose}. Prenez {n} à {time}.', tts_intro:"Vos médicaments d'aujourd'hui.", tts_none:"Rien n'est prévu aujourd'hui.", tts_unsupported:'Ce navigateur ne peut pas lire à voix haute.',
-  err_server:'Impossible de joindre le serveur.', err_offline:"MedSnap ne joint pas son serveur (app.py). Vérifiez qu'il tourne.", err_page:'Cette page a rencontré un problème. Actualisez.', retry:'Réessayer', off_banner_t:'MedSnap ne joint pas son serveur.', off_banner:'Dans le terminal VS Code, lancez : python app.py — puis ouvrez http://127.0.0.1:5000/app', tz_hint:'Par exemple America/New_York',
+  err_server:'Impossible de joindre le serveur.', err_offline:"VeraDose ne joint pas son serveur (app.py). Vérifiez qu'il tourne.", err_page:'Cette page a rencontré un problème. Actualisez.', retry:'Réessayer', off_banner_t:'VeraDose ne joint pas son serveur.', off_banner:'Dans le terminal VS Code, lancez : python app.py — puis ouvrez http://127.0.0.1:5000/app', tz_hint:'Par exemple America/New_York',
 },
 zh: {
   g_signin:'登录', g_signup:'创建账户', g_in_title:'欢迎回来', g_in_sub:'登录查看您的药物和日常安排。', g_up_title:'开始设置', g_up_sub:'账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。', g_password:'密码', g_pw_hint:'至少 8 个字符。', g_signin_btn:'登录', g_signup_btn:'创建我的账户',
-  sc_btn:'扫描标签', sc_hide:'关闭扫描', sc_title:'扫描处方或药瓶', sc_sub:'拍下标签，MedSnap 会帮您填写此表。最多 3 张照片，例如处方和药瓶。', sc_hint:'将标签放平，靠近拍摄，光线要充足。', sc_take_more:'再拍一张', sc_read:'读取标签', sc_reading:'正在读取标签…', sc_photos:'已拍 {n}/3 张', sc_photo_n:'照片 {n}', sc_remove:'删除照片', sc_max:'已达 3 张上限，请点“读取标签”。', sc_need:'请先拍照或上传照片。', sc_done_t:'已根据标签填写：', sc_done:'{f}。已填写的项目带有边框。', sc_times:'标签写着每天 {n} 次。MedSnap 每种药只记录一个时间，保存后请为其他时间再添加一次。', sc_check:'保存前请对照标签检查每一项，并补充标签上没有的信息，例如服药日期。', sc_pc_t:'有新处方？', sc_pc_s:'扫描标签或药瓶，即可添加到药物、库存和日历中。',
-  pc_main_title:'扫一扫，再核对。', pc_main_sub:'扫描处方或药瓶来添加药物，或将手中的药片与您的清单比对。', pc_mode_scan:'扫描标签', pc_mode_check:'核对药片', sc_main_t:'扫描标签自动填写', sc_main_s:'拍下处方标签或药瓶，MedSnap 会读取并填写新药物，供您检查后保存。', how_k:'使用方法', how_t:'三步添加药物', how1_t:'最多拍 3 张照片', how1:'同时拍处方和药瓶，MedSnap 能读到的信息最多。', how2_t:'MedSnap 读取标签', how2:'名称、剂量、用法、瓶中药片数量，以及饮食或时间提示。', how3_t:'检查并保存', how3:'之后会出现在药物、库存和日历页面。', sc_safe_t:'保存前由您确认', sc_safe_p:'MedSnap 只填写标签上印的内容。您检查并点“保存”之前，不会添加任何东西。', sc_to_check_t:'手里有一粒药？', sc_to_check:'将它的形状、颜色和刻印与已保存的药物比对。',
+  sc_btn:'扫描标签', sc_hide:'关闭扫描', sc_title:'扫描处方或药瓶', sc_sub:'拍下标签，VeraDose 会帮您填写此表。最多 3 张照片，例如处方和药瓶。', sc_hint:'将标签放平，靠近拍摄，光线要充足。', sc_take_more:'再拍一张', sc_read:'读取标签', sc_reading:'正在读取标签…', sc_photos:'已拍 {n}/3 张', sc_photo_n:'照片 {n}', sc_remove:'删除照片', sc_max:'已达 3 张上限，请点“读取标签”。', sc_need:'请先拍照或上传照片。', sc_done_t:'已根据标签填写：', sc_done:'{f}。已填写的项目带有边框。', sc_times:'标签写着每天 {n} 次。VeraDose 每种药只记录一个时间，保存后请为其他时间再添加一次。', sc_check:'保存前请对照标签检查每一项，并补充标签上没有的信息，例如服药日期。', sc_pc_t:'有新处方？', sc_pc_s:'扫描标签或药瓶，即可添加到药物、库存和日历中。',
+  pc_main_title:'扫一扫，再核对。', pc_main_sub:'扫描处方或药瓶来添加药物，或将手中的药片与您的清单比对。', pc_mode_scan:'扫描标签', pc_mode_check:'核对药片', sc_main_t:'扫描标签自动填写', sc_main_s:'拍下处方标签或药瓶，VeraDose 会读取并填写新药物，供您检查后保存。', how_k:'使用方法', how_t:'三步添加药物', how1_t:'最多拍 3 张照片', how1:'同时拍处方和药瓶，VeraDose 能读到的信息最多。', how2_t:'VeraDose 读取标签', how2:'名称、剂量、用法、瓶中药片数量，以及饮食或时间提示。', how3_t:'检查并保存', how3:'之后会出现在药物、库存和日历页面。', sc_safe_t:'保存前由您确认', sc_safe_p:'VeraDose 只填写标签上印的内容。您检查并点“保存”之前，不会添加任何东西。', sc_to_check_t:'手里有一粒药？', sc_to_check:'将它的形状、颜色和刻印与已保存的药物比对。',
   al_sub:'勾选所有您过敏的项目。', al_other:'其他', al_other_q:'您还有哪些过敏？', al_other_ph:'例如：猫、草莓（用逗号分隔）', al_penicillin:'青霉素', al_sulfa:'磺胺类药物', al_aspirin:'阿司匹林', al_nsaids:'布洛芬 / 非甾体抗炎药', al_codeine:'可待因 / 阿片类', al_latex:'乳胶', al_contrast:'造影剂（碘）', al_peanuts:'花生', al_tree_nuts:'坚果', al_shellfish:'贝类海鲜', al_fish:'鱼', al_eggs:'鸡蛋', al_milk:'牛奶 / 乳制品', al_soy:'大豆', al_wheat:'小麦 / 麸质', al_bee_stings:'蜂蜇',
   acc_title:'账户', acc_sub:'在您退出登录之前，此设备会一直保持登录。', acc_logout:'退出登录', acc_logout_s:'在此设备上退出。您的药物信息仍会保存。', acc_delete:'删除账户', acc_delete_s:'永久删除您的账户及其中所有内容。', del_title:'删除您的账户？', del_sub:'此操作无法撤销。', del_warn_t:'所有内容都会被删除', del_warn:'您的资料、药物、库存、日历记录、连续记录和照护人信息将被永久删除。', del_pw:'输入密码以确认', del_btn:'删除我的账户',
-  conn_t:'正在连接 MedSnap…', conn:'如果服务器刚才在休眠，可能需要一分钟。您仍保持登录。', still_trying:'MedSnap 会一直尝试，服务器一启动就会自动连接。', reconnected:'已连接，欢迎回来！',
+  conn_t:'正在连接 VeraDose…', conn:'如果服务器刚才在休眠，可能需要一分钟。您仍保持登录。', still_trying:'VeraDose 会一直尝试，服务器一启动就会自动连接。', reconnected:'已连接，欢迎回来！',
   show_pw:'显示密码', hide_pw:'隐藏密码', g_make_acc:'用这个邮箱创建账户 →',
   a11y:'无障碍', a11y_btn:'无障碍选项', tts:'语音朗读', auto_read:'自动朗读 AI 回复', read_page:'朗读本页内容', stop_audio:'停止朗读', readability:'易读性', visibility:'可视性', hc:'高对比度模式', normal_size:'正常大小',
   smaller:'缩小文字', larger:'放大文字', dark_mode:'深色模式',
   your_space:'我的空间', your_details:'我的信息', n_today:'今天', n_calendar:'日历', n_streaks:'连续记录', n_meds:'药物',
   n_inventory:'库存', n_pillcheck:'药片核对', n_caregiver:'照护人', n_profile:'个人资料与偏好',
-  install_app:"安装应用", install_sub:"把 MedSnap 添加到主屏幕。", need_hand:'需要帮助吗？', need_hand_sub:'您的日常，一步一步来。', your_care:'我的照护', personal_account:'个人账户', sign_out:'退出', menu:'菜单',
+  install_app:"安装应用", install_sub:"把 VeraDose 添加到主屏幕。", need_hand:'需要帮助吗？', need_hand_sub:'您的日常，一步一步来。', your_care:'我的照护', personal_account:'个人账户', sign_out:'退出', menu:'菜单',
   emergency:'紧急情况 · 拨打 911', private:'您的信息是私密的', language:'语言', foot_tag:'让每一天都更轻松一点。',
   td_eyebrow:'今天', g_morning:'早上好', g_afternoon:'下午好', g_evening:'晚上好', td_title:'这是您今天的安排。',
   td_sub:'今天计划的所有剂量。服用后请逐一标记。', td_read:'朗读今天的安排', td_doses:'今日剂量', td_of:'已服 {a} / {b}',
   td_streak:'当前连续', td_next:'下一次服药', td_next_none:'今天已全部完成', td_none_title:'今天没有安排', td_none_sub:'祝您愉快。接下来的剂量会显示在这里。',
-  empty_title:'添加您的第一种药物', empty_sub:'添加药物后，MedSnap 会为您建立每日安排、日历和连续记录。',
+  empty_title:'添加您的第一种药物', empty_sub:'添加药物后，VeraDose 会为您建立每日安排、日历和连续记录。',
   st_taken:'已服用', st_due:'现在服用', st_missed:'漏服', st_upcoming:'即将服用', mark_taken:'标记已服', undo:'撤销', read_aloud:'朗读',
   low_text:'{names}：剩余不足 {n} 天，请及时补药。', go_inventory:'库存',
   cal_eyebrow:'日历', cal_title:'本周安排，一目了然。', cal_sub:'按天查看安排，服用后逐一标记。', add_a_med:'添加药物',
@@ -855,7 +855,7 @@ zh: {
   cam_denied:'摄像头权限被阻止。请在浏览器地址栏允许后重试。', cam_none:'未找到摄像头。请改用“上传照片”。',
   cam_err:'摄像头无法启动：{e}', compare:'与我的清单比对', comparing:'正在识别照片…', need_photo:'请先拍照或上传照片。',
   helpful:'辅助核对', match_title:'比对您认得的细节', ref_title:'仅作为您清单的参考',
-  ref_text:'此工具只与您在 MedSnap 中保存的药物进行比对，无法识别未知药片，也不能确认是否安全。',
+  ref_text:'此工具只与您在 VeraDose 中保存的药物进行比对，无法识别未知药片，也不能确认是否安全。',
   saw:'摄像头识别到的', unknown:'不确定', m_strong:'看起来一致', m_partial:'部分一致', m_none:'不一致', matched_on:'一致项：{w}', matched_none:'无',
   no_saved:'您的药物还没有保存形状、颜色或刻印。请在“药物”中添加后再比对照片。', w_shape:'形状', w_color:'颜色', w_imprint:'刻印',
   cg_eyebrow:'照护人', cg_title:'照护人，由您决定。', cg_sub_on:'通知已连接。保存照护人后，漏服或药量不足时会立即提醒对方。',
@@ -864,21 +864,21 @@ zh: {
   cg_name:'照护人姓名', cg_email:'邮箱', cg_email_ph:'name@example.com', cg_phone:'电话', cg_phone_ph:'+14155550123', cg_consent:'我已获得此人同意保存其联系方式。',
   on_title:'通知已连接。', on_text:'剂量晚了 {m} 分钟或药量低于库存提醒时，会通过{ch}立即通知。',
   ch_email:'邮件', ch_sms:'短信', ch_and:'和', off_title:'服务器尚未设置通知发送。',
-  off_text:'请在 .env 文件中填写邮件（SMTP）或 Twilio 信息并重启 MedSnap。在此期间信息会被保存。',
+  off_text:'请在 .env 文件中填写邮件（SMTP）或 Twilio 信息并重启 VeraDose。在此期间信息会被保存。',
   save_prefs:'保存偏好', send_test:'发送测试', cs_k:'您的选择，您的节奏', cs_t:'让您感到舒适的照护才最有效。',
   cs_p:'您可以随时修改或删除这些信息。提醒只会发给您在此保存的人。',
   cg_saved_on:'已保存。已通知 {name} 成为您的照护人，之后会立即收到提醒。', cg_saved:'偏好已保存。', test_sent:'测试消息已发送。',
-  pf_eyebrow:'个人资料与偏好', pf_title:'适合您的个人资料。', pf_sub:'您的资料让 MedSnap 的安排更贴心。',
-  pd_title:'个人信息', pd_sub:'您的资料让 MedSnap 的安排更贴心。', f_pname:'姓名', optional:'可选', f_age:'年龄',
+  pf_eyebrow:'个人资料与偏好', pf_title:'适合您的个人资料。', pf_sub:'您的资料让 VeraDose 的安排更贴心。',
+  pd_title:'个人信息', pd_sub:'您的资料让 VeraDose 的安排更贴心。', f_pname:'姓名', optional:'可选', f_age:'年龄',
   f_allergies:'过敏', f_tz:'时区', f_low:'库存不足提醒（天）', not_stored:'您的资料和过敏信息不会存储在浏览器中。',
-  save_profile:'保存资料', ps_t:'您的资料让 MedSnap 的安排更贴心。', ps_p:'药物名称和说明保持您输入的原样；MedSnap 不翻译处方说明。',
+  save_profile:'保存资料', ps_t:'您的资料让 VeraDose 的安排更贴心。', ps_p:'药物名称和说明保持您输入的原样；VeraDose 不翻译处方说明。',
   ds_title:'显示设置', ds_sub:'文字大小', text_size:'文字大小', dyslexia:'阅读障碍友好字体', theme:'主题', light:'浅色', dark:'深色', profile_saved:'资料已保存。',
-  buddy:'Buddy', bd_title:'MedSnap Buddy', bd_sub:'一般帮助，不是医疗建议', bd_intro:'可以问我如何使用 MedSnap 或如何安排生活。用药决定请咨询药剂师或医生。',
+  buddy:'Buddy', bd_title:'VeraDose Buddy', bd_sub:'一般帮助，不是医疗建议', bd_intro:'可以问我如何使用 VeraDose 或如何安排生活。用药决定请咨询药剂师或医生。',
   bd_note:'您的问题会发送给 Groq。请避免填写姓名或个人医疗细节。', bd_ph:'有什么可以帮您？', bd_send:'发送', close:'关闭',
   em_title:'紧急情况', em_body:'如果您或身边的人有危险，请立即拨打 911。', em_call:'拨打 911', em_desktop:'在电脑上？请用任何电话拨打 911。',
   em_alert:'通知我的照护人', em_sent:'已通知您的照护人。',
   tts_dose:'{name}，{dose}。{time} 服用 {n}。', tts_intro:'您今天的药物。', tts_none:'今天没有安排。', tts_unsupported:'此浏览器不支持朗读。',
-  err_server:'无法连接服务器。', err_offline:'MedSnap 无法连接服务器（app.py）。请确认它正在运行。', err_page:'此页面出现问题，请刷新。', retry:'重试', off_banner_t:'MedSnap 无法连接服务器。', off_banner:'在 VS Code 终端运行：python app.py，然后打开 http://127.0.0.1:5000/app', tz_hint:'例如 America/New_York',
+  err_server:'无法连接服务器。', err_offline:'VeraDose 无法连接服务器（app.py）。请确认它正在运行。', err_page:'此页面出现问题，请刷新。', retry:'重试', off_banner_t:'VeraDose 无法连接服务器。', off_banner:'在 VS Code 终端运行：python app.py，然后打开 http://127.0.0.1:5000/app', tz_hint:'例如 America/New_York',
 }};
 const LOCALE = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
 const LANGS = { en: 'English', es: 'Español', fr: 'Français', zh: '中文' };
@@ -888,7 +888,7 @@ const COLOR_KEYS = ['white', 'yellow', 'pink', 'red', 'purple', 'green', 'blue',
 const COLOR_HEX = { white: '#F4F3EE', yellow: '#F2D35E', pink: '#F2A9C2', red: '#D65A50', purple: '#9C80CF', green: '#79B98A', blue: '#5F92D6', brown: '#A27A55', orange: '#EE9F52', gray: '#A9B0AC' };
 
 let lang = 'en';
-try { lang = localStorage.getItem('medsnap_lang') || 'en'; } catch (e) {}
+try { lang = localStorage.getItem('VeraDose_lang') || 'en'; } catch (e) {}
 if (!I18N[lang]) lang = 'en';
 function t(key, vars) {
   let s = (I18N[lang] && I18N[lang][key]);
@@ -898,17 +898,17 @@ function t(key, vars) {
   return s;
 }
 
-/* ---------- helpers (from the original MedSnap) ---------- */
+/* ---------- helpers (from the original VeraDose) ---------- */
 const $ = (sel, root = document) => root.querySelector(sel);
 function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 const esc = escapeHtml;
 function getClientId() {
   try {
-    let id = localStorage.getItem('medsnap_client_id');
+    let id = localStorage.getItem('VeraDose_client_id');
     if (!id) {
       const raw = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + Math.random().toString(36).slice(2));
       id = String(raw).replace(/[^A-Za-z0-9_-]/g, '');
-      localStorage.setItem('medsnap_client_id', id);
+      localStorage.setItem('VeraDose_client_id', id);
     }
     return id;
   } catch (e) {
@@ -916,8 +916,8 @@ function getClientId() {
     return window.__fallbackId;
   }
 }
-function getToken() { try { return localStorage.getItem('medsnap_token') || ''; } catch (e) { return ''; } }
-function setToken(v) { try { if (v) localStorage.setItem('medsnap_token', v); else localStorage.removeItem('medsnap_token'); } catch (e) {} }
+function getToken() { try { return localStorage.getItem('VeraDose_token') || ''; } catch (e) { return ''; } }
+function setToken(v) { try { if (v) localStorage.setItem('VeraDose_token', v); else localStorage.removeItem('VeraDose_token'); } catch (e) {} }
 function getTimezone() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } }
 /* Where app.py is. Normally the same server that sent this page. If the page was opened another way
    (VS Code Live Server, double-clicking index.html), fall back to Flask on this computer. */
@@ -963,7 +963,7 @@ function tabletsText(n) { return Number(n) === 1 ? t('tablet') : t('tablets', { 
 function nowMinutes() { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
 function firstName() { return (S.profile.name || '').trim().split(/\s+/)[0] || ''; }
 
-/* ---------- pill drawing (from the original MedSnap, plus a scored-tablet default) ---------- */
+/* ---------- pill drawing (from the original VeraDose, plus a scored-tablet default) ---------- */
 function textColorFor(hex) { const n = parseInt(hex.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) > 150 ? '#1F2A25' : '#FFFFFF'; }
 function pillSvg(shape, color, imprint, size) {
   size = size || 56;
@@ -1059,7 +1059,7 @@ function setLanguage(code, save = true) {
   if (!I18N[code]) code = 'en';
   lang = code;
   document.documentElement.lang = code;
-  try { localStorage.setItem('medsnap_lang', code); } catch (e) {}
+  try { localStorage.setItem('VeraDose_lang', code); } catch (e) {}
   if (save) {
     langChosenHere = true;
     if (loaded) api('/api/profile', jsonOptions('PUT', Object.assign({}, S.profile, { language: code }))).then(applyState).catch(() => {});
@@ -1099,7 +1099,7 @@ function renderTopbar() {
     </div>`;
 }
 function renderFooter() {
-  $('#footer').innerHTML = `<span><b>MedSnap</b>${esc(t('foot_tag'))}</span><a href="#profile">${ic('sliders', 17, 1.6)}${esc(t('n_profile'))}</a>`;
+  $('#footer').innerHTML = `<span><b>VeraDose</b>${esc(t('foot_tag'))}</span><a href="#profile">${ic('sliders', 17, 1.6)}${esc(t('n_profile'))}</a>`;
 }
 
 /* ---------- Today ---------- */
@@ -1702,7 +1702,7 @@ function renderA11y() {
     <div class="a11y-head"><h2 id="a11yTitle"><span aria-hidden="true">♿</span> ${esc(t('a11y'))}</h2>
       <button class="icon-btn" data-act="a11y-close" aria-label="${esc(t('close'))}">${ic('x', 18, 1.9)}</button></div>
     <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔊</span> ${esc(t('tts'))}</div>
-      <label class="a11y-row"><span>${esc(t('auto_read'))}</span>${sw('a11y-auto', getSetting('medsnap_autoread') === '1')}</label>
+      <label class="a11y-row"><span>${esc(t('auto_read'))}</span>${sw('a11y-auto', getSetting('VeraDose_autoread') === '1')}</label>
       <button class="a11y-wide read" data-act="a11y-read">${ic('volume', 17, 1.8)}${esc(t('read_page'))}</button>
       <button class="a11y-wide stop" data-act="a11y-stop">■ ${esc(t('stop_audio'))}</button></div>
     <div class="a11y-sec"><div class="a11y-k"><span aria-hidden="true">🔤</span> ${esc(t('text_size'))}</div>
@@ -1719,7 +1719,7 @@ function stepFont(dir) {
   let i = SCALES.findIndex(s => Math.abs(s - cur) < 0.01); if (i < 0) i = 2;
   const next = SCALES[Math.max(0, Math.min(SCALES.length - 1, i + dir))];
   document.documentElement.style.setProperty('--scale', next);
-  try { localStorage.setItem('medsnap_scale', String(next)); } catch (e) {}
+  try { localStorage.setItem('VeraDose_scale', String(next)); } catch (e) {}
 }
 
 /* ---------- read aloud ---------- */
@@ -1797,7 +1797,7 @@ async function sendChat(text) {
     const msgs = chatHistory.filter(m => !m.error).map(m => ({ role: m.role, content: m.content }));
     const data = await api('/api/chat', jsonOptions('POST', { messages: msgs, language: lang, medications: S.meds.map(m => m.name) }));
     chatHistory.push({ role: 'assistant', content: data.answer });
-    if (getSetting('medsnap_autoread') === '1') speak(data.answer);
+    if (getSetting('VeraDose_autoread') === '1') speak(data.answer);
   } catch (e) {
     chatHistory.push({ role: 'assistant', content: '⚠️ ' + e.message, error: true });
   }
@@ -1881,7 +1881,7 @@ async function deleteAccount(form) {
   try {
     await api('/api/auth/delete', jsonOptions('POST', { password: new FormData(form).get('password') }));
     setToken('');
-    try { localStorage.removeItem('medsnap_client_id'); } catch (e) {}
+    try { localStorage.removeItem('VeraDose_client_id'); } catch (e) {}
     location.href = API_BASE ? 'landing.html' : '/';
   } catch (e) {
     $('#delErr').innerHTML = `<div class="scan-msg err" role="alert">${esc(e.message)}</div>`;
@@ -1988,7 +1988,7 @@ document.addEventListener('click', async e => {
       el.disabled = false; break;
     }
     case 'font': stepFont(Number(el.dataset.dir)); renderA11y(); break;
-    case 'font-reset': document.documentElement.style.setProperty('--scale', 1); putSetting('medsnap_scale', '1'); renderA11y(); break;
+    case 'font-reset': document.documentElement.style.setProperty('--scale', 1); putSetting('VeraDose_scale', '1'); renderA11y(); break;
     case 'a11y-toggle': a11yOpen = !a11yOpen; renderA11y(); break;
     case 'a11y-close': a11yOpen = false; renderA11y(); $('#a11yBtn').focus(); break;
     case 'a11y-read': speak(($('#view').innerText || '').replace(/\s+/g, ' ').slice(0, 4000)); break;
@@ -2013,12 +2013,12 @@ document.addEventListener('change', e => {
     const wrap = $('#pAllOtherWrap'); if (wrap) wrap.hidden = !e.target.checked;
     if (e.target.checked) $('#pAllOther').focus();
   }
-  if (c === 'theme') { document.documentElement.setAttribute('data-theme', e.target.value); try { localStorage.setItem('medsnap_theme', e.target.value); } catch (err) {} }
-  if (c === 'a11y-auto') putSetting('medsnap_autoread', e.target.checked ? '1' : '0');
-  if (c === 'a11y-dys') { document.documentElement.classList.toggle('dyslexic', e.target.checked); putSetting('medsnap_dyslexia', e.target.checked ? '1' : '0'); if (route === 'profile') renderPage(true); }
-  if (c === 'a11y-hc') { document.documentElement.classList.toggle('hc', e.target.checked); putSetting('medsnap_contrast', e.target.checked ? '1' : '0'); }
-  if (c === 'a11y-dark') { document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light'); putSetting('medsnap_theme', e.target.checked ? 'dark' : 'light'); if (route === 'profile') renderPage(true); }
-  if (c === 'dyslexia') { document.documentElement.classList.toggle('dyslexic', e.target.checked); try { localStorage.setItem('medsnap_dyslexia', e.target.checked ? '1' : '0'); } catch (err) {} }
+  if (c === 'theme') { document.documentElement.setAttribute('data-theme', e.target.value); try { localStorage.setItem('VeraDose_theme', e.target.value); } catch (err) {} }
+  if (c === 'a11y-auto') putSetting('VeraDose_autoread', e.target.checked ? '1' : '0');
+  if (c === 'a11y-dys') { document.documentElement.classList.toggle('dyslexic', e.target.checked); putSetting('VeraDose_dyslexia', e.target.checked ? '1' : '0'); if (route === 'profile') renderPage(true); }
+  if (c === 'a11y-hc') { document.documentElement.classList.toggle('hc', e.target.checked); putSetting('VeraDose_contrast', e.target.checked ? '1' : '0'); }
+  if (c === 'a11y-dark') { document.documentElement.setAttribute('data-theme', e.target.checked ? 'dark' : 'light'); putSetting('VeraDose_theme', e.target.checked ? 'dark' : 'light'); if (route === 'profile') renderPage(true); }
+  if (c === 'dyslexia') { document.documentElement.classList.toggle('dyslexic', e.target.checked); try { localStorage.setItem('VeraDose_dyslexia', e.target.checked ? '1' : '0'); } catch (err) {} }
   if (c === 'scan-file') { [...e.target.files].slice(0, 3 - scanShots.length).forEach(addShot); e.target.value = ''; renderScan(); }
   if (c === 'cam-file') { const f = e.target.files[0]; if (f) { stopCamera(); setShot(f); renderPage(true); } }
 });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedSnap: Pill & Medication Schedule Manager</title>
+    <title>VeraDose: Pill & Medication Schedule Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -42,7 +42,7 @@
 </head>
 <body data-lang="en">
     <aside class="sidebar">
-        <h2>💊 MedSnap</h2>
+        <h2>💊 VeraDose</h2>
         <p style="font-size: 0.85rem; color: var(--text-secondary);">Smart Medication Manager</p>
         <ul style="list-style: none; margin-top: 10px;">
             <li class="nav-item active" onclick="switchPage('schedule-page', this)"><i class="fa-solid fa-calendar-day"></i> <span data-i18n="nav_schedule">Today's Schedule</span></li>
@@ -346,7 +346,7 @@
                 alert('Text-to-speech is not supported by your browser.');
                 return;
             }
-            let text = "Here is your MedSnap schedule reminder. ";
+            let text = "Here is your VeraDose schedule reminder. ";
             allMedications.forEach(m => {
                 text += `Medication ${m.name}, dosage ${m.dosage}, scheduled for ${m.slot}. Food instruction: ${m.food_guide}. `;
             });

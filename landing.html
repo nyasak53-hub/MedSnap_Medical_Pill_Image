@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedSnap | Never miss a dose</title>
+    <title>VeraDose | Never miss a dose</title>
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#3B6255">
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="MedSnap">
+    <meta name="apple-mobile-web-app-title" content="VeraDose">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="/pwa.js" defer></script>
-    <script>try { var d = document.documentElement; d.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); d.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1'); if (localStorage.getItem('medsnap_dyslexia') === '1') d.classList.add('dyslexic'); if (localStorage.getItem('medsnap_contrast') === '1') d.classList.add('hc'); } catch (e) {}</script>
+    <script>try { var d = document.documentElement; d.setAttribute('data-theme', localStorage.getItem('VeraDose_theme') || 'light'); d.style.setProperty('--scale', localStorage.getItem('VeraDose_scale') || '1'); if (localStorage.getItem('VeraDose_dyslexia') === '1') d.classList.add('dyslexic'); if (localStorage.getItem('VeraDose_contrast') === '1') d.classList.add('hc'); } catch (e) {}</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -330,7 +330,7 @@
 </head>
 <body>
     <nav class="topbar">
-        <a class="logo" href="/"><i class="fa-solid fa-capsules"></i> <span>MedSnap</span></a>
+        <a class="logo" href="/"><i class="fa-solid fa-capsules"></i> <span>VeraDose</span></a>
         <div class="top-right">
             <button type="button" class="pill-btn" data-install data-i18n-aria="install"><i class="fa-solid fa-download" aria-hidden="true"></i><span data-i18n="install">Install app</span></button>
             <a href="/app" class="btn-start" id="startBtn" data-auth="signup"><span data-i18n="get_started">Get Started</span></a>
@@ -358,7 +358,7 @@
             <div class="hero-badge"><span class="pulse"></span><i class="fa-solid fa-universal-access" aria-hidden="true"></i><span data-i18n="badge">Accessibility-First Medication Care</span></div>
             <h1 class="brand-title"><span class="a">Med</span><span class="b">Snap</span></h1>
             <p class="typing" id="typingLine"><span id="typed" aria-hidden="true"></span><span class="caret" aria-hidden="true"></span><span class="sr" id="typedSr"></span></p>
-            <p class="lead2" data-i18n="lead">Keeping track of medicines can feel overwhelming. MedSnap turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.</p>
+            <p class="lead2" data-i18n="lead">Keeping track of medicines can feel overwhelming. VeraDose turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.</p>
             <div class="hero-stats">
                 <div><b>~50%</b><span data-i18n="st1">of long-term medicines aren't taken as prescribed</span></div>
                 <div><b>43%</b><span data-i18n="st2">of adults 65+ take 5 or more prescription medicines</span></div>
@@ -367,7 +367,7 @@
             <a href="/app" class="cta-big" id="ctaBig" data-auth="signin"><span data-i18n="cta_out">Get Started — Sign In Free</span> <i class="fa-solid fa-arrow-right"></i></a>
             <button type="button" class="install-cta" data-install><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><span data-i18n="install_cta">Install the free app on your phone</span></button>
 
-            <div class="preview" id="how" aria-label="Example of the MedSnap schedule">
+            <div class="preview" id="how" aria-label="Example of the VeraDose schedule">
                 <div class="preview-head">
                     <div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div>
                     <span class="preview-title" data-i18n="pv_title">Today's schedule (example)</span>
@@ -454,11 +454,11 @@
     </section>
 
 
-    <!-- How it works: MedSnap's features -->
+    <!-- How it works: VeraDose's features -->
     <section class="how" id="how-it-works" aria-labelledby="howTitle">
         <span class="section-pill light" data-i18n="how_pill">How it works</span>
         <h2 id="howTitle" data-i18n="how_title">Simple, Smart, and Accessible</h2>
-        <p class="sub" data-i18n="how_sub">MedSnap gives everyone the tools to take the right medicine at the right time, from the first prescription to every refill.</p>
+        <p class="sub" data-i18n="how_sub">VeraDose gives everyone the tools to take the right medicine at the right time, from the first prescription to every refill.</p>
         <div class="how-grid">
             <div class="how-card"><div class="emo" aria-hidden="true">📷</div><h3 data-i18n="k1_t"></h3><p data-i18n="k1"></p></div>
             <div class="how-card"><div class="emo" aria-hidden="true">🔊</div><h3 data-i18n="k2_t"></h3><p data-i18n="k2"></p></div>
@@ -476,10 +476,10 @@
     </section>
 
     <footer data-i18n="footer">
-        MedSnap is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.
+        VeraDose is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.
     </footer>
 
-    <!-- Accessibility: these settings apply to the whole MedSnap website, including the app -->
+    <!-- Accessibility: these settings apply to the whole VeraDose website, including the app -->
     <button type="button" class="a11y-btn" id="a11yBtn" aria-expanded="false" aria-controls="a11yPanel" aria-label="Accessibility options"><i class="fa-solid fa-universal-access"></i></button>
     <div class="a11y-panel" id="a11yPanel" hidden role="dialog" aria-labelledby="a11yTitle">
         <div class="a11y-head"><h3 id="a11yTitle"><span aria-hidden="true">♿</span> <span data-i18n="a11y">Accessibility</span></h3>
@@ -501,7 +501,7 @@
     <dialog class="auth-dlg" id="authDlg" aria-labelledby="authTitle">
         <div class="auth-inner">
             <div class="auth-top">
-                <span class="logo"><i class="fa-solid fa-capsules"></i> MedSnap</span>
+                <span class="logo"><i class="fa-solid fa-capsules"></i> VeraDose</span>
                 <button type="button" class="auth-close" id="authClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <h2 id="authTitle">Welcome back</h2>
@@ -540,8 +540,8 @@
             band_pill: 'Impact by the numbers', band_title: 'Why Every Dose Matters', band_sub: 'Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health.',
             g1: "of long-term medicines aren't taken as prescribed", g2: 'of prescriptions are never filled', g3: 'U.S. deaths a year linked to missed medicines', g4: 'a year in avoidable U.S. health costs',
             res_pill: 'What the research shows', res_title: 'A closer look at the problem',
-            how_pill: 'How it works', how_title: 'Simple, Smart, and Accessible', how_sub: 'MedSnap gives everyone the tools to take the right medicine at the right time, from the first prescription to every refill.',
-            k1_t: 'Scan Your Prescription', k1: 'Snap a photo of a prescription label or bottle. MedSnap reads it and fills in the medication for you to check and save.',
+            how_pill: 'How it works', how_title: 'Simple, Smart, and Accessible', how_sub: 'VeraDose gives everyone the tools to take the right medicine at the right time, from the first prescription to every refill.',
+            k1_t: 'Scan Your Prescription', k1: 'Snap a photo of a prescription label or bottle. VeraDose reads it and fills in the medication for you to check and save.',
             k2_t: 'Hear It Out Loud', k2: "Every medicine's name, dose and instructions read aloud in your language, at the speed you like.",
             k3_t: 'Your Week at a Glance', k3: 'A weekly calendar shows what to take and when. Mark each dose taken as you go.',
             k4_t: 'Never Run Out', k4: 'Pill counts drop automatically as you take them, with a heads-up before your supply runs low.',
@@ -549,18 +549,18 @@
             k6_t: 'Pill Check', k6: 'Photograph the pill in your hand to compare its shape, color and imprint with your list.',
             k7_t: 'Caregiver Alerts', k7: 'Someone you trust gets a text or email right away if a dose is missed or your pills run low.',
             k8_t: 'Streaks That Motivate', k8: 'Build a streak of days with every dose taken and watch your consistency grow.',
-            k9_t: 'Buddy, Your AI Helper', k9: 'Ask Buddy how to use MedSnap or get organized, any time you need a hand.',
-            k10_t: 'Four Languages', k10: 'Use MedSnap in English, Spanish, French or Mandarin with one tap.',
+            k9_t: 'Buddy, Your AI Helper', k9: 'Ask Buddy how to use VeraDose or get organized, any time you need a hand.',
+            k10_t: 'Four Languages', k10: 'Use VeraDose in English, Spanish, French or Mandarin with one tap.',
             k11_t: 'Emergency in One Tap', k11: 'A 911 button is always at the top of the screen, and it can alert your caregiver too.',
             k12_t: 'Private & Secure', k12: 'Your account keeps your medicines safe and in sync on any device you sign in from.',
             tts: 'Text to speech', auto_read: 'Auto-read AI responses', read_page: 'Read this page aloud', stop: 'Stop audio', readability: 'Readability', visibility: 'Visibility', hc: 'High contrast mode',
             smaller: 'Smaller text', larger: 'Larger text', normal_size: 'Normal text size',
-            get_started: 'Get Started', open_app: 'Open MedSnap', sign_in: 'Sign In', sign_out: 'Sign Out', sign_up: 'Sign up', language: 'Language',
+            get_started: 'Get Started', open_app: 'Open VeraDose', sign_in: 'Sign In', sign_out: 'Sign Out', sign_up: 'Sign up', language: 'Language',
             badge: 'Accessibility-First Medication Care',
             typing: ['Never miss a dose, one day at a time.', 'Know every pill you take.', 'Reminders that read themselves out loud.', 'Peace of mind for you and your caregiver.'],
-            lead: 'Keeping track of medicines can feel overwhelming. MedSnap turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.',
+            lead: 'Keeping track of medicines can feel overwhelming. VeraDose turns your prescriptions into one simple daily routine, with spoken reminders, pill counts, label scanning and caregiver alerts, so you, your family and your caregivers can stay on track with confidence.',
             st1: "of long-term medicines aren't taken as prescribed", st2: 'of adults 65+ take 5 or more prescription medicines', st3: 'languages supported',
-            cta_out: 'Get Started — Sign In Free', install: "Install app", install_cta: "Install the free app on your phone", cta_in: 'Open MedSnap',
+            cta_out: 'Get Started — Sign In Free', install: "Install app", install_cta: "Install the free app on your phone", cta_in: 'Open VeraDose',
             pv_title: "Today's schedule (example)", pv_streak: '🔥 7-Day Health Streak!', pv_taken: '3 of 4 taken today', pv_food: '🍽️ Take with food', pv_ok: 'Taken', pv_bed: '🌙 Take before bedtime', pv_refill: 'Refill soon: 4 days left',
             im_title: 'Why staying on track matters', im_sub: "Missed and mixed-up doses are one of the most common, and most preventable, problems in everyday health. Here's what the research shows.",
             s1: 'of medicines for long-term conditions are <b>not taken as prescribed</b>.', s2: 'of prescriptions are <b>never filled</b> at all.',
@@ -575,24 +575,24 @@
             f2_t: 'Multi-language', f2: 'Switch the whole app between English, Spanish, French, and Mandarin with one tap.',
             f3_t: 'Pill counter and low-stock alerts', f3: "Counts drop automatically when you mark a dose taken, and you're warned when only a few days remain.",
             f4_t: 'Caregiver alerts', f4: 'Optionally let a trusted person know by email or text if a dose is missed or your pills are running low.',
-            f5_t: 'Scan a label', f5: 'Photograph a prescription or bottle and MedSnap fills in the medication for you to check and save.',
+            f5_t: 'Scan a label', f5: 'Photograph a prescription or bottle and VeraDose fills in the medication for you to check and save.',
             f6_t: 'Food and timing guide', f6: 'Clear badges like "Take with food" or "Avoid dairy" on every medication card.',
             f7_t: 'Adherence streak', f7: 'Build a daily streak of 100% adherence and stay motivated.',
-            f8_t: 'Pill check and AI Buddy', f8: 'Photograph a pill to compare it with your list, or ask Buddy for help using MedSnap.',
-            footer: "MedSnap is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.",
+            f8_t: 'Pill check and AI Buddy', f8: 'Photograph a pill to compare it with your list, or ask Buddy for help using VeraDose.',
+            footer: "VeraDose is a reminder tool and does not give medical advice. AI results can be wrong, so always follow your doctor's and pharmacist's instructions.",
             a11y: 'Accessibility', text_size: 'Text size', dyslexia: 'Dyslexia-friendly font', dark: 'Dark mode', a11y_btn: 'Accessibility options', to_dark: 'Switch to dark mode', to_light: 'Switch to light mode',
             email: 'Email', password: 'Password', your_name: 'Your name', pw_hint: 'At least 8 characters.', age: 'Age', optional: 'Optional', allergies: 'Allergies', allergies_ph: 'Optional, e.g. penicillin',
             create: 'Create my account', private: 'Your information is private.', close: 'Close',
             in_title: 'Welcome back', in_sub: 'Sign in to see your medicines and routine.', up_title: "Let's get you set up", up_sub: 'Your account keeps your medicines safe on any device. Age and allergies are optional.',
-            offline: "MedSnap can't reach its server. In the VS Code terminal run: python app.py", error: 'Something went wrong. Please try again.',
+            offline: "VeraDose can't reach its server. In the VS Code terminal run: python app.py", error: 'Something went wrong. Please try again.',
             make_acc: 'Create an account with this email →', show_pw: 'Show password', hide_pw: 'Hide password'
         },
         es: {
             band_pill: 'El impacto en cifras', band_title: 'Por qué cada dosis importa', band_sub: 'Las dosis olvidadas o confundidas son uno de los problemas de salud más comunes y más fáciles de prevenir.',
             g1: 'de los medicamentos de largo plazo no se toman como se recetan', g2: 'de las recetas nunca se surten', g3: 'muertes al año en EE. UU. ligadas a medicamentos no tomados', g4: 'al año en costos de salud evitables en EE. UU.',
             res_pill: 'Lo que muestra la investigación', res_title: 'Una mirada más de cerca al problema',
-            how_pill: 'Cómo funciona', how_title: 'Simple, inteligente y accesible', how_sub: 'MedSnap le da a todos las herramientas para tomar el medicamento correcto a la hora correcta, desde la primera receta hasta cada recarga.',
-            k1_t: 'Escanea tu receta', k1: 'Toma una foto de la etiqueta o del frasco. MedSnap la lee y completa el medicamento para que lo revises y guardes.',
+            how_pill: 'Cómo funciona', how_title: 'Simple, inteligente y accesible', how_sub: 'VeraDose le da a todos las herramientas para tomar el medicamento correcto a la hora correcta, desde la primera receta hasta cada recarga.',
+            k1_t: 'Escanea tu receta', k1: 'Toma una foto de la etiqueta o del frasco. VeraDose la lee y completa el medicamento para que lo revises y guardes.',
             k2_t: 'Escúchalo en voz alta', k2: 'El nombre, la dosis y las instrucciones de cada medicamento en voz alta, en tu idioma y a tu ritmo.',
             k3_t: 'Tu semana de un vistazo', k3: 'Un calendario semanal muestra qué tomar y cuándo. Marca cada dosis a medida que avanzas.',
             k4_t: 'Que nunca se acaben', k4: 'El conteo de pastillas baja al tomarlas y te avisa antes de que se terminen.',
@@ -600,18 +600,18 @@
             k6_t: 'Verificar pastilla', k6: 'Fotografía la pastilla que tienes en la mano para comparar su forma, color y grabado con tu lista.',
             k7_t: 'Avisos al cuidador', k7: 'Una persona de confianza recibe un texto o correo de inmediato si olvidas una dosis o se acaban tus pastillas.',
             k8_t: 'Rachas que motivan', k8: 'Suma días seguidos tomando todas tus dosis y mira crecer tu constancia.',
-            k9_t: 'Buddy, tu ayudante IA', k9: 'Pregúntale a Buddy cómo usar MedSnap u organizarte, siempre que necesites ayuda.',
-            k10_t: 'Cuatro idiomas', k10: 'Usa MedSnap en inglés, español, francés o mandarín con un toque.',
+            k9_t: 'Buddy, tu ayudante IA', k9: 'Pregúntale a Buddy cómo usar VeraDose u organizarte, siempre que necesites ayuda.',
+            k10_t: 'Cuatro idiomas', k10: 'Usa VeraDose en inglés, español, francés o mandarín con un toque.',
             k11_t: 'Emergencia en un toque', k11: 'Un botón de 911 siempre está arriba en la pantalla y también puede avisar a tu cuidador.',
             k12_t: 'Privado y seguro', k12: 'Tu cuenta guarda tus medicamentos y los mantiene al día en cualquier dispositivo donde inicies sesión.',
             tts: 'Texto a voz', auto_read: 'Leer en voz alta las respuestas de la IA', read_page: 'Leer esta página en voz alta', stop: 'Detener audio', readability: 'Legibilidad', visibility: 'Visibilidad', hc: 'Modo de alto contraste',
             smaller: 'Texto más pequeño', larger: 'Texto más grande', normal_size: 'Tamaño normal',
-            get_started: 'Comenzar', open_app: 'Abrir MedSnap', sign_in: 'Iniciar sesión', sign_out: 'Cerrar sesión', sign_up: 'Registrarse', language: 'Idioma',
+            get_started: 'Comenzar', open_app: 'Abrir VeraDose', sign_in: 'Iniciar sesión', sign_out: 'Cerrar sesión', sign_up: 'Registrarse', language: 'Idioma',
             badge: 'Cuidado de medicamentos accesible para todos',
             typing: ['Nunca olvides una dosis, un día a la vez.', 'Conoce cada pastilla que tomas.', 'Recordatorios que se leen en voz alta.', 'Tranquilidad para ti y tu cuidador.'],
-            lead: 'Llevar el control de los medicamentos puede ser abrumador. MedSnap convierte tus recetas en una rutina diaria sencilla, con recordatorios hablados, conteo de pastillas, escaneo de etiquetas y avisos al cuidador, para que tú, tu familia y tus cuidadores sigan el plan con confianza.',
+            lead: 'Llevar el control de los medicamentos puede ser abrumador. VeraDose convierte tus recetas en una rutina diaria sencilla, con recordatorios hablados, conteo de pastillas, escaneo de etiquetas y avisos al cuidador, para que tú, tu familia y tus cuidadores sigan el plan con confianza.',
             st1: 'de los medicamentos de largo plazo no se toman como se recetan', st2: 'de los adultos de 65+ toman 5 o más medicamentos recetados', st3: 'idiomas disponibles',
-            cta_out: 'Comenzar — Inicia sesión gratis', install: "Instalar app", install_cta: "Instala la app gratis en tu teléfono", cta_in: 'Abrir MedSnap',
+            cta_out: 'Comenzar — Inicia sesión gratis', install: "Instalar app", install_cta: "Instala la app gratis en tu teléfono", cta_in: 'Abrir VeraDose',
             pv_title: 'Horario de hoy (ejemplo)', pv_streak: '🔥 ¡Racha de salud de 7 días!', pv_taken: '3 de 4 tomadas hoy', pv_food: '🍽️ Tomar con comida', pv_ok: 'Tomada', pv_bed: '🌙 Tomar antes de dormir', pv_refill: 'Reabastecer: quedan 4 días',
             im_title: 'Por qué importa seguir el plan', im_sub: 'Las dosis olvidadas o confundidas son uno de los problemas de salud más comunes y más fáciles de prevenir. Esto es lo que muestra la investigación.',
             s1: 'de los medicamentos para afecciones de largo plazo <b>no se toman como se recetan</b>.', s2: 'de las recetas <b>nunca se surten</b>.',
@@ -626,24 +626,24 @@
             f2_t: 'Varios idiomas', f2: 'Cambia toda la app entre inglés, español, francés y mandarín con un toque.',
             f3_t: 'Conteo de pastillas y avisos de existencias', f3: 'El conteo baja al marcar una dosis como tomada y te avisa cuando quedan pocos días.',
             f4_t: 'Avisos al cuidador', f4: 'Si quieres, avisa a una persona de confianza por correo o texto si olvidas una dosis o se acaban tus pastillas.',
-            f5_t: 'Escanear una etiqueta', f5: 'Fotografía una receta o un frasco y MedSnap completa el medicamento para que lo revises y guardes.',
+            f5_t: 'Escanear una etiqueta', f5: 'Fotografía una receta o un frasco y VeraDose completa el medicamento para que lo revises y guardes.',
             f6_t: 'Guía de comidas y horarios', f6: 'Insignias claras como "Tomar con comida" o "Evitar lácteos" en cada medicamento.',
             f7_t: 'Racha de constancia', f7: 'Construye una racha diaria de 100% y mantente motivado.',
-            f8_t: 'Verificar pastilla y Buddy IA', f8: 'Fotografía una pastilla para compararla con tu lista, o pide ayuda a Buddy para usar MedSnap.',
-            footer: 'MedSnap es una herramienta de recordatorios y no da consejos médicos. La IA puede equivocarse; sigue siempre las indicaciones de tu médico y farmacéutico.',
+            f8_t: 'Verificar pastilla y Buddy IA', f8: 'Fotografía una pastilla para compararla con tu lista, o pide ayuda a Buddy para usar VeraDose.',
+            footer: 'VeraDose es una herramienta de recordatorios y no da consejos médicos. La IA puede equivocarse; sigue siempre las indicaciones de tu médico y farmacéutico.',
             a11y: 'Accesibilidad', text_size: 'Tamaño del texto', dyslexia: 'Fuente para dislexia', dark: 'Modo oscuro', a11y_btn: 'Opciones de accesibilidad', to_dark: 'Cambiar a modo oscuro', to_light: 'Cambiar a modo claro',
             email: 'Correo', password: 'Contraseña', your_name: 'Tu nombre', pw_hint: 'Al menos 8 caracteres.', age: 'Edad', optional: 'Opcional', allergies: 'Alergias', allergies_ph: 'Opcional, ej. penicilina',
             create: 'Crear mi cuenta', private: 'Tu información es privada.', close: 'Cerrar',
             in_title: 'Hola de nuevo', in_sub: 'Inicia sesión para ver tus medicamentos y tu rutina.', up_title: 'Vamos a prepararte', up_sub: 'Tu cuenta guarda tus medicamentos en cualquier dispositivo. La edad y las alergias son opcionales.',
-            offline: 'MedSnap no puede conectar con su servidor. En la terminal de VS Code ejecuta: python app.py', error: 'Algo salió mal. Inténtalo de nuevo.',
+            offline: 'VeraDose no puede conectar con su servidor. En la terminal de VS Code ejecuta: python app.py', error: 'Algo salió mal. Inténtalo de nuevo.',
             make_acc: 'Crear una cuenta con este correo →', show_pw: 'Mostrar contraseña', hide_pw: 'Ocultar contraseña'
         },
         fr: {
             band_pill: "L'impact en chiffres", band_title: 'Pourquoi chaque dose compte', band_sub: 'Les doses oubliées ou confondues font partie des problèmes de santé les plus courants, et les plus évitables.',
             g1: 'des médicaments au long cours ne sont pas pris comme prescrit', g2: 'des ordonnances ne sont jamais délivrées', g3: 'décès par an aux États-Unis liés aux médicaments non pris', g4: 'par an de dépenses de santé évitables aux États-Unis',
             res_pill: 'Ce que montre la recherche', res_title: 'Le problème de plus près',
-            how_pill: 'Comment ça marche', how_title: 'Simple, malin et accessible', how_sub: "MedSnap donne à chacun les outils pour prendre le bon médicament au bon moment, de la première ordonnance à chaque renouvellement.",
-            k1_t: 'Scannez votre ordonnance', k1: "Prenez en photo l'étiquette ou le flacon. MedSnap la lit et remplit le médicament : vous vérifiez et enregistrez.",
+            how_pill: 'Comment ça marche', how_title: 'Simple, malin et accessible', how_sub: "VeraDose donne à chacun les outils pour prendre le bon médicament au bon moment, de la première ordonnance à chaque renouvellement.",
+            k1_t: 'Scannez votre ordonnance', k1: "Prenez en photo l'étiquette ou le flacon. VeraDose la lit et remplit le médicament : vous vérifiez et enregistrez.",
             k2_t: 'Écoutez à voix haute', k2: 'Le nom, la dose et les instructions de chaque médicament lus à voix haute, dans votre langue et à votre rythme.',
             k3_t: "Votre semaine d'un coup d'œil", k3: 'Un calendrier montre quoi prendre et quand. Notez chaque prise au fur et à mesure.',
             k4_t: 'Jamais à court', k4: "Le décompte baisse automatiquement à chaque prise, avec une alerte avant d'être à court.",
@@ -651,18 +651,18 @@
             k6_t: 'Vérifier un comprimé', k6: 'Photographiez le comprimé dans votre main pour comparer sa forme, sa couleur et son inscription à votre liste.',
             k7_t: "Alertes à l'aidant", k7: 'Une personne de confiance reçoit un SMS ou un e-mail tout de suite si une dose est oubliée ou si le stock baisse.',
             k8_t: 'Des séries motivantes', k8: 'Enchaînez les jours où chaque dose est prise et regardez votre régularité grandir.',
-            k9_t: 'Buddy, votre assistant IA', k9: "Demandez à Buddy comment utiliser MedSnap ou vous organiser, dès que vous avez besoin d'aide.",
-            k10_t: 'Quatre langues', k10: "Utilisez MedSnap en anglais, espagnol, français ou mandarin d'un seul geste.",
+            k9_t: 'Buddy, votre assistant IA', k9: "Demandez à Buddy comment utiliser VeraDose ou vous organiser, dès que vous avez besoin d'aide.",
+            k10_t: 'Quatre langues', k10: "Utilisez VeraDose en anglais, espagnol, français ou mandarin d'un seul geste.",
             k11_t: 'Urgence en un geste', k11: "Un bouton 911 est toujours en haut de l'écran, et il peut aussi prévenir votre aidant.",
             k12_t: 'Privé et sécurisé', k12: 'Votre compte garde vos médicaments en sécurité et à jour sur tous les appareils où vous vous connectez.',
             tts: 'Synthèse vocale', auto_read: "Lire à voix haute les réponses de l'IA", read_page: 'Lire cette page à voix haute', stop: "Arrêter l'audio", readability: 'Lisibilité', visibility: 'Visibilité', hc: 'Mode contraste élevé',
             smaller: 'Texte plus petit', larger: 'Texte plus grand', normal_size: 'Taille normale',
-            get_started: 'Commencer', open_app: 'Ouvrir MedSnap', sign_in: 'Se connecter', sign_out: 'Se déconnecter', sign_up: "S'inscrire", language: 'Langue',
+            get_started: 'Commencer', open_app: 'Ouvrir VeraDose', sign_in: 'Se connecter', sign_out: 'Se déconnecter', sign_up: "S'inscrire", language: 'Langue',
             badge: 'Des médicaments accessibles à tous',
             typing: ['Ne manquez plus une dose, jour après jour.', 'Connaissez chaque comprimé que vous prenez.', 'Des rappels qui se lisent à voix haute.', 'La tranquillité pour vous et votre aidant.'],
-            lead: "Suivre ses médicaments peut vite devenir compliqué. MedSnap transforme vos ordonnances en une routine quotidienne simple, avec des rappels parlés, le décompte des comprimés, le scan des étiquettes et des alertes à l'aidant, pour que vous, votre famille et vos aidants restiez sur la bonne voie en toute confiance.",
+            lead: "Suivre ses médicaments peut vite devenir compliqué. VeraDose transforme vos ordonnances en une routine quotidienne simple, avec des rappels parlés, le décompte des comprimés, le scan des étiquettes et des alertes à l'aidant, pour que vous, votre famille et vos aidants restiez sur la bonne voie en toute confiance.",
             st1: 'des médicaments au long cours ne sont pas pris comme prescrit', st2: 'des adultes de 65+ ans prennent 5 médicaments ou plus', st3: 'langues disponibles',
-            cta_out: 'Commencer — Connexion gratuite', install: "Installer l'app", install_cta: "Installez l'app gratuite sur votre téléphone", cta_in: 'Ouvrir MedSnap',
+            cta_out: 'Commencer — Connexion gratuite', install: "Installer l'app", install_cta: "Installez l'app gratuite sur votre téléphone", cta_in: 'Ouvrir VeraDose',
             pv_title: "Programme du jour (exemple)", pv_streak: '🔥 Série santé de 7 jours !', pv_taken: "3 sur 4 prises aujourd'hui", pv_food: '🍽️ Prendre en mangeant', pv_ok: 'Pris', pv_bed: '🌙 Prendre au coucher', pv_refill: 'À renouveler : 4 jours restants',
             im_title: 'Pourquoi rester sur la bonne voie compte', im_sub: "Les doses oubliées ou confondues font partie des problèmes de santé les plus courants, et les plus évitables. Voici ce que montre la recherche.",
             s1: 'des médicaments pour maladies chroniques <b>ne sont pas pris comme prescrit</b>.', s2: 'des ordonnances <b>ne sont jamais délivrées</b>.',
@@ -677,24 +677,24 @@
             f2_t: 'Plusieurs langues', f2: "Passez toute l'application en anglais, espagnol, français ou mandarin d'un seul geste.",
             f3_t: 'Décompte et alertes de stock', f3: 'Le décompte baisse à chaque prise notée, et vous êtes prévenu quand il reste peu de jours.',
             f4_t: "Alertes à l'aidant", f4: 'Si vous le souhaitez, prévenez une personne de confiance par e-mail ou SMS en cas de dose oubliée ou de stock bas.',
-            f5_t: 'Scanner une étiquette', f5: "Photographiez une ordonnance ou un flacon : MedSnap remplit le médicament, vous vérifiez et enregistrez.",
+            f5_t: 'Scanner une étiquette', f5: "Photographiez une ordonnance ou un flacon : VeraDose remplit le médicament, vous vérifiez et enregistrez.",
             f6_t: 'Guide repas et horaires', f6: 'Des badges clairs comme « Prendre en mangeant » ou « Éviter les laitages » sur chaque médicament.',
             f7_t: "Série d'observance", f7: 'Construisez une série quotidienne à 100 % et restez motivé.',
             f8_t: 'Vérification et Buddy IA', f8: "Photographiez un comprimé pour le comparer à votre liste, ou demandez de l'aide à Buddy.",
-            footer: "MedSnap est un outil de rappel et ne donne pas d'avis médical. L'IA peut se tromper : suivez toujours les instructions de votre médecin et de votre pharmacien.",
+            footer: "VeraDose est un outil de rappel et ne donne pas d'avis médical. L'IA peut se tromper : suivez toujours les instructions de votre médecin et de votre pharmacien.",
             a11y: 'Accessibilité', text_size: 'Taille du texte', dyslexia: 'Police pour la dyslexie', dark: 'Mode sombre', a11y_btn: "Options d'accessibilité", to_dark: 'Passer en mode sombre', to_light: 'Passer en mode clair',
             email: 'E-mail', password: 'Mot de passe', your_name: 'Votre nom', pw_hint: 'Au moins 8 caractères.', age: 'Âge', optional: 'Facultatif', allergies: 'Allergies', allergies_ph: 'Facultatif, ex. pénicilline',
             create: 'Créer mon compte', private: 'Vos informations sont privées.', close: 'Fermer',
             in_title: 'Bon retour', in_sub: 'Connectez-vous pour voir vos médicaments et votre routine.', up_title: 'Créons votre compte', up_sub: "Votre compte garde vos médicaments sur tous vos appareils. L'âge et les allergies sont facultatifs.",
-            offline: 'MedSnap ne joint pas son serveur. Dans le terminal VS Code, lancez : python app.py', error: "Une erreur s'est produite. Réessayez.",
+            offline: 'VeraDose ne joint pas son serveur. Dans le terminal VS Code, lancez : python app.py', error: "Une erreur s'est produite. Réessayez.",
             make_acc: 'Créer un compte avec cet e-mail →', show_pw: 'Afficher le mot de passe', hide_pw: 'Masquer le mot de passe'
         },
         zh: {
             band_pill: '用数字说话', band_title: '为什么每一次服药都重要', band_sub: '漏服和服错是日常健康中最常见、也最容易预防的问题之一。',
             g1: '的长期用药没有按医嘱服用', g2: '的处方从未取药', g3: '美国每年与漏服药物相关的死亡人数', g4: '美国每年可避免的医疗花费',
             res_pill: '研究显示', res_title: '深入了解这个问题',
-            how_pill: '使用方法', how_title: '简单、智能、无障碍', how_sub: 'MedSnap 帮助每个人在正确的时间服用正确的药物，从第一张处方到每一次补药。',
-            k1_t: '扫描处方', k1: '拍下处方标签或药瓶，MedSnap 读取后自动填写药物信息，由您检查并保存。',
+            how_pill: '使用方法', how_title: '简单、智能、无障碍', how_sub: 'VeraDose 帮助每个人在正确的时间服用正确的药物，从第一张处方到每一次补药。',
+            k1_t: '扫描处方', k1: '拍下处方标签或药瓶，VeraDose 读取后自动填写药物信息，由您检查并保存。',
             k2_t: '大声朗读', k2: '用您的语言、按您喜欢的速度朗读每种药物的名称、剂量和说明。',
             k3_t: '一周安排一目了然', k3: '每周日历显示何时服什么药，服用后逐一标记。',
             k4_t: '不再断药', k4: '每次服药自动减少数量，药快用完前会提醒您。',
@@ -702,18 +702,18 @@
             k6_t: '药片核对', k6: '拍下手中的药片，将形状、颜色和刻印与您的清单比对。',
             k7_t: '照护人提醒', k7: '漏服或药量不足时，您信任的人会立即收到短信或邮件。',
             k8_t: '激励连续记录', k8: '每天按时服完所有药物，看着坚持的天数不断增加。',
-            k9_t: 'AI 助手 Buddy', k9: '随时询问 Buddy 如何使用 MedSnap 或如何安排生活。',
+            k9_t: 'AI 助手 Buddy', k9: '随时询问 Buddy 如何使用 VeraDose 或如何安排生活。',
             k10_t: '四种语言', k10: '一键切换英语、西班牙语、法语或中文。',
             k11_t: '一键紧急求助', k11: '屏幕顶部始终有 911 按钮，也可以同时通知您的照护人。',
             k12_t: '私密安全', k12: '您的账户会安全保存药物信息，并在您登录的任何设备上同步。',
             tts: '语音朗读', auto_read: '自动朗读 AI 回复', read_page: '朗读本页内容', stop: '停止朗读', readability: '易读性', visibility: '可视性', hc: '高对比度模式',
             smaller: '缩小文字', larger: '放大文字', normal_size: '正常大小',
-            get_started: '开始使用', open_app: '打开 MedSnap', sign_in: '登录', sign_out: '退出', sign_up: '注册', language: '语言',
+            get_started: '开始使用', open_app: '打开 VeraDose', sign_in: '登录', sign_out: '退出', sign_up: '注册', language: '语言',
             badge: '无障碍优先的用药助手',
             typing: ['一天一天，不再漏服。', '清楚每一粒药。', '会自己朗读的提醒。', '让您和照护人都安心。'],
-            lead: '管理药物常常让人手忙脚乱。MedSnap 把您的处方变成简单的每日安排，提供语音提醒、药片计数、标签扫描和照护人提醒，让您、家人和照护人都能安心按计划服药。',
+            lead: '管理药物常常让人手忙脚乱。VeraDose 把您的处方变成简单的每日安排，提供语音提醒、药片计数、标签扫描和照护人提醒，让您、家人和照护人都能安心按计划服药。',
             st1: '的长期用药没有按医嘱服用', st2: '的 65 岁以上老人同时服用 5 种或更多处方药', st3: '种语言',
-            cta_out: '开始使用 — 免费登录', install: "安装应用", install_cta: "在手机上安装免费应用", cta_in: '打开 MedSnap',
+            cta_out: '开始使用 — 免费登录', install: "安装应用", install_cta: "在手机上安装免费应用", cta_in: '打开 VeraDose',
             pv_title: '今日安排（示例）', pv_streak: '🔥 连续健康 7 天！', pv_taken: '今天已服 3/4', pv_food: '🍽️ 随餐服用', pv_ok: '已服用', pv_bed: '🌙 睡前服用', pv_refill: '请补药：剩 4 天',
             im_title: '为什么按时服药很重要', im_sub: '漏服和服错是日常健康中最常见、也最容易预防的问题之一。以下是研究结果。',
             s1: '的慢性病用药<b>没有按医嘱服用</b>。', s2: '的处方<b>从未取药</b>。',
@@ -728,21 +728,21 @@
             f2_t: '多语言', f2: '一键在英语、西班牙语、法语和中文之间切换整个应用。',
             f3_t: '药片计数与库存提醒', f3: '每次标记已服用时自动减少数量，剩余天数不多时提醒您。',
             f4_t: '照护人提醒', f4: '可选择在漏服或药量不足时，通过邮件或短信通知您信任的人。',
-            f5_t: '扫描标签', f5: '拍下处方或药瓶，MedSnap 自动填写药物信息，由您检查后保存。',
+            f5_t: '扫描标签', f5: '拍下处方或药瓶，VeraDose 自动填写药物信息，由您检查后保存。',
             f6_t: '饮食与时间指南', f6: '每种药物上都有“随餐服用”“避免乳制品”等清晰标记。',
             f7_t: '连续服药记录', f7: '保持每天 100% 按时服药，持续获得动力。',
-            f8_t: '药片核对与 AI 助手 Buddy', f8: '拍下药片与清单比对，或请 Buddy 帮您使用 MedSnap。',
-            footer: 'MedSnap 是提醒工具，不提供医疗建议。AI 结果可能有误，请始终遵循医生和药剂师的指导。',
+            f8_t: '药片核对与 AI 助手 Buddy', f8: '拍下药片与清单比对，或请 Buddy 帮您使用 VeraDose。',
+            footer: 'VeraDose 是提醒工具，不提供医疗建议。AI 结果可能有误，请始终遵循医生和药剂师的指导。',
             a11y: '无障碍', text_size: '文字大小', dyslexia: '阅读障碍友好字体', dark: '深色模式', a11y_btn: '无障碍选项', to_dark: '切换到深色模式', to_light: '切换到浅色模式',
             email: '邮箱', password: '密码', your_name: '您的姓名', pw_hint: '至少 8 个字符。', age: '年龄', optional: '可选', allergies: '过敏', allergies_ph: '可选，例如青霉素',
             create: '创建我的账户', private: '您的信息是私密的。', close: '关闭',
             in_title: '欢迎回来', in_sub: '登录查看您的药物和日常安排。', up_title: '开始设置', up_sub: '账户会在任何设备上保存您的药物信息。年龄和过敏信息可选填。',
-            offline: 'MedSnap 无法连接服务器。请在 VS Code 终端运行：python app.py', error: '出了点问题，请重试。',
+            offline: 'VeraDose 无法连接服务器。请在 VS Code 终端运行：python app.py', error: '出了点问题，请重试。',
             make_acc: '用这个邮箱创建账户 →', show_pw: '显示密码', hide_pw: '隐藏密码'
         }};
         var $ = function (id) { return document.getElementById(id); };
         var lang = 'en';
-        try { lang = localStorage.getItem('medsnap_lang') || (navigator.language || 'en').slice(0, 2); } catch (e) {}
+        try { lang = localStorage.getItem('VeraDose_lang') || (navigator.language || 'en').slice(0, 2); } catch (e) {}
         if (!T[lang]) lang = 'en';
         function t(k) { return (T[lang] && T[lang][k] !== undefined) ? T[lang][k] : T.en[k]; }
         var signedIn = false, authMode = false;
@@ -763,7 +763,7 @@
         }
         $('langSel').addEventListener('change', function () {
             lang = this.value;
-            try { localStorage.setItem('medsnap_lang', lang); } catch (e) {}   // the app opens in this language too
+            try { localStorage.setItem('VeraDose_lang', lang); } catch (e) {}   // the app opens in this language too
             applyLang();
         });
 
@@ -798,19 +798,19 @@
         }
         function setTheme(dark) {
             document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-            try { localStorage.setItem('medsnap_theme', dark ? 'dark' : 'light'); } catch (e) {}
+            try { localStorage.setItem('VeraDose_theme', dark ? 'dark' : 'light'); } catch (e) {}
             updateIcon();
         }
         window.toggleTheme = function () { setTheme(!isDark()); };
         $('themeBtn').onclick = window.toggleTheme;
         $('darkChk').onchange = function () { setTheme(this.checked); };
 
-        // These settings are shared with the MedSnap app (same saved keys), so they change the whole website.
+        // These settings are shared with the VeraDose app (same saved keys), so they change the whole website.
         function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
         function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
         var SCALES = [0.85, 0.92, 1, 1.1, 1.2, 1.32, 1.45, 1.6];
-        function getScale() { return parseFloat(read('medsnap_scale')) || 1; }
-        function setScale(v) { document.documentElement.style.setProperty('--scale', v); store('medsnap_scale', String(v)); $('fontReset').disabled = Math.abs(v - 1) < 0.01; }
+        function getScale() { return parseFloat(read('VeraDose_scale')) || 1; }
+        function setScale(v) { document.documentElement.style.setProperty('--scale', v); store('VeraDose_scale', String(v)); $('fontReset').disabled = Math.abs(v - 1) < 0.01; }
         setScale(getScale());
         document.querySelectorAll('[data-font]').forEach(function (b) {
             b.onclick = function () {
@@ -820,13 +820,13 @@
                 setScale(SCALES[Math.max(0, Math.min(SCALES.length - 1, i + dir))]);
             };
         });
-        function setDys(on) { document.documentElement.classList.toggle('dyslexic', on); store('medsnap_dyslexia', on ? '1' : '0'); $('dysChk').checked = on; }
-        function setHc(on) { document.documentElement.classList.toggle('hc', on); store('medsnap_contrast', on ? '1' : '0'); $('hcChk').checked = on; }
-        setDys(read('medsnap_dyslexia') === '1'); setHc(read('medsnap_contrast') === '1');
+        function setDys(on) { document.documentElement.classList.toggle('dyslexic', on); store('VeraDose_dyslexia', on ? '1' : '0'); $('dysChk').checked = on; }
+        function setHc(on) { document.documentElement.classList.toggle('hc', on); store('VeraDose_contrast', on ? '1' : '0'); $('hcChk').checked = on; }
+        setDys(read('VeraDose_dyslexia') === '1'); setHc(read('VeraDose_contrast') === '1');
         $('dysChk').onchange = function () { setDys(this.checked); };
         $('hcChk').onchange = function () { setHc(this.checked); };
-        $('autoChk').checked = read('medsnap_autoread') === '1';
-        $('autoChk').onchange = function () { store('medsnap_autoread', this.checked ? '1' : '0'); };
+        $('autoChk').checked = read('VeraDose_autoread') === '1';
+        $('autoChk').onchange = function () { store('VeraDose_autoread', this.checked ? '1' : '0'); };
 
         // Read the page out loud in the chosen language.
         var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN' };
@@ -839,7 +839,7 @@
             speechSynthesis.speak(u);
         }
         $('readPage').onclick = function () {
-            var parts = ['MedSnap.', t('typing')[0], t('lead'), t('band_title') + '.', t('band_sub'), t('how_title') + '.', t('how_sub')];
+            var parts = ['VeraDose.', t('typing')[0], t('lead'), t('band_title') + '.', t('band_sub'), t('how_title') + '.', t('how_sub')];
             for (var i = 1; i <= 12; i++) parts.push(t('k' + i + '_t') + '. ' + t('k' + i));
             speak(parts.join(' '));
         };
@@ -858,9 +858,9 @@
         var notFlask = location.protocol === 'file:' || location.pathname.slice(-5) === '.html';
         var API = notFlask ? 'http://127.0.0.1:5000' : '';
         var APP_URL = notFlask ? 'index.html' : '/app';
-        function token() { try { return localStorage.getItem('medsnap_token') || ''; } catch (e) { return ''; } }
-        function setToken(v) { try { v ? localStorage.setItem('medsnap_token', v) : localStorage.removeItem('medsnap_token'); } catch (e) {} }
-        function clientId() { try { return localStorage.getItem('medsnap_client_id') || ''; } catch (e) { return ''; } }
+        function token() { try { return localStorage.getItem('VeraDose_token') || ''; } catch (e) { return ''; } }
+        function setToken(v) { try { v ? localStorage.setItem('VeraDose_token', v) : localStorage.removeItem('VeraDose_token'); } catch (e) {} }
+        function clientId() { try { return localStorage.getItem('VeraDose_client_id') || ''; } catch (e) { return ''; } }
         function tz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch (e) { return 'UTC'; } }
 
         async function call(path, body) {
@@ -897,7 +897,7 @@
             if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
             var first = (up ? $('formUp') : $('formIn')).querySelector('input'); if (first) first.focus();
         }
-        // Signed out: buttons open the sign-in window. Signed in: they go straight into MedSnap.
+        // Signed out: buttons open the sign-in window. Signed in: they go straight into VeraDose.
         document.querySelectorAll('[data-auth]').forEach(function (b) {
             b.addEventListener('click', function (e) {
                 if (signedIn && b.tagName === 'A') return;
