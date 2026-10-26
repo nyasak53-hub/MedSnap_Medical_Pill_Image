@@ -240,7 +240,91 @@ class StorageBusy(Exception):
     """A saved-data file exists but couldn't be read right now. Never treat it as empty."""
 
 
+# ==========================================================================
+# Permanent storage in a free Postgres database (e.g. Neon) when DATABASE_URL is set.
+# Render's free plan erases saved files on every restart, so accounts must live in a database there.
+# Without DATABASE_URL (e.g. on your own computer) everything is saved in files next to app.py.
+# ==========================================================================
+DATABASE_URL = normalize_secret(os.environ.get("DATABASE_URL"))
+_pg = None
+if DATABASE_URL:
+    try:
+        import psycopg as _pg
+    except ImportError:
+        raise SystemExit("\n[MedSnap] DATABASE_URL is set but the database driver is missing.\n"
+                         "Add this line to requirements.txt and deploy again:  psycopg[binary]\n")
+_db_conn = None
+_db_lock = threading.Lock()
+
+
+def _db_connect():
+    global _db_conn
+    _db_conn = _pg.connect(DATABASE_URL, autocommit=True, connect_timeout=15)
+    _db_conn.execute("CREATE TABLE IF NOT EXISTS medsnap_kv ("
+                     "k TEXT PRIMARY KEY, v TEXT NOT NULL, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)")
+
+
+def _db(sql, params=()):
+    """Run one query on a shared connection. Reconnects once if the database closed it
+    (free databases go to sleep when idle and drop old connections)."""
+    global _db_conn
+    with _db_lock:
+        for attempt in (1, 2):
+            try:
+                if _db_conn is None or getattr(_db_conn, "closed", False):
+                    _db_connect()
+                cur = _db_conn.execute(sql, params)
+                return cur.fetchone() if cur.description else None
+            except (_pg.OperationalError, _pg.InterfaceError) as exc:
+                print(f"[warn] Database connection problem ({exc}); reconnecting.")
+                try:
+                    _db_conn.close()
+                except Exception:
+                    pass
+                _db_conn = None
+                if attempt == 2:
+                    raise StorageBusy(str(exc))
+
+
+def _db_key(path):
+    return os.path.basename(path)          # "users.json" or "medications_data.json"
+
+
+def _db_load(path):
+    row = _db("SELECT v FROM medsnap_kv WHERE k = %s", (_db_key(path),))
+    if row:
+        return json.loads(row[0])
+    # First run with a database: bring over anything already saved in the local file.
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                _db_save(path, data)
+                print(f"[MedSnap] Copied {os.path.basename(path)} into the database.")
+                return data
+        except Exception as exc:
+            print(f"[warn] Could not import {path}: {exc}")
+    return None
+
+
+def _db_save(path, data):
+    _db("INSERT INTO medsnap_kv (k, v, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
+        "ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v, updated_at = CURRENT_TIMESTAMP",
+        (_db_key(path), json.dumps(data)))
+
+
+def storage_mode():
+    return "database" if DATABASE_URL else "files"
+
+
 def _load_json(path):
+    if DATABASE_URL:
+        return _db_load(path)
+    return _load_json_file(path)
+
+
+def _load_json_file(path):
     """Read a saved JSON file safely.
     - Missing file: returns None (nothing saved yet).
     - Briefly locked (OneDrive, antivirus, backup tools): retries for a moment.
@@ -282,6 +366,13 @@ def _load_json(path):
 
 
 def _save_json(path, data):
+    if DATABASE_URL:
+        _db_save(path, data)
+        return
+    _save_json_file(path, data)
+
+
+def _save_json_file(path, data):
     """Write atomically (never half-written) and keep the previous version as a .bak copy."""
     folder = os.path.dirname(path) or "."
     os.makedirs(folder, exist_ok=True)
@@ -627,6 +718,8 @@ def healthz():
         "ai_enabled": client is not None,
         "email_alerts": EMAIL_CONFIGURED,
         "sms_alerts": SMS_CONFIGURED,
+        "storage": storage_mode(),
+        "accounts_saved_permanently": bool(DATABASE_URL) or not os.environ.get("RENDER"),
     })
 
 
@@ -1197,6 +1290,12 @@ def start_alert_worker():
 
 start_alert_worker()
 
+if os.environ.get("RENDER") and not DATABASE_URL:
+    print("\n" + "!" * 78 + "\n[MedSnap] WARNING: no DATABASE_URL is set. Render's free plan erases saved files on every"
+          "\nrestart, so ALL ACCOUNTS AND MEDICINES WILL BE LOST. Add a free Neon database and set DATABASE_URL in Render's Environment tab.\n" + "!" * 78 + "\n")
+elif DATABASE_URL:
+    print("[MedSnap] Saving accounts and medicines in the database (DATABASE_URL).")
+
 
 # ==========================================================================
 # AI: pill search, interactions, chat, translation, label scan
@@ -1568,7 +1667,8 @@ if __name__ == "__main__":
     print(f"\nMedSnap running at http://127.0.0.1:{port}")
     try:
         n = len(_read_users()["users"])
-        print(f"Accounts are saved in: {USERS_FILE} ({n} account{'s' if n != 1 else ''})\n")
+        where = "the database (DATABASE_URL)" if DATABASE_URL else USERS_FILE
+        print(f"Accounts are saved in: {where} ({n} account{'s' if n != 1 else ''})\n")
     except Exception as exc:
         print(f"[warn] Could not read the accounts file yet: {exc}\n")
     if not os.environ.get("RENDER"):
