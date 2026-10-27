@@ -16,7 +16,7 @@
     <script>try { var d = document.documentElement; d.setAttribute('data-theme', localStorage.getItem('medsnap_theme') || 'light'); d.style.setProperty('--scale', localStorage.getItem('medsnap_scale') || '1'); if (localStorage.getItem('medsnap_dyslexia') === '1') d.classList.add('dyslexic'); if (localStorage.getItem('medsnap_contrast') === '1') d.classList.add('hc'); } catch (e) {}</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
     <style>
         /* Palette: #8BA49A sage, #CBDED3 mint, #3B6255 forest, #D2C49E sand */
@@ -33,7 +33,7 @@
             --accent: #8BA49A; --accent-text: #10241c; --glow-1: rgba(59,98,85,.6); --glow-2: rgba(210,196,158,.16);
             --shadow: 0 16px 40px rgba(0,0,0,.4);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Plus Jakarta Sans", "Noto Sans Devanagari", "Noto Sans Telugu", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Kohinoor Devanagari", "Kohinoor Telugu", "PingFang SC", "Microsoft YaHei", sans-serif; transition: background-color .3s, color .3s, border-color .3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Plus Jakarta Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Kohinoor Devanagari", "PingFang SC", "Microsoft YaHei", sans-serif; transition: background-color .3s, color .3s, border-color .3s; }
         body { background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
         .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(to right, rgba(59,98,85,.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,98,85,.06) 1px, transparent 1px); background-size: 50px 50px; z-index: -2; }
         .orb { position: fixed; width: 560px; height: 560px; border-radius: 50%; filter: blur(130px); z-index: -1; pointer-events: none; }
@@ -169,7 +169,7 @@
 
         /* =============== Redesigned top of the page =============== */
         html { font-size: calc(16px * var(--scale, 1)); }
-        html.dyslexic body, html.dyslexic body *:not(i) { font-family: "OpenDyslexic", "Comic Sans MS", "Noto Sans Devanagari", "Noto Sans Telugu", "Nirmala UI", sans-serif !important; letter-spacing: .02em; }
+        html.dyslexic body, html.dyslexic body *:not(i) { font-family: "OpenDyslexic", "Comic Sans MS", "Noto Sans Devanagari", "Nirmala UI", sans-serif !important; letter-spacing: .02em; }
         body { background: linear-gradient(180deg, #E9F1EC 0%, #DCE9E1 55%, var(--bg) 100%) fixed; }
         [data-theme="dark"] body { background: linear-gradient(180deg, #0E1813 0%, #101C17 100%) fixed; }
         .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -327,7 +327,7 @@
             .float { display: none; }
         }
         @media (prefers-reduced-motion: reduce) { .float, .hero-badge .pulse, .caret { animation: none; } }
-        html:lang(hi) *, html:lang(te) * { letter-spacing: 0 !important; }
+        html:lang(hi) * { letter-spacing: 0 !important; }
     </style>
 </head>
 <body>
@@ -343,7 +343,7 @@
             <button type="button" class="pill-btn" id="authOut" data-auth="signin" data-i18n="sign_in">Sign In</button>
             <label class="lang-pill"><i class="fa-solid fa-globe" aria-hidden="true"></i><span class="sr" data-i18n="language">Language</span>
                 <select id="langSel">
-                    <option value="en">EN</option><option value="es">ES</option><option value="fr">FR</option><option value="zh">中文</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option>
+                    <option value="en">EN</option><option value="es">ES</option><option value="fr">FR</option><option value="zh">中文</option><option value="hi">हिन्दी</option>
                 </select></label>
             <button type="button" class="moon-btn" id="themeBtn" aria-label="Switch to dark mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
         </div>
@@ -364,7 +364,7 @@
             <div class="hero-stats">
                 <div><b>~50%</b><span data-i18n="st1">of long-term medicines aren't taken as prescribed</span></div>
                 <div><b>43%</b><span data-i18n="st2">of adults 65+ take 5 or more prescription medicines</span></div>
-                <div><b>6</b><span data-i18n="st3">languages supported</span></div>
+                <div><b>5</b><span data-i18n="st3">languages supported</span></div>
             </div>
             <a href="/app" class="cta-big" id="ctaBig" data-auth="signin"><span data-i18n="cta_out">Get Started — Sign In Free</span> <i class="fa-solid fa-arrow-right"></i></a>
             <button type="button" class="install-cta" data-install><i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i><span data-i18n="install_cta">Install the free app on your phone</span></button>
@@ -552,7 +552,7 @@
             k7_t: 'Caregiver Alerts', k7: 'Someone you trust gets a text or email right away if a dose is missed or your pills run low.',
             k8_t: 'Streaks That Motivate', k8: 'Build a streak of days with every dose taken and watch your consistency grow.',
             k9_t: 'Buddy, Your AI Helper', k9: 'Ask Buddy how to use VeraDose or get organized, any time you need a hand.',
-            k10_t: 'Six Languages', k10: 'Use VeraDose in English, Spanish, French, Mandarin, Hindi or Telugu with one tap.',
+            k10_t: 'Five Languages', k10: 'Use VeraDose in English, Spanish, French, Mandarin or Hindi with one tap.',
             k11_t: 'Emergency in One Tap', k11: 'A 911 button is always at the top of the screen, and it can alert your caregiver too.',
             k12_t: 'Private & Secure', k12: 'Your account keeps your medicines safe and in sync on any device you sign in from.',
             tts: 'Text to speech', auto_read: 'Auto-read AI responses', read_page: 'Read this page aloud', stop: 'Stop audio', readability: 'Readability', visibility: 'Visibility', hc: 'High contrast mode',
@@ -574,7 +574,7 @@
             sources: 'Sources: adherence figures from an <i>Annals of Internal Medicine</i> review, as reported in ' + SRC + '. Chart data from the CDC National Center for Health Statistics, ' + CDC + ' (NHANES 2001–2004 and 2017–March 2020).',
             ft_title: 'Everything you need to stay on track',
             f1_t: 'Read-aloud assistant', f1: "Hear each medication's name, dosage, and instructions spoken out loud, in your chosen language.",
-            f2_t: 'Multi-language', f2: 'Switch the whole app between English, Spanish, French, Mandarin, Hindi and Telugu with one tap.',
+            f2_t: 'Multi-language', f2: 'Switch the whole app between English, Spanish, French, Mandarin and Hindi with one tap.',
             f3_t: 'Pill counter and low-stock alerts', f3: "Counts drop automatically when you mark a dose taken, and you're warned when only a few days remain.",
             f4_t: 'Caregiver alerts', f4: 'Optionally let a trusted person know by email or text if a dose is missed or your pills are running low.',
             f5_t: 'Scan a label', f5: 'Photograph a prescription or bottle and VeraDose fills in the medication for you to check and save.',
@@ -603,7 +603,7 @@
             k7_t: 'Avisos al cuidador', k7: 'Una persona de confianza recibe un texto o correo de inmediato si olvidas una dosis o se acaban tus pastillas.',
             k8_t: 'Rachas que motivan', k8: 'Suma días seguidos tomando todas tus dosis y mira crecer tu constancia.',
             k9_t: 'Buddy, tu ayudante IA', k9: 'Pregúntale a Buddy cómo usar VeraDose u organizarte, siempre que necesites ayuda.',
-            k10_t: 'Seis idiomas', k10: 'Usa VeraDose en inglés, español, francés, mandarín, hindi o telugu con un toque.',
+            k10_t: 'Cinco idiomas', k10: 'Usa VeraDose en inglés, español, francés, mandarín o hindi con un toque.',
             k11_t: 'Emergencia en un toque', k11: 'Un botón de 911 siempre está arriba en la pantalla y también puede avisar a tu cuidador.',
             k12_t: 'Privado y seguro', k12: 'Tu cuenta guarda tus medicamentos y los mantiene al día en cualquier dispositivo donde inicies sesión.',
             tts: 'Texto a voz', auto_read: 'Leer en voz alta las respuestas de la IA', read_page: 'Leer esta página en voz alta', stop: 'Detener audio', readability: 'Legibilidad', visibility: 'Visibilidad', hc: 'Modo de alto contraste',
@@ -625,7 +625,7 @@
             sources: 'Fuentes: cifras de adherencia de una revisión de <i>Annals of Internal Medicine</i>, citada en ' + SRC + '. Datos del gráfico del Centro Nacional de Estadísticas de Salud de los CDC, ' + CDC + ' (NHANES 2001–2004 y 2017–marzo 2020).',
             ft_title: 'Todo lo que necesitas para seguir el plan',
             f1_t: 'Asistente de lectura en voz alta', f1: 'Escucha el nombre, la dosis y las instrucciones de cada medicamento en tu idioma.',
-            f2_t: 'Varios idiomas', f2: 'Cambia toda la app entre inglés, español, francés, mandarín, hindi y telugu con un toque.',
+            f2_t: 'Varios idiomas', f2: 'Cambia toda la app entre inglés, español, francés, mandarín y hindi con un toque.',
             f3_t: 'Conteo de pastillas y avisos de existencias', f3: 'El conteo baja al marcar una dosis como tomada y te avisa cuando quedan pocos días.',
             f4_t: 'Avisos al cuidador', f4: 'Si quieres, avisa a una persona de confianza por correo o texto si olvidas una dosis o se acaban tus pastillas.',
             f5_t: 'Escanear una etiqueta', f5: 'Fotografía una receta o un frasco y VeraDose completa el medicamento para que lo revises y guardes.',
@@ -654,7 +654,7 @@
             k7_t: "Alertes à l'aidant", k7: 'Une personne de confiance reçoit un SMS ou un e-mail tout de suite si une dose est oubliée ou si le stock baisse.',
             k8_t: 'Des séries motivantes', k8: 'Enchaînez les jours où chaque dose est prise et regardez votre régularité grandir.',
             k9_t: 'Buddy, votre assistant IA', k9: "Demandez à Buddy comment utiliser VeraDose ou vous organiser, dès que vous avez besoin d'aide.",
-            k10_t: 'Six langues', k10: "Utilisez VeraDose en anglais, espagnol, français, mandarin, hindi ou télougou d'un seul geste.",
+            k10_t: 'Cinq langues', k10: "Utilisez VeraDose en anglais, espagnol, français, mandarin ou hindi d'un seul geste.",
             k11_t: 'Urgence en un geste', k11: "Un bouton 911 est toujours en haut de l'écran, et il peut aussi prévenir votre aidant.",
             k12_t: 'Privé et sécurisé', k12: 'Votre compte garde vos médicaments en sécurité et à jour sur tous les appareils où vous vous connectez.',
             tts: 'Synthèse vocale', auto_read: "Lire à voix haute les réponses de l'IA", read_page: 'Lire cette page à voix haute', stop: "Arrêter l'audio", readability: 'Lisibilité', visibility: 'Visibilité', hc: 'Mode contraste élevé',
@@ -676,7 +676,7 @@
             sources: "Sources : chiffres d'observance issus d'une revue des <i>Annals of Internal Medicine</i>, rapportés dans " + SRC + '. Données du graphique : CDC National Center for Health Statistics, ' + CDC + ' (NHANES 2001–2004 et 2017–mars 2020).',
             ft_title: 'Tout ce qu\'il faut pour rester sur la bonne voie',
             f1_t: 'Lecture à voix haute', f1: 'Écoutez le nom, la dose et les instructions de chaque médicament, dans votre langue.',
-            f2_t: 'Plusieurs langues', f2: "Passez toute l'application en anglais, espagnol, français, mandarin, hindi ou télougou d'un seul geste.",
+            f2_t: 'Plusieurs langues', f2: "Passez toute l'application en anglais, espagnol, français, mandarin ou hindi d'un seul geste.",
             f3_t: 'Décompte et alertes de stock', f3: 'Le décompte baisse à chaque prise notée, et vous êtes prévenu quand il reste peu de jours.',
             f4_t: "Alertes à l'aidant", f4: 'Si vous le souhaitez, prévenez une personne de confiance par e-mail ou SMS en cas de dose oubliée ou de stock bas.',
             f5_t: 'Scanner une étiquette', f5: "Photographiez une ordonnance ou un flacon : VeraDose remplit le médicament, vous vérifiez et enregistrez.",
@@ -705,7 +705,7 @@
             k7_t: '照护人提醒', k7: '漏服或药量不足时，您信任的人会立即收到短信或邮件。',
             k8_t: '激励连续记录', k8: '每天按时服完所有药物，看着坚持的天数不断增加。',
             k9_t: 'AI 助手 Buddy', k9: '随时询问 Buddy 如何使用 VeraDose 或如何安排生活。',
-            k10_t: '六种语言', k10: '一键切换英语、西班牙语、法语、中文、印地语或泰卢固语。',
+            k10_t: '五种语言', k10: '一键切换英语、西班牙语、法语、中文或印地语。',
             k11_t: '一键紧急求助', k11: '屏幕顶部始终有 911 按钮，也可以同时通知您的照护人。',
             k12_t: '私密安全', k12: '您的账户会安全保存药物信息，并在您登录的任何设备上同步。',
             tts: '语音朗读', auto_read: '自动朗读 AI 回复', read_page: '朗读本页内容', stop: '停止朗读', readability: '易读性', visibility: '可视性', hc: '高对比度模式',
@@ -727,7 +727,7 @@
             sources: '来源：依从性数据来自《Annals of Internal Medicine》的综述，引自 ' + SRC + '。图表数据来自美国 CDC 国家卫生统计中心，' + CDC + '（NHANES 2001–2004 与 2017–2020 年 3 月）。',
             ft_title: '按时服药所需的一切',
             f1_t: '朗读助手', f1: '用您选择的语言朗读每种药物的名称、剂量和说明。',
-            f2_t: '多语言', f2: '一键在英语、西班牙语、法语、中文、印地语和泰卢固语之间切换整个应用。',
+            f2_t: '多语言', f2: '一键在英语、西班牙语、法语、中文和印地语之间切换整个应用。',
             f3_t: '药片计数与库存提醒', f3: '每次标记已服用时自动减少数量，剩余天数不多时提醒您。',
             f4_t: '照护人提醒', f4: '可选择在漏服或药量不足时，通过邮件或短信通知您信任的人。',
             f5_t: '扫描标签', f5: '拍下处方或药瓶，VeraDose 自动填写药物信息，由您检查后保存。',
@@ -756,7 +756,7 @@
             k7_t: 'देखभालकर्ता को सूचना', k7: 'खुराक छूटने या गोलियाँ कम होने पर आपके किसी भरोसेमंद व्यक्ति को तुरंत SMS या ईमेल मिलता है।',
             k8_t: 'हौसला बढ़ाने वाली स्ट्रीक', k8: 'हर खुराक लेकर लगातार दिनों की स्ट्रीक बनाएँ और अपनी नियमितता बढ़ती देखें।',
             k9_t: 'Buddy, आपका AI सहायक', k9: 'जब भी मदद चाहिए, Buddy से पूछें कि VeraDose कैसे इस्तेमाल करें या व्यवस्थित कैसे रहें।',
-            k10_t: 'छह भाषाएँ', k10: 'एक टैप में VeraDose को अंग्रेज़ी, स्पैनिश, फ़्रेंच, मंदारिन, हिन्दी या तेलुगु में इस्तेमाल करें।',
+            k10_t: 'पाँच भाषाएँ', k10: 'एक टैप में VeraDose को अंग्रेज़ी, स्पैनिश, फ़्रेंच, मंदारिन या हिन्दी में इस्तेमाल करें।',
             k11_t: 'एक टैप में आपातकाल', k11: 'स्क्रीन के ऊपर हमेशा 911 का बटन रहता है, और यह आपके देखभालकर्ता को भी सूचना भेज सकता है।',
             k12_t: 'निजी और सुरक्षित', k12: 'आपका खाता आपकी दवाओं को सुरक्षित रखता है और जिस भी डिवाइस से आप साइन इन करें, वहाँ एक जैसा रखता है।',
             tts: 'बोलकर पढ़ना', auto_read: 'AI के जवाब अपने आप पढ़ें', read_page: 'यह पेज बोलकर पढ़ें', stop: 'आवाज़ रोकें',
@@ -778,7 +778,7 @@
             sources: 'स्रोत: दवा पालन के आँकड़े <i>Annals of Internal Medicine</i> की एक समीक्षा से, जैसा ' + SRC + ' में बताया गया। चार्ट का डेटा अमेरिका के CDC National Center for Health Statistics से, ' + CDC + ' (NHANES 2001–2004 और 2017–मार्च 2020)।',
             ft_title: 'सही राह पर रहने के लिए सब कुछ',
             f1_t: 'बोलकर पढ़ने वाला सहायक', f1: 'हर दवा का नाम, खुराक और निर्देश आपकी चुनी भाषा में बोलकर सुनें।',
-            f2_t: 'कई भाषाएँ', f2: 'एक टैप में पूरे ऐप को अंग्रेज़ी, स्पैनिश, फ़्रेंच, मंदारिन, हिन्दी और तेलुगु में बदलें।',
+            f2_t: 'कई भाषाएँ', f2: 'एक टैप में पूरे ऐप को अंग्रेज़ी, स्पैनिश, फ़्रेंच, मंदारिन और हिन्दी में बदलें।',
             f3_t: 'गोली गिनती और कम स्टॉक की सूचना', f3: 'खुराक ली गई चिह्नित करते ही गिनती अपने आप घटती है, और कुछ ही दिन बचने पर आपको चेतावनी मिलती है।',
             f4_t: 'देखभालकर्ता को सूचना', f4: 'चाहें तो खुराक छूटने या गोलियाँ कम होने पर किसी भरोसेमंद व्यक्ति को ईमेल या SMS से बताएँ।',
             f5_t: 'लेबल स्कैन करें', f5: 'पर्चे या बोतल की फ़ोटो लें और VeraDose दवा भर देता है, जिसे आप जाँचकर सेव करते हैं।',
@@ -793,58 +793,6 @@
             in_title: 'फिर से स्वागत है', in_sub: 'अपनी दवाएँ और दिनचर्या देखने के लिए साइन इन करें।', up_title: 'चलिए आपका खाता तैयार करते हैं', up_sub: 'आपका खाता आपकी दवाओं को हर डिवाइस पर सुरक्षित रखता है। उम्र और एलर्जी भरना ज़रूरी नहीं है।',
             offline: 'VeraDose अपने सर्वर से नहीं जुड़ पा रहा। VS Code टर्मिनल में चलाएँ: python app.py', error: 'कुछ गड़बड़ हो गई। कृपया फिर कोशिश करें।',
             make_acc: 'इस ईमेल से खाता बनाएँ →', show_pw: 'पासवर्ड दिखाएँ', hide_pw: 'पासवर्ड छिपाएँ'
-        },
-        te: {
-            band_pill: 'సంఖ్యల్లో ప్రభావం', band_title: 'ప్రతి మోతాదు ఎందుకు ముఖ్యం', band_sub: 'తప్పిపోయిన మరియు గందరగోళమైన మోతాదులు రోజువారీ ఆరోగ్యంలో అత్యంత సాధారణమైన, మరియు సులభంగా నివారించగల, సమస్యలలో ఒకటి.',
-            g1: 'దీర్ఘకాలిక మందులు ప్రిస్క్రిప్షన్ ప్రకారం వేసుకోబడవు', g2: 'ప్రిస్క్రిప్షన్లు ఎప్పుడూ కొనబడవు', g3: 'అమెరికాలో ఏటా తప్పిపోయిన మందులతో ముడిపడిన మరణాలు', g4: 'అమెరికాలో ఏటా నివారించగల ఆరోగ్య ఖర్చు',
-            res_pill: 'పరిశోధన ఏమి చెబుతోంది', res_title: 'సమస్యను దగ్గరగా చూద్దాం',
-            how_pill: 'ఇది ఎలా పనిచేస్తుంది', how_title: 'సులభం, తెలివైనది, అందరికీ అందుబాటు', how_sub: 'మొదటి ప్రిస్క్రిప్షన్ నుండి ప్రతి రీఫిల్ వరకు, సరైన సమయంలో సరైన మందు వేసుకునే సాధనాలను VeraDose అందరికీ ఇస్తుంది.',
-            k1_t: 'మీ ప్రిస్క్రిప్షన్ స్కాన్ చేయండి', k1: 'ప్రిస్క్రిప్షన్ లేబుల్ లేదా సీసా ఫోటో తీయండి. VeraDose దాన్ని చదివి మందును నింపుతుంది, మీరు తనిఖీ చేసి సేవ్ చేస్తారు.',
-            k2_t: 'చదివి వినిపిస్తుంది', k2: 'ప్రతి మందు పేరు, మోతాదు మరియు సూచనలు మీ భాషలో, మీకు నచ్చిన వేగంలో చదివి వినిపిస్తుంది.',
-            k3_t: 'మీ వారం ఒక్క చూపులో', k3: 'వారపు క్యాలెండర్ ఏమి ఎప్పుడు వేసుకోవాలో చూపిస్తుంది. ప్రతి మోతాదు వేసుకోగానే గుర్తు పెట్టండి.',
-            k4_t: 'ఎప్పుడూ అయిపోకుండా', k4: 'మీరు వేసుకోగానే మాత్రల సంఖ్య స్వయంగా తగ్గుతుంది, నిల్వ తగ్గే ముందే మీకు గుర్తుచేస్తుంది.',
-            k5_t: 'ఆహారం & సమయ గైడ్', k5: 'ప్రతి మందుపై "ఆహారంతో వేసుకోండి", "పాల ఉత్పత్తులు వద్దు" లేదా "నిద్రకు ముందు" వంటి స్పష్టమైన బ్యాడ్జ్‌లు.',
-            k6_t: 'మాత్ర తనిఖీ', k6: 'చేతిలోని మాత్ర ఫోటో తీసి దాని ఆకారం, రంగు మరియు ముద్రను మీ జాబితాతో పోల్చండి.',
-            k7_t: 'సంరక్షకుని హెచ్చరికలు', k7: 'మోతాదు తప్పినా లేదా మాత్రలు తగ్గినా మీరు నమ్మే వ్యక్తికి వెంటనే SMS లేదా ఈమెయిల్ వెళుతుంది.',
-            k8_t: 'ప్రోత్సహించే స్ట్రీక్‌లు', k8: 'ప్రతి మోతాదు వేసుకుని వరుస రోజుల స్ట్రీక్ నిర్మించండి, మీ క్రమశిక్షణ పెరగడం చూడండి.',
-            k9_t: 'Buddy, మీ AI సహాయకుడు', k9: 'సహాయం కావాల్సినప్పుడల్లా VeraDose ఎలా వాడాలో లేదా క్రమబద్ధంగా ఎలా ఉండాలో Buddy ని అడగండి.',
-            k10_t: 'ఆరు భాషలు', k10: 'ఒక్క నొక్కుతో VeraDose ను ఇంగ్లీష్, స్పానిష్, ఫ్రెంచ్, మాండరిన్, హిందీ లేదా తెలుగులో వాడండి.',
-            k11_t: 'ఒక్క నొక్కుతో అత్యవసరం', k11: 'స్క్రీన్ పైభాగంలో ఎప్పుడూ 911 బటన్ ఉంటుంది, అది మీ సంరక్షకుడికి కూడా తెలియజేయగలదు.',
-            k12_t: 'గోప్యం & సురక్షితం', k12: 'మీ ఖాతా మీ మందులను సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసే ఏ పరికరంలోనైనా ఒకేలా ఉంచుతుంది.',
-            tts: 'చదివి వినిపించడం', auto_read: 'AI సమాధానాలను స్వయంగా చదవండి', read_page: 'ఈ పేజీని చదివి వినిపించండి', stop: 'శబ్దం ఆపండి',
-            readability: 'చదవడం సులభం', visibility: 'కనిపించే విధానం', hc: 'హై కాంట్రాస్ట్ మోడ్', smaller: 'చిన్న అక్షరాలు', larger: 'పెద్ద అక్షరాలు', normal_size: 'సాధారణ అక్షర పరిమాణం',
-            get_started: 'ప్రారంభించండి', open_app: 'VeraDose తెరవండి', sign_in: 'సైన్ ఇన్', sign_out: 'సైన్ అవుట్', sign_up: 'ఖాతా సృష్టించండి', language: 'భాష',
-            badge: 'అందరికీ అందుబాటులో మందుల సంరక్షణ',
-            typing: ['ఒక్క మోతాదు కూడా తప్పకుండా, రోజు రోజుకీ.', 'మీరు వేసుకునే ప్రతి మాత్ర తెలుసుకోండి.', 'స్వయంగా చదివి వినిపించే రిమైండర్లు.', 'మీకూ మీ సంరక్షకుడికీ మనశ్శాంతి.'],
-            lead: 'మందుల లెక్క చూసుకోవడం భారంగా అనిపించవచ్చు. VeraDose మీ ప్రిస్క్రిప్షన్లను ఒక సులభమైన రోజువారీ దినచర్యగా మారుస్తుంది, మాట్లాడే రిమైండర్లు, మాత్రల లెక్కింపు, లేబుల్ స్కానింగ్ మరియు సంరక్షకుని హెచ్చరికలతో, తద్వారా మీరు, మీ కుటుంబం మరియు మీ సంరక్షకులు నమ్మకంగా సరైన దారిలో ఉంటారు.',
-            st1: 'దీర్ఘకాలిక మందులు ప్రిస్క్రిప్షన్ ప్రకారం వేసుకోబడవు', st2: '65+ వయస్సు వారు 5 లేదా అంతకంటే ఎక్కువ ప్రిస్క్రిప్షన్ మందులు వేసుకుంటారు', st3: 'భాషలు అందుబాటులో',
-            cta_out: 'ప్రారంభించండి — ఉచిత సైన్ ఇన్', install: 'యాప్ ఇన్‌స్టాల్ చేయండి', install_cta: 'మీ ఫోన్‌లో ఉచిత యాప్ ఇన్‌స్టాల్ చేయండి', cta_in: 'VeraDose తెరవండి',
-            pv_title: 'ఈరోజు షెడ్యూల్ (ఉదాహరణ)', pv_streak: '🔥 7 రోజుల ఆరోగ్య స్ట్రీక్!', pv_taken: 'ఈరోజు 4 లో 3 వేసుకున్నారు', pv_food: '🍽️ ఆహారంతో వేసుకోండి', pv_ok: 'వేసుకున్నారు', pv_bed: '🌙 నిద్రకు ముందు వేసుకోండి', pv_refill: 'త్వరలో తెచ్చుకోండి: 4 రోజులు మిగిలాయి',
-            im_title: 'సరైన దారిలో ఉండటం ఎందుకు ముఖ్యం', im_sub: 'తప్పిపోయిన మరియు గందరగోళమైన మోతాదులు రోజువారీ ఆరోగ్యంలో అత్యంత సాధారణమైన, మరియు సులభంగా నివారించగల, సమస్యలలో ఒకటి. పరిశోధన ఇది చెబుతోంది.',
-            s1: 'దీర్ఘకాలిక వ్యాధుల మందులు <b>ప్రిస్క్రిప్షన్ ప్రకారం వేసుకోబడవు</b>.', s2: 'ప్రిస్క్రిప్షన్లు <b>ఎప్పుడూ కొనబడవు</b>.', s3: 'అమెరికాలో <b>ఏటా మరణాలు</b> మందులు ప్రిస్క్రిప్షన్ ప్రకారం వేసుకోకపోవడంతో ముడిపడి ఉన్నాయి.', s4: 'అమెరికాలో ఏటా నివారించగల ఖర్చు (అంచనాలు <b>$100 నుండి $289 బిలియన్</b> వరకు).',
-            c1_t: 'దాదాపు 2 లో 1 మోతాదు దారి తప్పుతుంది', c1_s: 'దీర్ఘకాలిక (క్రానిక్) వ్యాధుల మందులు', c1_big: '2 లో 1', c1_small: 'ప్రిస్క్రిప్షన్ ప్రకారం కాదు', c1_l1: 'ప్రిస్క్రిప్షన్ ప్రకారం వేసుకున్నవి (~50%)', c1_l2: 'ప్రిస్క్రిప్షన్ ప్రకారం వేసుకోనివి (~50%)',
-            c2_t: 'ఎక్కువ మంది 5+ మందులు సంభాళిస్తున్నారు', c2_s: 'అమెరికాలో గత 30 రోజుల్లో 5 లేదా అంతకంటే ఎక్కువ ప్రిస్క్రిప్షన్ మందులు వాడినవారి శాతం',
-            age1: 'వయస్సు 18–44', age2: 'అన్ని వయస్సులు', age3: 'వయస్సు 65+',
-            callout: '👵 65 మరియు అంతకంటే ఎక్కువ వయస్సు వారిలో, <b>3 లో 2 కంటే ఎక్కువ మంది (67.7%)</b> 3 లేదా అంతకంటే ఎక్కువ ప్రిస్క్రిప్షన్ మందులు వేసుకుంటారు.',
-            h1_t: 'మోతాదు మర్చిపోవడం', h1: 'రిమైండర్లు, వారపు క్యాలెండర్ మరియు చదివి వినిపించే సూచనలు.', h2_t: 'మందు అయిపోవడం', h2: 'వేసుకోగానే మాత్రల సంఖ్య తగ్గుతుంది, తక్కువయ్యే ముందే హెచ్చరిక వస్తుంది.', h3_t: 'ఎవరూ పట్టించుకోకపోవడం', h3: 'మోతాదు తప్పితే సంరక్షకుడికి వెంటనే తెలియజేయవచ్చు.',
-            sources: 'మూలాలు: మందుల పాటింపు గణాంకాలు <i>Annals of Internal Medicine</i> సమీక్ష నుండి, ' + SRC + ' లో పేర్కొన్నట్లు. చార్ట్ డేటా అమెరికా CDC National Center for Health Statistics నుండి, ' + CDC + ' (NHANES 2001–2004 మరియు 2017–మార్చి 2020).',
-            ft_title: 'సరైన దారిలో ఉండటానికి కావాల్సినవన్నీ',
-            f1_t: 'చదివి వినిపించే సహాయకుడు', f1: 'ప్రతి మందు పేరు, మోతాదు మరియు సూచనలను మీరు ఎంచుకున్న భాషలో వినండి.',
-            f2_t: 'బహుళ భాషలు', f2: 'ఒక్క నొక్కుతో మొత్తం యాప్‌ను ఇంగ్లీష్, స్పానిష్, ఫ్రెంచ్, మాండరిన్, హిందీ మరియు తెలుగు మధ్య మార్చండి.',
-            f3_t: 'మాత్రల లెక్కింపు మరియు తక్కువ నిల్వ హెచ్చరికలు', f3: 'మోతాదు వేసుకున్నట్లు గుర్తించగానే సంఖ్య స్వయంగా తగ్గుతుంది, కొన్ని రోజులే మిగిలినప్పుడు మీకు హెచ్చరిక వస్తుంది.',
-            f4_t: 'సంరక్షకుని హెచ్చరికలు', f4: 'కావాలంటే, మోతాదు తప్పినా లేదా మాత్రలు తగ్గినా మీరు నమ్మే వ్యక్తికి ఈమెయిల్ లేదా SMS ద్వారా తెలియజేయండి.',
-            f5_t: 'లేబుల్ స్కాన్ చేయండి', f5: 'ప్రిస్క్రిప్షన్ లేదా సీసా ఫోటో తీయండి, VeraDose మందును నింపుతుంది, మీరు తనిఖీ చేసి సేవ్ చేస్తారు.',
-            f6_t: 'ఆహారం మరియు సమయ గైడ్', f6: 'ప్రతి మందు కార్డుపై "ఆహారంతో వేసుకోండి" లేదా "పాల ఉత్పత్తులు వద్దు" వంటి స్పష్టమైన బ్యాడ్జ్‌లు.',
-            f7_t: 'మందుల పాటింపు స్ట్రీక్', f7: '100% పాటింపుతో రోజువారీ స్ట్రీక్ నిర్మించి ఉత్సాహంగా ఉండండి.',
-            f8_t: 'మాత్ర తనిఖీ మరియు AI Buddy', f8: 'ఒక మాత్ర ఫోటో తీసి మీ జాబితాతో పోల్చండి, లేదా VeraDose వాడటానికి Buddy సహాయం అడగండి.',
-            footer: 'VeraDose ఒక రిమైండర్ సాధనం మాత్రమే, వైద్య సలహా ఇవ్వదు. AI ఫలితాలు తప్పు కావచ్చు, కాబట్టి ఎప్పుడూ మీ డాక్టర్ మరియు ఫార్మసిస్ట్ సూచనలను పాటించండి.',
-            a11y: 'అందుబాటు', text_size: 'అక్షర పరిమాణం', dyslexia: 'డిస్లెక్సియాకు అనుకూలమైన ఫాంట్', dark: 'డార్క్ మోడ్', a11y_btn: 'అందుబాటు ఎంపికలు', to_dark: 'డార్క్ మోడ్‌కు మారండి', to_light: 'లైట్ మోడ్‌కు మారండి',
-            email: 'ఈమెయిల్', password: 'పాస్‌వర్డ్', your_name: 'మీ పేరు', pw_hint: 'కనీసం 8 అక్షరాలు.', age: 'వయస్సు', optional: 'ఐచ్ఛికం', allergies: 'అలెర్జీలు', allergies_ph: 'ఐచ్ఛికం, ఉదా. పెన్సిలిన్',
-            create: 'నా ఖాతా సృష్టించండి', server_down: 'VeraDose సర్వర్ స్పందించలేదు. అది నిద్రలో ఉంటే, ఒక నిమిషం ఆగి మళ్ళీ ప్రయత్నించండి.', working: 'దయచేసి వేచి ఉండండి…', waking: 'సర్వర్ మేల్కొంటోంది. మొదటిసారి దీనికి ఒక నిమిషం వరకు పట్టవచ్చు. దయచేసి ఈ విండో తెరిచి ఉంచండి.', too_slow: 'సర్వర్ స్పందించడానికి చాలా సమయం తీసుకుంది. దయచేసి ఒక నిమిషం తర్వాత మళ్ళీ ప్రయత్నించండి.',
-            private: 'మీ సమాచారం గోప్యంగా ఉంటుంది.', close: 'మూసివేయండి',
-            in_title: 'మళ్ళీ స్వాగతం', in_sub: 'మీ మందులు మరియు దినచర్యను చూడటానికి సైన్ ఇన్ చేయండి.', up_title: 'మీ ఖాతాను సిద్ధం చేద్దాం', up_sub: 'మీ ఖాతా మీ మందులను ఏ పరికరంలోనైనా సురక్షితంగా ఉంచుతుంది. వయస్సు మరియు అలెర్జీలు ఐచ్ఛికం.',
-            offline: 'VeraDose తన సర్వర్‌ను చేరుకోలేకపోతోంది. VS Code టెర్మినల్‌లో నడపండి: python app.py', error: 'ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.',
-            make_acc: 'ఈ ఈమెయిల్‌తో ఖాతా సృష్టించండి →', show_pw: 'పాస్‌వర్డ్ చూపించు', hide_pw: 'పాస్‌వర్డ్ దాచు'
         }
 };
         var $ = function (id) { return document.getElementById(id); };
@@ -936,21 +884,48 @@
         $('autoChk').onchange = function () { store('medsnap_autoread', this.checked ? '1' : '0'); };
 
         // Read the page out loud in the chosen language.
-        var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN', te: 'te-IN' };
-        function speak(text) {
-            if (!('speechSynthesis' in window)) return;
-            speechSynthesis.cancel();
+        var LOCALES = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN' };
+        // Read aloud with the device's own voice.
+        var ttsAudio = null, ttsSeq = 0;
+        function stopSpeech() { ttsSeq++; if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} } if ('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch (e) {} } }
+        var SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+        function ttsChunks(text, max) {
+            var out = [];
+            (text.match(/[^.!?।\n]+[.!?।]*\s*/g) || [text]).forEach(function (sen) {
+                while (sen.length > max) { out.push(sen.slice(0, max)); sen = sen.slice(max); }
+                if (out.length && (out[out.length - 1] + sen).length <= max) out[out.length - 1] += sen; else if (sen.trim()) out.push(sen);
+            });
+            return out.map(function (x) { return x.trim(); }).filter(Boolean);
+        }
+        function fetchTts(part) {
+            return fetch(API + '/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: part, lang: lang }) })
+                .then(function (r) { if (!r.ok) throw new Error('tts'); return r.blob(); });
+        }
+        // (Server voice removed.)
+        function serverSpeak(text) { /* no server voice: this device has no voice for this language */ }
+        function speak(text, retry) {
+            retry = retry || 0;
+            if (!('speechSynthesis' in window)) { serverSpeak(text); return; }
+            var voices = speechSynthesis.getVoices();
+            var v = voices.find(function (x) { return x.lang && x.lang.toLowerCase().replace('_', '-').indexOf(lang) === 0; });
+            if (!v && lang !== 'en' && (voices.length || retry >= 3)) { serverSpeak(text); return; }
+            if (!voices.length && retry < 3) { setTimeout(function () { speak(text, retry + 1); }, 300); return; }
+            stopSpeech();
             var u = new SpeechSynthesisUtterance(text); u.lang = LOCALES[lang]; u.rate = 0.92;
-            var v = speechSynthesis.getVoices().find(function (x) { return x.lang && x.lang.toLowerCase().indexOf(lang) === 0; });
             if (v) u.voice = v;
             speechSynthesis.speak(u);
         }
+        // Phones only allow sound after a tap: unlock the audio player on the first tap.
+        document.addEventListener('pointerdown', function unlock() {
+            document.removeEventListener('pointerdown', unlock);
+            try { if (!ttsAudio) ttsAudio = new Audio(); ttsAudio.muted = true; ttsAudio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='; var p = ttsAudio.play(); if (p) p.then(function () { ttsAudio.pause(); ttsAudio.muted = false; }).catch(function () { ttsAudio.muted = false; }); } catch (e) {}
+        }, { passive: true });
         $('readPage').onclick = function () {
             var parts = ['VeraDose.', t('typing')[0], t('lead'), t('band_title') + '.', t('band_sub'), t('how_title') + '.', t('how_sub')];
             for (var i = 1; i <= 12; i++) parts.push(t('k' + i + '_t') + '. ' + t('k' + i));
             speak(parts.join(' '));
         };
-        $('stopAudio').onclick = function () { if ('speechSynthesis' in window) speechSynthesis.cancel(); };
+        $('stopAudio').onclick = function () { stopSpeech(); };
 
         function closePanel() { $('a11yPanel').hidden = true; $('a11yBtn').setAttribute('aria-expanded', 'false'); }
         $('a11yBtn').onclick = function () {
