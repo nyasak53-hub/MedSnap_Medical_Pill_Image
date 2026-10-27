@@ -41,51 +41,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"), override=False)
 
 DATA_DIR = os.environ.get("DATA_DIR", BASE_DIR)
 DATA_FILE = os.path.join(DATA_DIR, "medications_data.json")
-class TimedLock:
-    """A lock that never waits forever. If something holds it too long, the waiting request gives up
-    with a clear message (instead of the page spinning forever) and the log shows what was stuck."""
-    def __init__(self, name, wait=25):
-        self.name, self.wait = name, wait
-        self._lock = threading.RLock()
-        self.holder, self.since = None, 0.0
-        self._depth = 0
-
-    def __enter__(self):
-        if not self._lock.acquire(timeout=self.wait):
-            held = time.time() - self.since
-            print(f"[error] {self.name} has been busy for {held:.0f}s (held by thread {self.holder}). "
-                  f"Stuck code:\n{stack_report(self.holder)}")
-            raise StorageBusy(f"{self.name} busy")
-        if self.holder is None:
-            self.holder, self.since = threading.current_thread().name, time.time()
-        self._depth += 1
-        return self
-
-    def __exit__(self, *exc):
-        self._depth -= 1
-        if self._depth == 0:
-            self.holder, self.since = None, 0.0
-        self._lock.release()
-        return False
-
-
-def stack_report(thread_name=None):
-    """Where each thread is right now (only VeraDose's own code lines), for the diagnostic page."""
-    import sys
-    import traceback
-    names = {t.ident: t.name for t in threading.enumerate()}
-    out = []
-    for ident, frame in sys._current_frames().items():
-        name = names.get(ident, str(ident))
-        if thread_name and name != thread_name:
-            continue
-        lines = [f"{os.path.basename(f.filename)}:{f.lineno} {f.name}" for f in traceback.extract_stack(frame)
-                 if f.filename.endswith("app.py")]
-        out.append(f"{name}: " + (" > ".join(lines[-6:]) or "(waiting outside VeraDose code)"))
-    return "\n".join(out)
-
-
-DATA_LOCK = TimedLock("saved medicines")
+DATA_LOCK = threading.RLock()
 
 
 def normalize_secret(raw_value):
@@ -143,7 +99,7 @@ MISSED_GRACE_MINUTES = int(os.environ.get("MISSED_DOSE_GRACE_MINUTES", "30"))
 VALID_SHAPES = {"", "round", "oval", "capsule", "oblong", "square", "diamond", "triangle", "hexagon"}
 VALID_COLORS = {"", "white", "yellow", "orange", "pink", "red", "brown", "green", "blue", "purple", "gray"}
 LANGUAGE_NAMES = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Simplified Chinese",
-                  "hi": "Hindi (Devanagari script)"}
+                  "hi": "Hindi (Devanagari script)", "te": "Telugu (Telugu script)"}
 TIME_RE = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,255}\.[^@\s]{2,}$")
 PHONE_RE = re.compile(r"^\+[1-9]\d{7,14}$")
@@ -246,7 +202,6 @@ def new_state():
                     "timezone": "", "low_stock_days": 7},
         "low_alerted": [],
         "low_tries": {},
-        "chat": [],          # Buddy conversation, saved with the account
     }
 
 
@@ -262,7 +217,7 @@ def migrate_state(raw):
     else:
         return new_state()
     base = new_state()
-    for key in ("history", "caregiver", "tz", "best_streak", "profile", "low_alerted", "low_tries", "chat"):
+    for key in ("history", "caregiver", "tz", "best_streak", "profile", "low_alerted", "low_tries"):
         state.setdefault(key, base[key])
     for key, value in base["profile"].items():
         state["profile"].setdefault(key, value)
@@ -355,7 +310,7 @@ def _db_http_conn(fresh=False):
                 pass
         u = urlsplit(_DB_HTTP)
         cls = http.client.HTTPSConnection if u.scheme == "https" else http.client.HTTPConnection
-        c = cls(u.hostname, u.port, timeout=10)
+        c = cls(u.hostname, u.port, timeout=12)
         _db_http_local.conn = c
     return c
 
@@ -385,10 +340,7 @@ def _db_http(sql, params=()):
             break
         except Exception as exc:   # no internet, wrong address, timeout, closed connection...
             _db_http_local.conn = None
-            # Retry at once only if a kept-open connection was simply closed; never wait twice on a timeout.
-            closed = isinstance(exc, (ConnectionError, BrokenPipeError)) or exc.__class__.__name__ in (
-                "RemoteDisconnected", "BadStatusLine", "CannotSendRequest", "ResponseNotReady")
-            if attempt == 2 or not closed:
+            if attempt == 2:
                 raise _DbHttpError(f"could not reach the database ({exc.__class__.__name__}: {exc})")
     try:
         data = json.loads(raw.decode("utf-8") or "{}")
@@ -413,25 +365,7 @@ def _db_connect():
     _db_conn.execute(_KV_TABLE_SQL)
 
 
-DB_TIMINGS = deque(maxlen=30)
-REQUEST_TIMINGS = deque(maxlen=40)
-STARTED_AT = time.time()
-
-
 def _db(sql, params=()):
-    t0 = time.time()
-    ok = "ok"
-    try:
-        return _db_inner(sql, params)
-    except Exception as exc:
-        ok = "error: " + str(exc)[:120]
-        raise
-    finally:
-        DB_TIMINGS.append({"at": time.strftime("%H:%M:%S"), "ms": int((time.time() - t0) * 1000),
-                           "query": sql.split()[0], "result": ok})
-
-
-def _db_inner(sql, params=()):
     """Run one query. Neon goes over HTTPS; other Postgres databases use a shared psycopg
     connection that reconnects once if the database closed it."""
     global _db_conn, DATABASE_STATUS, _db_table_ready
@@ -449,9 +383,8 @@ def _db_inner(sql, params=()):
                 last = exc
                 DATABASE_STATUS = "error: " + _db_hint(exc)
                 print(f"[warn] Database problem ({_db_hint(exc)}).")
-                low = str(exc).lower()
-                if "password" in low or "does not exist" in low or "timeout" in low or "timed out" in low:
-                    break   # retrying won't help (or would make people wait twice as long)
+                if "password" in str(exc).lower() or "does not exist" in str(exc).lower():
+                    break   # retrying won't help
         raise StorageBusy(str(last))
     # Never let requests pile up behind a stuck database call.
     if not _db_lock.acquire(timeout=25):
@@ -690,7 +623,7 @@ def mutate(client_id, fn):
 # Accounts (sign up / sign in). Each account owns one saved state in the data file.
 # ==========================================================================
 USERS_FILE = os.path.join(DATA_DIR, "users.json")
-USERS_LOCK = TimedLock("saved accounts")
+USERS_LOCK = threading.RLock()
 LOGIN_LOG = {}
 
 
@@ -1187,7 +1120,13 @@ PWA_JS = r"""
           iosOther: 'iPhone और iPad पर पहले यह पेज <b>Safari</b> में खोलें, फिर ये चरण अपनाएँ।',
           android: ['ब्राउज़र में ऊपर दाईं ओर <b>⋮</b> मेनू टैप करें।', '<b>ऐप इंस्टॉल करें</b> या <b>होम स्क्रीन में जोड़ें</b> टैप करें।', '<b>इंस्टॉल करें</b> टैप करें। VeraDose अब आपकी होम स्क्रीन पर है।'],
           desktop: ['<b>Chrome</b> या <b>Edge</b> में पता बार के दाईं ओर इंस्टॉल आइकन पर क्लिक करें, या <b>⋮</b> मेनू खोलकर <b>VeraDose इंस्टॉल करें</b> चुनें।', 'Mac पर <b>Safari</b> में <b>File → Add to Dock</b> चुनें।', 'कंप्यूटर पर Firefox ऐप इंस्टॉल नहीं कर सकता। कृपया Chrome, Edge या Safari इस्तेमाल करें।'],
-          ok: 'समझ गया', done: 'VeraDose इंस्टॉल हो गया! इसे अपनी होम स्क्रीन पर देखें।' }
+          ok: 'समझ गया', done: 'VeraDose इंस्टॉल हो गया! इसे अपनी होम स्क्रीन पर देखें।' },
+    te: { btn: 'యాప్ ఇన్‌స్టాల్ చేయండి', title: 'VeraDose ఇన్‌స్టాల్ చేయండి', sub: 'VeraDose ను మీ హోమ్ స్క్రీన్‌కు జోడించండి. ఇది సాధారణ యాప్‌లా తెరుచుకుంటుంది, ఉచితంగా.',
+          ios: ['Safari లో <b>షేర్</b> బటన్ (బాణం ఉన్న చతురస్రం) నొక్కండి.', 'కిందికి స్క్రోల్ చేసి <b>హోమ్ స్క్రీన్‌కు జోడించు</b> నొక్కండి.', '<b>జోడించు</b> నొక్కండి. VeraDose ఇప్పుడు మీ హోమ్ స్క్రీన్‌పై ఉంది.'],
+          iosOther: 'iPhone మరియు iPad లో ముందుగా ఈ పేజీని <b>Safari</b> లో తెరిచి, తర్వాత ఈ దశలు పాటించండి.',
+          android: ['బ్రౌజర్ పైభాగంలో కుడివైపు <b>⋮</b> మెనూ నొక్కండి.', '<b>యాప్ ఇన్‌స్టాల్ చేయండి</b> లేదా <b>హోమ్ స్క్రీన్‌కు జోడించు</b> నొక్కండి.', '<b>ఇన్‌స్టాల్</b> నొక్కండి. VeraDose ఇప్పుడు మీ హోమ్ స్క్రీన్‌పై ఉంది.'],
+          desktop: ['<b>Chrome</b> లేదా <b>Edge</b> లో అడ్రస్ బార్ కుడి చివర ఉన్న ఇన్‌స్టాల్ ఐకాన్ నొక్కండి, లేదా <b>⋮</b> మెనూ తెరిచి <b>VeraDose ఇన్‌స్టాల్ చేయండి</b> ఎంచుకోండి.', 'Mac లో <b>Safari</b> లో <b>File → Add to Dock</b> ఎంచుకోండి.', 'కంప్యూటర్‌లో Firefox యాప్‌లను ఇన్‌స్టాల్ చేయలేదు. దయచేసి Chrome, Edge లేదా Safari వాడండి.'],
+          ok: 'అర్థమైంది', done: 'VeraDose ఇన్‌స్టాల్ అయింది! మీ హోమ్ స్క్రీన్‌పై చూడండి.' }
   };
   function L() { var l = 'en'; try { l = localStorage.getItem('medsnap_lang') || document.documentElement.lang || 'en'; } catch (e) {} l = String(l).slice(0, 2); return TXT[l] || TXT.en; }
   var root = document.documentElement;
@@ -1282,38 +1221,8 @@ def check_ai_now():
     return result
 
 
-@app.before_request
-def _timer_start():
-    request._t0 = time.time()
-
-
-@app.after_request
-def _timer_end(resp):
-    try:
-        ms = int((time.time() - request._t0) * 1000)
-        if request.path.startswith("/api/") or ms > 3000:
-            REQUEST_TIMINGS.append({"at": time.strftime("%H:%M:%S"), "path": request.path, "ms": ms,
-                                    "status": resp.status_code})
-            if ms > 5000:
-                print(f"[slow] {request.method} {request.path} took {ms} ms")
-    except Exception:
-        pass
-    return resp
-
-
 @app.route("/healthz")
 def healthz():
-    if request.args.get("debug"):
-        def lock_state(lk):
-            return {"busy_for_seconds": round(time.time() - lk.since, 1), "held_by": lk.holder} if lk.holder else "free"
-        return jsonify({
-            "server_running_for_seconds": int(time.time() - STARTED_AT),
-            "database": DATABASE_STATUS, "storage": storage_mode(), "memory_copy": _MEM_OK,
-            "locks": {"accounts": lock_state(USERS_LOCK), "medicines": lock_state(DATA_LOCK)},
-            "recent_database_calls": list(DB_TIMINGS),
-            "recent_requests": list(REQUEST_TIMINGS),
-            "threads": stack_report().split("\n"),
-        })
     if request.args.get("check_ai"):
         return jsonify({"ai": check_ai_now(), "models_tried": TEXT_MODELS})
     return jsonify({
@@ -2067,48 +1976,20 @@ def check_interactions():
         return jsonify({"success": False, "error": ai_error_message(exc)}), 502
 
 
-CHAT_KEEP = 60   # messages kept per account (30 questions and answers)
-
-
-def _chat_messages(state):
-    return [m for m in (state.get("chat") or []) if isinstance(m, dict) and m.get("role") in ("user", "assistant")]
-
-
-@app.route("/api/chat/history", methods=["GET", "DELETE"])
-@require_client
-def chat_history(cid):
-    """Buddy's saved conversation for this account (DELETE clears it)."""
-    if request.method == "DELETE":
-        def clear(state):
-            state["chat"] = []
-        mutate(cid, clear)
-        return jsonify({"success": True, "messages": []})
-    with DATA_LOCK:
-        state = migrate_state(_read_store().get(cid))
-    return jsonify({"success": True, "messages": [{"role": m["role"], "content": m.get("content", "")}
-                                                  for m in _chat_messages(state)]})
-
-
 @app.route("/api/chat", methods=["POST"])
-@require_client
-def chat(cid):
+def chat():
     data = request.get_json(silent=True) or {}
     lang = data.get("language", "en")
     meds = [clean_text(m, "", 80) for m in (data.get("medications") or [])][:30]
 
-    # Context = the saved conversation + the new question (so Buddy remembers earlier chats).
-    question = ""
-    for m in reversed(data.get("messages") or []):
-        if isinstance(m, dict) and m.get("role") == "user":
-            question = clean_text(m.get("content"), "", 1000)
-            break
-    if not question:
+    messages = []
+    for m in (data.get("messages") or [])[-12:]:
+        if isinstance(m, dict) and m.get("role") in ("user", "assistant"):
+            content = clean_text(m.get("content"), "", 1000)
+            if content:
+                messages.append({"role": m["role"], "content": content})
+    if not messages or messages[-1]["role"] != "user":
         return jsonify({"success": False, "error": "No question provided."}), 400
-    with DATA_LOCK:
-        saved = _chat_messages(migrate_state(_read_store().get(cid)))
-    messages = [{"role": m["role"], "content": clean_text(m.get("content"), "", 1000)} for m in saved[-12:]
-                if m.get("content")]
-    messages.append({"role": "user", "content": question})
     if not client:
         return jsonify({"success": False, "error": "The AI assistant isn't configured on this server (missing GROQ_API_KEY)."}), 503
 
@@ -2129,15 +2010,6 @@ def chat(cid):
     )
     try:
         answer = ai_complete([{"role": "system", "content": system_prompt}] + messages, temperature=0.3, max_tokens=1000)
-        now = datetime.now().isoformat(timespec="seconds")
-
-        def remember(state):
-            state["chat"] = (_chat_messages(state) + [{"role": "user", "content": question, "at": now},
-                                                     {"role": "assistant", "content": answer, "at": now}])[-CHAT_KEEP:]
-        try:
-            mutate(cid, remember)
-        except Exception as exc:          # the answer still shows even if saving fails
-            print(f"[warn] Could not save the chat: {exc}")
         return jsonify({"success": True, "answer": answer})
     except Exception as exc:
         print(f"[error] chat: {exc}")

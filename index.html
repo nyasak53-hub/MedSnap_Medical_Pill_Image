@@ -23,7 +23,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.cdnfonts.com/css/opendyslexic" rel="stylesheet">
 <style>
 :root {
@@ -36,7 +36,7 @@
   --em-bg: #FCF1EF; --em-line: #E9B7AF; --em-ink: #B23A30;
   --ok: #3B6255; --done-bg: #E3EEE6;
   --shadow: 0 1px 2px rgba(36,69,58,.04), 0 6px 24px rgba(36,69,58,.05);
-  --font: "Plus Jakarta Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Kohinoor Devanagari", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font: "Plus Jakarta Sans", "Noto Sans Devanagari", "Noto Sans Telugu", system-ui, -apple-system, "Segoe UI", "Nirmala UI", "Kohinoor Devanagari", "Kohinoor Telugu", "PingFang SC", "Microsoft YaHei", sans-serif;
   color-scheme: light;
 }
 [data-theme="dark"] {
@@ -52,7 +52,7 @@
   color-scheme: dark;
 }
 html { font-size: calc(16px * var(--scale, 1)); }
-html.dyslexic { --font: "OpenDyslexic", "Comic Sans MS", "Noto Sans Devanagari", "Nirmala UI", sans-serif; }
+html.dyslexic { --font: "OpenDyslexic", "Comic Sans MS", "Noto Sans Devanagari", "Noto Sans Telugu", "Nirmala UI", sans-serif; }
 html.dyslexic body { letter-spacing: .02em; word-spacing: .1em; line-height: 1.7; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--font); background: var(--bg); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
@@ -557,10 +557,8 @@ html.hc a:not(.btn):not(.logo):not(.avatar) { text-decoration: underline; }
   .alarm-time { font-size: 1.25rem; min-width: 5.2rem; }
   .ring { padding: 1.8rem 1.1rem 1.2rem; }
 }
-/* Hindi: spaced-out letters would break joined characters apart */
-html:lang(hi) * { letter-spacing: 0 !important; }
-.bd-clear { margin-left: auto; font-size: .78rem; color: var(--ink-2); }
-.bd-head .bd-clear + .icon-btn { margin-left: .2rem; }
+/* Hindi and Telugu: spaced-out letters would break joined characters apart */
+html:lang(hi) *, html:lang(te) * { letter-spacing: 0 !important; }
 </style>
 </head>
 <body>
@@ -950,8 +948,8 @@ zh: {
   tts_dose:'{name}，{dose}。{time} 服用 {n}。', tts_intro:'您今天的药物。', tts_none:'今天没有安排。', tts_unsupported:'此浏览器不支持朗读。',
   err_server:'无法连接服务器。', err_offline:'VeraDose 无法连接服务器（app.py）。请确认它正在运行。', err_page:'此页面出现问题，请刷新。', retry:'重试', off_banner_t:'VeraDose 无法连接服务器。', off_banner:'在 VS Code 终端运行：python app.py，然后打开 http://127.0.0.1:5000/app', tz_hint:'例如 America/New_York',
 }};
-const LOCALE = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN' };
-const LANGS = { en: 'English', es: 'Español', fr: 'Français', zh: '中文', hi: 'हिन्दी' };
+const LOCALE = { en: 'en-US', es: 'es-ES', fr: 'fr-FR', zh: 'zh-CN', hi: 'hi-IN', te: 'te-IN' };
+const LANGS = { en: 'English', es: 'Español', fr: 'Français', zh: '中文', hi: 'हिन्दी', te: 'తెలుగు' };
 /* ---------- Alarms + notifications text ---------- */
 Object.assign(I18N.en, {
   n_alarms:'Alarms', al_eyebrow:'Alarms', al_title:'Dose alarms', alm_sub:"VeraDose rings an alarm when it's time for each medicine.",
@@ -1037,7 +1035,7 @@ Object.assign(I18N.zh, {
   ring_marked:'已标记为服用。做得好！', ring_snoozed:'好的，{n} 分钟后我会再次提醒。', notif_body:'{names}。点按打开 VeraDose。',
   left_hm:'{h} 小时 {m} 分钟', left_m:'{m} 分钟', test_med:'测试药物',
 });
-/* ---------- Hindi ---------- */
+/* ---------- Hindi and Telugu ---------- */
 I18N.hi = {
   g_signin:"साइन इन", g_signup:"खाता बनाएँ", g_in_title:"फिर से स्वागत है", g_in_sub:"अपनी दवाएँ और दिनचर्या देखने के लिए साइन इन करें।",
   g_up_title:"चलिए आपका खाता तैयार करते हैं", g_up_sub:"आपका खाता आपकी दवाओं को हर डिवाइस पर सुरक्षित रखता है। उम्र और एलर्जी भरना ज़रूरी नहीं है।",
@@ -1165,21 +1163,139 @@ I18N.hi = {
   ring_marked:"ली गई चिह्नित की गई। शाबाश!", ring_snoozed:"ठीक है, मैं {n} मिनट बाद फिर बजूँगा।", notif_body:"{names}। VeraDose खोलने के लिए टैप करें।",
   left_hm:"{h} घंटे {m} मिनट", left_m:"{m} मिनट", test_med:"टेस्ट दवा",
 };
-I18N.en.bd_clear = "Clear chat"; I18N.en.bd_clear_q = "Delete this whole conversation with Buddy?";
-I18N.es.bd_clear = "Borrar chat"; I18N.es.bd_clear_q = "¿Borrar toda esta conversación con Buddy?";
-I18N.fr.bd_clear = "Effacer la discussion"; I18N.fr.bd_clear_q = "Effacer toute cette conversation avec Buddy ?";
-I18N.zh.bd_clear = "清除聊天"; I18N.zh.bd_clear_q = "要删除与 Buddy 的全部对话吗？";
-I18N.hi.bd_clear = "चैट मिटाएँ"; I18N.hi.bd_clear_q = "Buddy के साथ पूरी बातचीत मिटा दें?";
-I18N.en.tts_loading = "Getting the voice ready…"; I18N.en.tts_server_fail = "Couldn't play the voice right now. Please try again.";
-I18N.es.tts_loading = "Preparando la voz…"; I18N.es.tts_server_fail = "No se pudo reproducir la voz ahora. Inténtalo de nuevo.";
-I18N.fr.tts_loading = "Préparation de la voix…"; I18N.fr.tts_server_fail = "Impossible de lire la voix pour le moment. Réessayez.";
-I18N.zh.tts_loading = "正在准备语音…"; I18N.zh.tts_server_fail = "暂时无法播放语音，请重试。";
-I18N.hi.tts_loading = "आवाज़ तैयार हो रही है…"; I18N.hi.tts_server_fail = "अभी आवाज़ नहीं चल सकी। कृपया फिर कोशिश करें।";
+I18N.te = {
+  g_signin:"సైన్ ఇన్", g_signup:"ఖాతా సృష్టించండి", g_in_title:"మళ్ళీ స్వాగతం", g_in_sub:"మీ మందులు మరియు దినచర్యను చూడటానికి సైన్ ఇన్ చేయండి.",
+  g_up_title:"మీ ఖాతాను సిద్ధం చేద్దాం", g_up_sub:"మీ ఖాతా మీ మందులను ఏ పరికరంలోనైనా సురక్షితంగా ఉంచుతుంది. వయస్సు మరియు అలెర్జీలు ఐచ్ఛికం.",
+  g_password:"పాస్‌వర్డ్", g_pw_hint:"కనీసం 8 అక్షరాలు.", g_signin_btn:"సైన్ ఇన్", g_signup_btn:"నా ఖాతా సృష్టించండి",
+  sc_btn:"లేబుల్ స్కాన్ చేయండి", sc_hide:"స్కానర్ మూసివేయండి", sc_title:"ప్రిస్క్రిప్షన్ లేదా మందుల సీసాను స్కాన్ చేయండి",
+  sc_sub:"లేబుల్ ఫోటో తీయండి, VeraDose మీ కోసం ఈ ఫారమ్ నింపుతుంది. ప్రిస్క్రిప్షన్ మరియు సీసా వంటి 3 ఫోటోల వరకు జోడించండి.",
+  sc_hint:"లేబుల్‌ను సమతలంగా, దగ్గరగా, మంచి వెలుతురులో పట్టుకోండి.", sc_take_more:"మరో ఫోటో తీయండి", sc_read:"లేబుల్ చదవండి", sc_reading:"లేబుల్ చదువుతోంది…",
+  sc_photos:"3 లో {n} ఫోటోలు", sc_photo_n:"ఫోటో {n}", sc_remove:"ఫోటో తొలగించండి", sc_max:"3 ఫోటోల పరిమితి పూర్తయింది. లేబుల్ చదవండి నొక్కండి.",
+  sc_need:"ముందుగా ఒక ఫోటో తీయండి లేదా అప్‌లోడ్ చేయండి.", sc_done_t:"లేబుల్ నుండి నింపినవి:", sc_done:"{f}. నింపిన పెట్టెలకు గుర్తు పెట్టబడింది.",
+  sc_times:"లేబుల్ ప్రకారం రోజుకు {n} సార్లు వేసుకోవాలి. VeraDose ప్రతి మందుకు ఒక సమయం ఉంచుతుంది, కాబట్టి సేవ్ చేసిన తర్వాత మిగతా ప్రతి సమయానికి దాన్ని మళ్ళీ జోడించండి.",
+  sc_check:"సేవ్ చేసే ముందు ప్రతి వివరాన్ని మీ లేబుల్‌తో సరిచూడండి, లేబుల్‌లో లేనివి నింపండి, ఉదాహరణకు ఏ రోజుల్లో వేసుకోవాలి.",
+  sc_pc_t:"కొత్త ప్రిస్క్రిప్షనా?", sc_pc_s:"లేబుల్ లేదా సీసాను స్కాన్ చేసి మీ మందులు, నిల్వ మరియు క్యాలెండర్‌కు జోడించండి.",
+  pc_main_title:"స్కాన్ చేయండి. రెండుసార్లు చూడండి.", pc_main_sub:"మందు జోడించడానికి ప్రిస్క్రిప్షన్ లేదా సీసాను స్కాన్ చేయండి, లేదా చేతిలోని మాత్రను మీ జాబితాతో పోల్చండి.",
+  pc_mode_scan:"లేబుల్ స్కాన్ చేయండి", pc_mode_check:"మాత్రను తనిఖీ చేయండి", sc_main_t:"దీన్ని నింపడానికి లేబుల్ స్కాన్ చేయండి",
+  sc_main_s:"మీ ప్రిస్క్రిప్షన్ లేబుల్ లేదా మందుల సీసా ఫోటో తీయండి. VeraDose దాన్ని చదివి కొత్త మందును నింపుతుంది, మీరు తనిఖీ చేసి సేవ్ చేయవచ్చు.",
+  how_k:"ఇది ఎలా పనిచేస్తుంది", how_t:"మూడు దశల్లో మందు జోడించండి", how1_t:"3 ఫోటోల వరకు తీయండి", how1:"ప్రిస్క్రిప్షన్ మరియు సీసా రెండూ ఉంటే VeraDose కి చదవడానికి ఎక్కువ సమాచారం దొరుకుతుంది.",
+  how2_t:"VeraDose లేబుల్ చదువుతుంది", how2:"పేరు, మోతాదు, సూచనలు, సీసాలో ఎన్ని మాత్రలు వచ్చాయి, మరియు ఆహారం లేదా సమయం గురించిన గమనికలు.",
+  how3_t:"తనిఖీ చేసి సేవ్ చేయండి", how3:"తర్వాత అది మీ మందులు, నిల్వ మరియు క్యాలెండర్ పేజీలలో కనిపిస్తుంది.",
+  sc_safe_t:"ఏదైనా సేవ్ అయ్యే ముందు మీరే తనిఖీ చేస్తారు", sc_safe_p:"VeraDose లేబుల్‌పై ముద్రించినది మాత్రమే నింపుతుంది. మీరు చూసి సేవ్ నొక్కే వరకు ఏదీ జోడించబడదు.",
+  sc_to_check_t:"చేతిలో మాత్ర ఉందా?", sc_to_check:"దాని ఆకారం, రంగు మరియు ముద్రను మీరు సేవ్ చేసిన మందులతో పోల్చండి.",
+  al_sub:"మీకు అలెర్జీ ఉన్న అన్నింటిపై టిక్ పెట్టండి.", al_other:"ఇతర", al_other_q:"మీకు ఇంకా వేటికి అలెర్జీ ఉంది?", al_other_ph:"ఉదా. పిల్లులు, స్ట్రాబెర్రీలు (కామాలతో వేరు చేయండి)",
+  al_penicillin:"పెన్సిలిన్", al_sulfa:"సల్ఫా మందులు", al_aspirin:"ఆస్పిరిన్", al_nsaids:"ఐబుప్రోఫెన్ / NSAIDs", al_codeine:"కోడీన్ / ఓపియాయిడ్లు",
+  al_latex:"లేటెక్స్", al_contrast:"కాంట్రాస్ట్ డై (అయోడిన్)", al_peanuts:"వేరుశెనగలు", al_tree_nuts:"డ్రై ఫ్రూట్స్ (ట్రీ నట్స్)", al_shellfish:"షెల్‌ఫిష్",
+  al_fish:"చేపలు", al_eggs:"గుడ్లు", al_milk:"పాలు / పాల ఉత్పత్తులు", al_soy:"సోయా", al_wheat:"గోధుమ / గ్లూటెన్", al_bee_stings:"తేనెటీగ కుట్టడం",
+  acc_title:"ఖాతా", acc_sub:"మీరు లాగ్ అవుట్ చేసే వరకు ఈ పరికరంలో సైన్ ఇన్‌లో ఉంటారు.", acc_logout:"లాగ్ అవుట్", acc_logout_s:"ఈ పరికరం నుండి సైన్ అవుట్ చేయండి. మీ మందులు సేవ్ అయి ఉంటాయి.",
+  acc_delete:"ఖాతా తొలగించండి", acc_delete_s:"మీ ఖాతాను మరియు అందులోని ప్రతిదాన్ని శాశ్వతంగా తొలగించండి.", del_title:"మీ ఖాతాను తొలగించాలా?", del_sub:"దీన్ని తిరిగి చేయలేరు.",
+  del_warn_t:"అన్నీ తొలగించబడతాయి", del_warn:"మీ ప్రొఫైల్, మందులు, నిల్వ, క్యాలెండర్ చరిత్ర, స్ట్రీక్ మరియు సంరక్షకుని వివరాలు శాశ్వతంగా తొలగించబడతాయి.",
+  del_pw:"నిర్ధారించడానికి మీ పాస్‌వర్డ్ టైప్ చేయండి", del_btn:"నా ఖాతా తొలగించండి",
+  conn_t:"VeraDose కి కనెక్ట్ అవుతోంది…", conn:"సర్వర్ నిద్రలో ఉంటే దీనికి ఒక నిమిషం వరకు పట్టవచ్చు. మీరు సైన్ ఇన్‌లోనే ఉంటారు.",
+  still_trying:"VeraDose ప్రయత్నిస్తూనే ఉంటుంది, సర్వర్ నడవగానే స్వయంగా కనెక్ట్ అవుతుంది.", reconnected:"కనెక్ట్ అయింది. మళ్ళీ స్వాగతం!",
+  show_pw:"పాస్‌వర్డ్ చూపించు", hide_pw:"పాస్‌వర్డ్ దాచు", g_make_acc:"ఈ ఈమెయిల్‌తో ఖాతా సృష్టించండి →",
+  a11y:"అందుబాటు", a11y_btn:"అందుబాటు ఎంపికలు", tts:"చదివి వినిపించడం", auto_read:"AI సమాధానాలను స్వయంగా చదవండి", read_page:"ఈ పేజీని చదివి వినిపించండి", stop_audio:"శబ్దం ఆపండి",
+  readability:"చదవడం సులభం", visibility:"కనిపించే విధానం", hc:"హై కాంట్రాస్ట్ మోడ్", normal_size:"సాధారణ అక్షర పరిమాణం", smaller:"చిన్న అక్షరాలు", larger:"పెద్ద అక్షరాలు", dark_mode:"డార్క్ మోడ్",
+  your_space:"మీ స్థలం", your_details:"మీ వివరాలు", n_today:"ఈరోజు", n_calendar:"క్యాలెండర్", n_streaks:"స్ట్రీక్‌లు", n_meds:"మందులు", n_inventory:"నిల్వ",
+  n_pillcheck:"మాత్ర తనిఖీ", n_caregiver:"సంరక్షకుడు", n_profile:"ప్రొఫైల్ & ప్రాధాన్యతలు", install_app:"యాప్ ఇన్‌స్టాల్ చేయండి", install_sub:"VeraDose ను మీ హోమ్ స్క్రీన్‌కు జోడించండి.",
+  need_hand:"సహాయం కావాలా?", need_hand_sub:"మీ దినచర్య, ఒక్కో అడుగు.", your_care:"మీ సంరక్షణ", personal_account:"వ్యక్తిగత ఖాతా", sign_out:"సైన్ అవుట్", menu:"మెను",
+  emergency:"అత్యవసరం · 911 కి కాల్ చేయండి", private:"మీ సమాచారం గోప్యంగా ఉంటుంది", language:"భాష", foot_tag:"రోజువారీ జీవితాన్ని కాస్త సులభం చేయడానికి.",
+  td_eyebrow:"ఈరోజు", g_morning:"శుభోదయం", g_afternoon:"నమస్కారం", g_evening:"శుభ సాయంత్రం", td_title:"ఇదిగో మీ రోజు.",
+  td_sub:"ఈరోజు కోసం అంతా ప్లాన్ చేయబడింది. ప్రతి మోతాదు వేసుకున్న తర్వాత దానికి గుర్తు పెట్టండి.", td_read:"ఈరోజును చదివి వినిపించండి", td_doses:"ఈరోజు మోతాదులు",
+  td_of:"{b} లో {a} వేసుకున్నారు", td_streak:"ప్రస్తుత స్ట్రీక్", td_next:"తదుపరి మోతాదు", td_next_none:"ఈరోజుకి అన్నీ పూర్తి", td_none_title:"ఈరోజు ఏమీ ప్లాన్ చేయలేదు",
+  td_none_sub:"మీ రోజును ఆనందించండి. రాబోయే మోతాదులు ఇక్కడ కనిపిస్తాయి.", empty_title:"మీ మొదటి మందును జోడిద్దాం",
+  empty_sub:"ఒక మందును జోడించండి, VeraDose మీ రోజువారీ దినచర్య, క్యాలెండర్ మరియు స్ట్రీక్‌ను తయారు చేస్తుంది.",
+  st_taken:"వేసుకున్నారు", st_due:"ఇప్పుడు వేసుకోవాలి", st_missed:"తప్పిపోయింది", st_upcoming:"రాబోయేది", mark_taken:"వేసుకున్నట్లు గుర్తించండి", undo:"రద్దు చేయండి", read_aloud:"చదివి వినిపించండి",
+  low_text:"{names}: {n} రోజుల కంటే తక్కువ మిగిలి ఉంది. మళ్ళీ తెచ్చుకునే సమయం.", go_inventory:"నిల్వ",
+  cal_eyebrow:"క్యాలెండర్", cal_title:"మీ వారం, ఒక్క చూపులో.", cal_sub:"ప్రతి రోజు ఏమి ప్లాన్ చేశారో చూడండి. ప్రతి మోతాదు వేసుకోగానే గుర్తు పెట్టండి.", add_a_med:"మందు జోడించండి",
+  this_week:"ఈ వారం", last_week:"గత వారం", next_week:"వచ్చే వారం", weeks_ago:"{n} వారాల క్రితం", weeks_ahead:"{n} వారాల తర్వాత", today_btn:"ఈరోజు", today_lbl:"ఈరోజు",
+  nothing_planned:"ఏమీ ప్లాన్ చేయలేదు", tablets:"{n} మాత్రలు", tablet:"1 మాత్ర", planned:"ప్లాన్ చేసినవి", completed:"పూర్తయింది", taken_short:"వేసుకున్నారు", prev_week:"మునుపటి వారం", next_week_aria:"వచ్చే వారం",
+  future_no:"ఆ రోజు వచ్చాక మీరు దీనికి గుర్తు పెట్టవచ్చు.", st_eyebrow:"స్ట్రీక్‌లు", st_title:"మీ క్రమశిక్షణ, రోజు రోజుకీ.",
+  st_sub:"ప్రతి ప్లాన్ చేసిన మోతాదు వేసుకున్నట్లు గుర్తించిన వరుస రోజులను స్ట్రీక్ లెక్కిస్తుంది.", momentum:"మీ జోరు", days:"రోజులు", day:"రోజు",
+  showing_up:"మీ దినచర్యను పాటిస్తున్నారు", best:"అత్యుత్తమ రికార్డు", cal_link:"క్యాలెండర్", t_missed:"తప్పిపోయింది", t_none:"మోతాదులు లేవు", t_planned:"ప్లాన్ చేసినవి", t_complete:"పూర్తి", t_today:"జరుగుతోంది",
+  cg_box_title:"సంరక్షకుడు", cg_box_on:"సంప్రదింపు పంపడం ఆన్‌లో ఉంది. మోతాదు తప్పిపోయినా లేదా నిల్వ తగ్గినా {name} కి వెంటనే తెలియజేయబడుతుంది.",
+  cg_box_saved:"{name} మీ సంరక్షకుడిగా సేవ్ అయ్యారు. సర్వర్‌లో ఈమెయిల్ లేదా SMS సెట్ అవ్వగానే హెచ్చరికలు మొదలవుతాయి.",
+  cg_box_off:"ఇంకా సంరక్షకుడు లేరు. మోతాదు తప్పిపోతే తెలిసేలా సంరక్షకుడు పేజీలో మీరు నమ్మే వ్యక్తిని జోడించండి.", your_caregiver:"మీ సంరక్షకుడు",
+  m_eyebrow:"మందులు", m_title:"మీ మందులు", m_sub:"మీ మోతాదులు, సమయాలు, సూచనలు మరియు మాత్రల వివరాలను ఒకే చోట ఉంచండి.", add_med:"మందు జోడించండి", important:"ముఖ్యమైనది",
+  cur_stock:"ప్రస్తుత నిల్వ (మాత్రలు)", per_dose:"ఒక్కో మోతాదుకు {n}", days_left:"{n} రోజులు మిగిలాయి", edit:"మార్చండి", delete:"తొలగించండి", confirm_delete:"{name} ని మీ మందుల నుండి తొలగించాలా?",
+  m_private:"మందుల వివరాలు మీ ఖాతాకు మాత్రమే గోప్యం, మీ బ్రౌజర్‌లో సేవ్ కావు.", every_day:"ప్రతి రోజు",
+  f_new:"మందు జోడించండి", f_edit:"మందును మార్చండి", f_sub:"మీకు తెలిసినది నింపండి. ఎప్పుడైనా మార్చవచ్చు.", f_name:"మందు పేరు", f_name_ph:"ఉదా. Metformin",
+  f_dose:"మోతాదు", f_dose_ph:"ఉదా. 500 mg", f_instr:"సూచనలు / గుర్తుచేతలు", f_instr_ph:"ఉదా. పూర్తిగా మింగండి. బాగున్నా వేసుకుంటూ ఉండండి.",
+  f_food:"ఆహారం & సమయ గైడ్", f_food_ph:"ఉదా. అల్పాహారానికి 30 నిమిషాల ముందు వేసుకోండి", f_guidance:"ఉపయోగకరమైన సూచనలు", f_guidance_sub:"వర్తించే అన్నింటిపై టిక్ పెట్టండి.",
+  f_days:"వారంలోని రోజులు", f_time:"మోతాదు సమయం", f_stock:"ప్రస్తుత నిల్వ (మాత్రలు)", f_ppd:"ఒక్కో మోతాదుకు మాత్రలు", f_shape:"ఆకారం", f_color:"రంగు", f_choose:"ఎంచుకోండి…",
+  f_imprint:"ముద్ర (ఐచ్ఛికం)", f_imprint_ph:"ఉదా. MET 500", f_important:"ఇది ముఖ్యమైన మందు", cancel:"రద్దు", save_med:"మందును సేవ్ చేయండి", saved:"సేవ్ అయింది.",
+  b_with_food:"ఆహారంతో వేసుకోండి", b_empty_stomach:"ఖాళీ కడుపుతో", b_avoid_dairy:"పాల ఉత్పత్తులు వద్దు", b_avoid_alcohol:"మద్యం వద్దు", b_avoid_sugar:"చక్కెర వద్దు",
+  b_before_bed:"నిద్రకు ముందు", b_with_water:"నీటితో వేసుకోండి", b_before_lunch:"మధ్యాహ్న భోజనానికి ముందు", b_before_breakfast:"అల్పాహారానికి ముందు", b_before_dinner:"రాత్రి భోజనానికి ముందు",
+  b_avoid_grapefruit:"గ్రేప్‌ఫ్రూట్ వద్దు",
+  s_round:"గుండ్రని", s_oval:"అండాకారం", s_oblong:"పొడవాటి", s_square:"చతురస్రం", s_diamond:"వజ్రాకారం", s_triangle:"త్రిభుజం", s_hexagon:"షడ్భుజి", s_capsule:"క్యాప్సూల్",
+  c_white:"తెలుపు", c_yellow:"పసుపు", c_pink:"గులాబీ", c_red:"ఎరుపు", c_purple:"ఊదా", c_green:"ఆకుపచ్చ", c_blue:"నీలం", c_brown:"గోధుమ", c_orange:"నారింజ", c_gray:"బూడిద",
+  i_eyebrow:"నిల్వ", i_title:"మీ దగ్గర ఏముందో తెలుసుకోండి.", i_sub:"ఏదైనా మందు మీరు ఎంచుకున్న రోజుల కంటే తక్కువ మిగిలినప్పుడు ఒక చిన్న హెచ్చరిక.",
+  i_steady_k:"మీ నిల్వ బాగుంది", i_steady_t:"మీ నిల్వ బాగుంది", i_steady_s:"ప్రతి మందుకు కనీసం {n} రోజులు మిగిలి ఉన్నాయి.",
+  i_low_k:"త్వరలో తెచ్చుకోండి", i_low_t:"{names} మళ్ళీ తెచ్చుకునే సమయం", i_low_s:"{n} రోజుల కంటే తక్కువ మిగిలింది. హెచ్చరికలు ఆన్‌లో ఉంటే మీ సంరక్షకుడికి కూడా తెలియజేయబడుతుంది.",
+  col_meds:"మందులు", col_inv:"నిల్వ", col_days:"రోజులు", pills_n:"{n} మాత్రలు", update_stock:"నిల్వ నవీకరించండి",
+  i_note:"అంచనా రోజులు మీరు సేవ్ చేసిన సమయాలు, రోజులు మరియు ఒక్కో మోతాదు మాత్రల ఆధారంగా లెక్కించబడతాయి.",
+  us_title:"నిల్వ నవీకరించండి", us_now:"ప్రస్తుతం {n} మాత్రలు ఉన్నాయి", us_add:"ఇప్పుడే జోడించిన మాత్రలు", us_add_btn:"జోడించండి", us_set:"లేదా ఖచ్చితమైన సంఖ్య ఇవ్వండి", us_set_btn:"సెట్ చేయండి", stock_updated:"నిల్వ నవీకరించబడింది.",
+  pc_eyebrow:"మాత్ర తనిఖీ", pc_title:"ఇది పరిచయంగా అనిపిస్తుందా?", pc_sub:"ఈ తనిఖీ తెలియని మాత్రను గుర్తించలేదు, ఏది వేసుకోవడం సురక్షితమో చెప్పలేదు. సందేహం ఉంటే ఫార్మసిస్ట్‌ను అడగండి.",
+  cam_back:"వెనుక కెమెరా", cam_front:"ముందు కెమెరా", cam_start:"కెమెరా ఆన్ చేయండి", cam_snap:"ఫోటో తీయండి", cam_retake:"మళ్ళీ తీయండి", cam_upload:"ఫోటో అప్‌లోడ్ చేయండి",
+  cam_hint:"ఒక మాత్రను సాదా ఉపరితలంపై మంచి వెలుతురులో ఉంచి, ఫోటో తీయండి.",
+  cam_https:"కెమెరా సురక్షిత పేజీలో (https:// లేదా http://127.0.0.1) మాత్రమే పనిచేస్తుంది. బదులుగా “ఫోటో అప్‌లోడ్ చేయండి” వాడండి.",
+  cam_denied:"కెమెరా అనుమతి నిరోధించబడింది. బ్రౌజర్ అడ్రస్ బార్‌లో కెమెరాకు అనుమతి ఇచ్చి, మళ్ళీ ప్రయత్నించండి.", cam_none:"ఈ పరికరంలో కెమెరా కనబడలేదు. బదులుగా “ఫోటో అప్‌లోడ్ చేయండి” వాడండి.",
+  cam_err:"కెమెరా ప్రారంభం కాలేదు: {e}", compare:"నా జాబితాతో పోల్చండి", comparing:"ఫోటోను తనిఖీ చేస్తోంది…", need_photo:"ముందుగా ఒక ఫోటో తీయండి లేదా అప్‌లోడ్ చేయండి.",
+  helpful:"ఉపయోగకరమైన తనిఖీ", match_title:"మీరు గుర్తించే వివరాలను పోల్చండి", ref_title:"మీ జాబితాకు మాత్రమే సూచన",
+  ref_text:"ఈ సాధనం VeraDose లో మీరు సేవ్ చేసిన మందులతో మాత్రమే పోల్చుతుంది. ఇది తెలియని మాత్రను గుర్తించలేదు, ఏది వేసుకోవడం సురక్షితమో చెప్పలేదు.",
+  saw:"కెమెరా ఏమి చూసింది", unknown:"ఖచ్చితంగా తెలియదు", m_strong:"సరిపోలినట్లు ఉంది", m_partial:"కొంతవరకు సరిపోలింది", m_none:"సరిపోలలేదు", matched_on:"వీటిలో సరిపోలింది: {w}", matched_none:"ఏమీ లేదు",
+  no_saved:"మీ ఏ మందుకూ ఇంకా ఆకారం, రంగు లేదా ముద్ర సేవ్ కాలేదు. ఫోటోలతో పోల్చడానికి మందులు పేజీలో వాటిని జోడించండి.",
+  w_shape:"ఆకారం", w_color:"రంగు", w_imprint:"ముద్ర",
+  cg_eyebrow:"సంరక్షకుడు", cg_title:"మీరు కోరుకుంటే, ఒక సంరక్షకుడు.",
+  cg_sub_on:"సంప్రదింపు పంపడం ఆన్‌లో ఉంది. సంరక్షకుడిని సేవ్ చేశాక, మోతాదు తప్పినా లేదా మాత్రలు తగ్గినా వారికి వెంటనే తెలియజేయబడుతుంది.",
+  cg_sub_off:"ఒక సంరక్షకుడిని సేవ్ చేయండి, మోతాదు తప్పినా లేదా మాత్రలు తగ్గినా వారికి వెంటనే తెలియజేయబడుతుంది.",
+  cp_title:"సంప్రదింపు ప్రాధాన్యతలు", cp_sub:"సంరక్షకుని వివరాలు ఈ ఖాతాలో ఉంచండి", en_title:"సంరక్షకుని హెచ్చరికలు ఆన్ చేయండి", en_sub:"మోతాదు తప్పినా లేదా నిల్వ తగ్గినా వారికి తెలియజేయండి",
+  cg_name:"సంరక్షకుని పేరు", cg_email:"ఈమెయిల్", cg_email_ph:"name@example.com", cg_phone:"ఫోన్", cg_phone_ph:"+919876543210",
+  cg_consent:"ఈ వ్యక్తి సంప్రదింపు వివరాలు సేవ్ చేయడానికి నాకు అనుమతి ఉంది.", on_title:"సంప్రదింపు పంపడం ఆన్‌లో ఉంది.",
+  on_text:"మోతాదు {m} నిమిషాలు ఆలస్యం కాగానే, లేదా ఏదైనా మందు నిల్వ మీ పరిమితి కంటే తగ్గినప్పుడు, {ch} ద్వారా హెచ్చరిక వెళుతుంది.", ch_email:"ఈమెయిల్", ch_sms:"SMS", ch_and:" మరియు ",
+  off_title:"సర్వర్‌లో సంప్రదింపు పంపడం ఇంకా సెట్ కాలేదు.", off_text:"మీ ఈమెయిల్ (SMTP) లేదా Twilio వివరాలను .env ఫైల్‌లో జోడించి VeraDose ను మళ్ళీ ప్రారంభించండి. అప్పటివరకు మీ సంరక్షకుని వివరాలు సేవ్ అయి ఉంటాయి.",
+  save_prefs:"ప్రాధాన్యతలు సేవ్ చేయండి", send_test:"పరీక్ష పంపండి", cs_k:"మీ ఎంపిక, మీ వేగం", cs_t:"సంరక్షణ మీకు సరైనదిగా అనిపించినప్పుడే బాగా పనిచేస్తుంది.",
+  cs_p:"మీరు ఈ వివరాలను ఎప్పుడైనా మార్చవచ్చు లేదా తొలగించవచ్చు. హెచ్చరికలు మీరు ఇక్కడ సేవ్ చేసిన వ్యక్తికి మాత్రమే వెళతాయి.",
+  cg_saved_on:"సేవ్ అయింది. {name} గారికి వారు మీ సంరక్షకుడని తెలియజేశాం, వారికి వెంటనే హెచ్చరికలు వస్తాయి.", cg_saved:"సంరక్షకుని ప్రాధాన్యతలు సేవ్ అయ్యాయి.", test_sent:"పరీక్ష సందేశం పంపబడింది.",
+  pf_eyebrow:"ప్రొఫైల్ & ప్రాధాన్యతలు", pf_title:"మీకు సరిపోయే ప్రొఫైల్.", pf_sub:"మీ ప్రొఫైల్ VeraDose దినచర్యను మరింత వ్యక్తిగతంగా చేస్తుంది.",
+  pd_title:"వ్యక్తిగత వివరాలు", pd_sub:"మీ ప్రొఫైల్ VeraDose దినచర్యను మరింత వ్యక్తిగతంగా చేస్తుంది.", f_pname:"పేరు", optional:"ఐచ్ఛికం", f_age:"వయస్సు", f_allergies:"అలెర్జీలు",
+  f_tz:"సమయ మండలం", f_low:"తక్కువ నిల్వ హెచ్చరిక (రోజులు)", not_stored:"మీ ప్రొఫైల్ మరియు అలెర్జీ వివరాలు బ్రౌజర్‌లో సేవ్ కావు.", save_profile:"ప్రొఫైల్ సేవ్ చేయండి",
+  ps_t:"మీ ప్రొఫైల్ VeraDose దినచర్యను మరింత వ్యక్తిగతంగా చేస్తుంది.", ps_p:"మందుల పేర్లు మరియు సూచనలు మీరు రాసినట్లే ఉంటాయి; VeraDose ప్రిస్క్రిప్షన్ సూచనలను అనువదించదు.",
+  ds_title:"ప్రదర్శన సెట్టింగ్‌లు", ds_sub:"అక్షర పరిమాణం", text_size:"అక్షర పరిమాణం", dyslexia:"డిస్లెక్సియాకు అనుకూలమైన ఫాంట్", theme:"థీమ్", light:"లేత", dark:"ముదురు", profile_saved:"ప్రొఫైల్ సేవ్ అయింది.",
+  buddy:"Buddy", bd_title:"VeraDose Buddy", bd_sub:"సాధారణ సహాయం, వైద్య సలహా కాదు",
+  bd_intro:"VeraDose వాడటం లేదా క్రమబద్ధంగా ఉండటం గురించి అడగండి. మందుల నిర్ణయాల కోసం ఫార్మసిస్ట్ లేదా డాక్టర్‌ను సంప్రదించండి.",
+  bd_note:"మీ ప్రశ్న Groq కి పంపబడుతుంది. పేర్లు లేదా వ్యక్తిగత వైద్య వివరాలు రాయవద్దు.", bd_ph:"నేను ఎలా సహాయం చేయగలను?", bd_send:"పంపండి", close:"మూసివేయండి",
+  em_title:"అత్యవసరం", em_body:"మీరు లేదా మీ దగ్గర ఎవరైనా ప్రమాదంలో ఉంటే, ఇప్పుడే 911 కి కాల్ చేయండి.", em_call:"911 కి కాల్ చేయండి", em_desktop:"కంప్యూటర్‌లో ఉన్నారా? ఏ ఫోన్ నుండైనా 911 డయల్ చేయండి.",
+  em_alert:"నా సంరక్షకుడికి తెలియజేయండి", em_sent:"మీ సంరక్షకుడికి తెలియజేయబడింది.",
+  tts_dose:"{name}, {dose}. {time} కి {n} వేసుకోండి.", tts_intro:"ఈరోజు మీ మందులు.", tts_none:"ఈరోజు ఏమీ ప్లాన్ చేయలేదు.", tts_unsupported:"ఈ బ్రౌజర్‌లో చదివి వినిపించడం అందుబాటులో లేదు.",
+  err_server:"సర్వర్‌ను చేరుకోలేకపోయాం.", err_offline:"VeraDose తన సర్వర్‌ను (app.py) చేరుకోలేకపోతోంది. అది నడుస్తోందని నిర్ధారించుకోండి.", err_page:"ఈ పేజీలో సమస్య వచ్చింది. దయచేసి రిఫ్రెష్ చేయండి.",
+  retry:"మళ్ళీ ప్రయత్నించండి", off_banner_t:"VeraDose తన సర్వర్‌ను చేరుకోలేకపోతోంది.", off_banner:"VS Code టెర్మినల్‌లో నడపండి: python app.py — తర్వాత తెరవండి http://127.0.0.1:5000/app",
+  tz_hint:"ఉదాహరణకు Asia/Kolkata",
+  n_alarms:"అలారాలు", al_eyebrow:"అలారాలు", al_title:"మోతాదు అలారాలు", alm_sub:"ప్రతి మందు సమయం రాగానే VeraDose అలారం మోగిస్తుంది.",
+  al_now:"ఇప్పుడు", al_next:"తదుపరి అలారం", al_next_in:"{time} కి {name}, {left} లో", al_none_next:"ఈరోజు ఇంకా అలారాలు లేవు. చాలా బాగుంది!",
+  al_none:"ఇంకా అలారాలు లేవు", al_none_sub:"సమయంతో మందును జోడించండి, అలారం స్వయంగా సెట్ అవుతుంది.", al_list:"మీ అలారాలు",
+  al_list_sub:"ప్రతి మందు దాని సమయానికి మోగుతుంది. ఈ పరికరం ఏదైనా మందుకు మోగకూడదనుకుంటే దాన్ని ఆఫ్ చేయండి.",
+  al_on:"అలారం ఆన్", al_every_day:"ప్రతి రోజు", al_st_taken:"ఈరోజు వేసుకున్నారు", al_st_rang:"ఈరోజు మోగింది", al_st_upcoming:"ఈరోజు మోగుతుంది", al_st_notoday:"ఈరోజు కాదు", al_st_snoozed:"{time} వరకు వాయిదా", al_st_off:"ఆఫ్",
+  al_settings:"అలారం సెట్టింగ్‌లు", al_test:"అలారం పరీక్షించండి", al_voice:"మందు పేరు చదివి వినిపించండి", al_voice_sub:"బీప్‌ల తర్వాత VeraDose మందు పేరు మరియు మోతాదు చెబుతుంది.",
+  al_snooze_len:"వాయిదా సమయం", al_min:"{n} నిమి", al_keep_open:"ఈ పరికరంలో VeraDose తెరిచి ఉన్నప్పుడే అలారాలు మోగుతాయి. iPhone లో VeraDose ను స్క్రీన్‌పై తెరిచి ఉంచండి.",
+  nt_title:"రిమైండర్లు ఆన్ చేయాలా?", nt_sub:"మీరు వేరే పేజీ లేదా యాప్‌లో ఉన్నా, {time} కి {name} కోసం నోటిఫికేషన్ మరియు అలారం పొందండి.",
+  nt_on:"నోటిఫికేషన్లు ఆన్ చేయండి", nt_later:"ఇప్పుడు కాదు", nt_see:"నా అలారాలు చూడండి", nt_ios_title:"నోటిఫికేషన్ల కోసం VeraDose ఇన్‌స్టాల్ చేయండి",
+  nt_ios_sub:"iPhone మరియు iPad లో, VeraDose ను హోమ్ స్క్రీన్‌కు జోడించిన తర్వాతే నోటిఫికేషన్లు వస్తాయి. VeraDose తెరిచి ఉన్నప్పుడు {time} కి {name} అలారం అయినా మోగుతుంది.",
+  nt_denied:"ఈ సైట్‌కు నోటిఫికేషన్లు నిరోధించబడ్డాయి. బ్రౌజర్ సైట్ సెట్టింగ్‌లు తెరిచి, నోటిఫికేషన్లకు అనుమతి ఇచ్చి, తిరిగి రండి.",
+  nt_enabled:"నోటిఫికేషన్లు ఆన్‌లో ఉన్నాయి.", nt_card_t:"నోటిఫికేషన్లు ఆఫ్‌లో ఉన్నాయి", nt_card_s:"VeraDose వెనుక నడుస్తున్నప్పుడు కూడా రిమైండర్ చూడటానికి వాటిని ఆన్ చేయండి.",
+  nt_card_on_t:"నోటిఫికేషన్లు ఆన్‌లో ఉన్నాయి", nt_card_on_s:"ప్రతి మోతాదు సమయానికి మీకు నోటిఫికేషన్ మరియు అలారం వస్తాయి.", nt_card_blocked_t:"నోటిఫికేషన్లు నిరోధించబడ్డాయి",
+  nt_card_ios_t:"నోటిఫికేషన్ల కోసం ఇన్‌స్టాల్ చేయండి", nt_card_ios_s:"iPhone లో నోటిఫికేషన్లు పొందడానికి VeraDose ను హోమ్ స్క్రీన్‌కు జోడించండి.",
+  alarm_set:"సేవ్ అయింది. {time} కి అలారం సెట్ చేయబడింది.", ring_title:"మందు వేసుకునే సమయం", ring_tap_sound:"అలారం వినడానికి నొక్కండి", ring_taken:"నేను వేసుకున్నాను",
+  ring_snooze:"{n} నిమి వాయిదా", ring_stop:"అలారం ఆపండి", ring_test:"ఇది పరీక్ష మాత్రమే. మీ నిజమైన అలారాలు ఇలాగే కనిపిస్తాయి.", ring_say:"మీ మందు వేసుకునే సమయం అయింది.",
+  ring_marked:"వేసుకున్నట్లు గుర్తించబడింది. శభాష్!", ring_snoozed:"సరే, {n} నిమిషాల తర్వాత మళ్ళీ మోగుతాను.", notif_body:"{names}. VeraDose తెరవడానికి నొక్కండి.",
+  left_hm:"{h} గం {m} నిమి", left_m:"{m} నిమి", test_med:"పరీక్ష మందు",
+};
 I18N.en.tts_no_voice = "This device has no voice for this language, so read-aloud may stay silent. You can add one in your phone or computer's speech (text-to-speech) settings.";
 I18N.es.tts_no_voice = "Este dispositivo no tiene una voz para este idioma, así que la lectura en voz alta puede quedar en silencio. Puedes añadir una en los ajustes de voz (texto a voz) de tu teléfono o computadora.";
 I18N.fr.tts_no_voice = "Cet appareil n'a pas de voix pour cette langue, la lecture à voix haute peut donc rester silencieuse. Vous pouvez en ajouter une dans les réglages de synthèse vocale de votre téléphone ou ordinateur.";
 I18N.zh.tts_no_voice = "此设备没有这种语言的语音，朗读可能没有声音。您可以在手机或电脑的语音（文字转语音）设置中添加。";
 I18N.hi.tts_no_voice = "इस डिवाइस में इस भाषा की आवाज़ नहीं है, इसलिए बोलकर पढ़ना चुप रह सकता है। आप अपने फ़ोन या कंप्यूटर की स्पीच (टेक्स्ट-टू-स्पीच) सेटिंग में इसे जोड़ सकते हैं।";
+I18N.te.tts_no_voice = "ఈ పరికరంలో ఈ భాషకు గొంతు లేదు, కాబట్టి చదివి వినిపించడం నిశ్శబ్దంగా ఉండవచ్చు. మీ ఫోన్ లేదా కంప్యూటర్ స్పీచ్ (టెక్స్ట్-టు-స్పీచ్) సెట్టింగ్‌లలో దాన్ని జోడించవచ్చు.";
 
 const BADGE_KEYS = ['with_food', 'empty_stomach', 'avoid_dairy', 'avoid_alcohol', 'avoid_sugar', 'before_bed', 'with_water', 'before_lunch', 'before_breakfast', 'before_dinner'];
 const SHAPE_KEYS = ['round', 'oval', 'oblong', 'square', 'diamond', 'triangle', 'hexagon'];
@@ -1289,7 +1405,6 @@ function pillSvg(shape, color, imprint, size) {
 let S = { meds: [], streak: 0, best: 0, caregiver: {}, alerts: { email: false, sms: false }, profile: {}, today: isoD(new Date()), week: [], ai: false };
 let loaded = false;
 function applyState(data) {
-  if (!chatLoaded) setTimeout(loadChatHistory, 0);
   S.meds = data.medications || [];
   S.streak = data.streak || 0;
   S.best = data.best_streak || 0;
@@ -1364,7 +1479,7 @@ function setLanguage(code, save = true) {
     langChosenHere = true;
     if (loaded) api('/api/profile', jsonOptions('PUT', Object.assign({}, S.profile, { language: code }))).then(applyState).catch(() => {});
   }
-  stopSpeech();
+  if (window.speechSynthesis) speechSynthesis.cancel();
   render(true);
 }
 
@@ -2052,41 +2167,14 @@ function plainText(text) {
 }
 const ttsWarned = {};
 if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices(); } catch (e) {} }
-let ttsAudio = null, ttsUnlocked = false, ttsSeq = 0;
-function getTtsAudio() { if (!ttsAudio) { try { ttsAudio = new Audio(); } catch (e) { ttsAudio = null; } } return ttsAudio; }
-function stopServerSpeech() { ttsSeq++; if (ttsAudio) { try { ttsAudio.pause(); } catch (e) {} } }
-function stopSpeech() { stopServerSpeech(); if ('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch (e) {} } }
-let ttsBusy = false;
-function ttsChunks(text, max) {
-  const out = [];
-  (text.match(/[^.!?।\n]+[.!?।]*\s*/g) || [text]).forEach(sen => {
-    while (sen.length > max) { out.push(sen.slice(0, max)); sen = sen.slice(max); }
-    if (out.length && (out[out.length - 1] + sen).length <= max) out[out.length - 1] += sen; else if (sen.trim()) out.push(sen);
-  });
-  return out.map(x => x.trim()).filter(Boolean);
-}
-function fetchTts(part) {
-  return fetch(API_BASE + '/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: part, lang }) })
-    .then(async res => { if (!res.ok) { let m = ''; try { m = (await res.json()).error; } catch (e) {} throw new Error(m || t('tts_server_fail')); } return res.blob(); });
-}
-/* (Server voice removed.)
-   The text is read in short pieces so the voice starts quickly; the next piece loads while one plays. */
-function serverSpeak(text) {
-  // No server voice: tell the person their device has no voice for this language.
-  showToast(t('tts_no_voice'), 'error');
-}
-function speak(text, retry) {
-  retry = retry || 0;
+function speak(text) {
   text = plainText(text);
   if (!text.trim()) return;
-  if (!('speechSynthesis' in window)) { serverSpeak(text); return; }
+  if (!('speechSynthesis' in window)) { showToast(t('tts_unsupported'), 'error'); return; }
   const synth = speechSynthesis;
   const voices = synth.getVoices();
   const voice = voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(lang)) || null;
-  // No voice for this language on this device ): tell the person.
-  if (!voice && lang !== 'en' && (voices.length || retry >= 3)) { serverSpeak(text); return; }
-  if (!voices.length && retry < 3) { setTimeout(() => speak(text, retry + 1), 300); return; }  // voices still loading
-  stopServerSpeech();
+  if (!voice && lang !== 'en' && voices.length && !ttsWarned[lang]) { ttsWarned[lang] = true; showToast(t('tts_no_voice'), 'error'); }
   // Short pieces: some browsers (Chrome) stop reading after about 15 seconds.
   const parts = [];
   (text.match(/[^.!?\u0964\n]+[.!?\u0964]*\s*/g) || [text]).forEach(sen => {
@@ -2113,22 +2201,7 @@ function medSentence(m) {
 }
 
 /* ---------- Buddy ---------- */
-let buddyOpen = false, chatHistory = [], chatBusy = false, chatLoaded = false;
-/* Buddy's conversation is saved with the account, so it is still there after a refresh or on another device. */
-async function loadChatHistory() {
-  if (chatLoaded) return;
-  chatLoaded = true;
-  try {
-    const d = await api('/api/chat/history');
-    if (!chatBusy && !chatHistory.length) { chatHistory = d.messages || []; if (buddyOpen) renderBuddy(); }
-  } catch (e) { chatLoaded = false; }
-}
-async function clearChat() {
-  if (chatBusy || !chatHistory.length) return;
-  if (!window.confirm(t('bd_clear_q'))) return;
-  try { await api('/api/chat/history', { method: 'DELETE' }); chatHistory = []; renderBuddy(); }
-  catch (e) { showToast(e.message, 'error'); }
-}
+let buddyOpen = false, chatHistory = [], chatBusy = false;
 function renderBuddy() {
   $('#buddyFab').innerHTML = `${ic('sparkles', 22, 1.6)}${esc(t('buddy'))}`;
   $('#buddyFab').setAttribute('aria-expanded', buddyOpen);
@@ -2138,7 +2211,7 @@ function renderBuddy() {
   const keep = $('#bdInput') ? $('#bdInput').value : '';
   panel.classList.toggle('grown', chatHistory.length > 0);
   panel.innerHTML = `
-    <div class="bd-head"><div><h2>${esc(t('bd_title'))}</h2><small>${esc(t('bd_sub'))}</small></div>${chatHistory.length && !chatBusy ? `<button class="link-btn bd-clear" data-act="buddy-clear">${ic('trash', 16, 1.8)}${esc(t('bd_clear'))}</button>` : ''}<button class="icon-btn" data-act="buddy-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
+    <div class="bd-head"><div><h2>${esc(t('bd_title'))}</h2><small>${esc(t('bd_sub'))}</small></div><button class="icon-btn" data-act="buddy-close" aria-label="${esc(t('close'))}">${ic('x', 20, 1.8)}</button></div>
     <div class="bd-msgs" id="bdMsgs" aria-live="polite">${chatHistory.length ? chatHistory.map(m => `<div class="msg ${m.role === 'user' ? 'user' : 'bot'} ${m.error ? 'err' : ''}">${m.role === 'user' ? esc(m.content) : formatAnswer(m.content)}</div>`).join('') + (chatBusy ? '<div class="msg bot typing"><span></span><span></span><span></span></div>' : '')
       : `<p class="bd-intro">${esc(t('bd_intro'))}</p>`}</div>
     <p class="bd-note">${esc(t('bd_note'))}</p>
@@ -2358,7 +2431,7 @@ document.addEventListener('click', async e => {
     case 'a11y-toggle': a11yOpen = !a11yOpen; renderA11y(); break;
     case 'a11y-close': a11yOpen = false; renderA11y(); $('#a11yBtn').focus(); break;
     case 'a11y-read': speak(($('#view').innerText || '').replace(/\s+/g, ' ').slice(0, 4000)); break;
-    case 'a11y-stop': stopSpeech(); break;
+    case 'a11y-stop': if ('speechSynthesis' in window) speechSynthesis.cancel(); break;
     case 'emergency': openEmergency(); break;
     case 'em-close': $('#emDlg').close(); break;
     case 'em-alert': {
@@ -2369,7 +2442,6 @@ document.addEventListener('click', async e => {
     case 'buddy-open': buddyOpen = true; document.body.classList.remove('nav-open'); renderBuddy(); $('#bdInput').focus(); break;
     case 'buddy-toggle': buddyOpen = !buddyOpen; renderBuddy(); if (buddyOpen) $('#bdInput').focus(); break;
     case 'buddy-close': buddyOpen = false; renderBuddy(); $('#buddyFab').focus(); break;
-    case 'buddy-clear': clearChat(); break;
   }
 });
 document.addEventListener('change', e => {
@@ -2491,10 +2563,8 @@ function makeBeepWav() {
   }
   return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
 }
-let beepUrl = null;
-function getBeepUrl() { if (!beepUrl) beepUrl = makeBeepWav(); return beepUrl; }
 function getAlarmAudio() {
-  if (!alarmAudio) { try { alarmAudio = new Audio(getBeepUrl()); alarmAudio.loop = true; alarmAudio.preload = 'auto'; } catch (e) { alarmAudio = null; } }
+  if (!alarmAudio) { try { alarmAudio = new Audio(makeBeepWav()); alarmAudio.loop = true; alarmAudio.preload = 'auto'; } catch (e) { alarmAudio = null; } }
   return alarmAudio;
 }
 function startSound() {
@@ -2510,15 +2580,6 @@ function unlockAudio() {
     if (!audioCtx) { const C = window.AudioContext || window.webkitAudioContext; if (C) audioCtx = new C(); }
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
   } catch (e) {}
-  // Phones only allow sound after a tap: play silently once so read-aloud audio can play later too.
-  if (!ttsUnlocked && !ttsBusy) {
-    const t2 = getTtsAudio();
-    if (t2 && t2.paused) {
-      try { const warm = getBeepUrl(); t2.src = warm; t2.muted = true;
-        // only touch the player if it's still the silent warm-up (never stop real speech)
-        t2.play().then(() => { ttsUnlocked = true; if (t2.src === warm) { t2.pause(); t2.muted = false; } }).catch(() => { if (t2.src === warm) t2.muted = false; }); } catch (e) {}
-    }
-  }
   // Phones only allow sound after a tap: play the alarm file silently once so it can ring later.
   if (!audioUnlocked && !alarmPlaying) {
     const a = getAlarmAudio(); if (!a) return;
@@ -2579,7 +2640,7 @@ function quietRing() { if (!ringing) return; stopSound(); clearInterval(ringing.
 function stopRing() {
   if (!ringing) return;
   quietRing(); clearTimeout(ringing.stopTimer);
-  stopSpeech();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
   ringing = null; document.title = baseTitle; clearNotifications();
   const d = $('#alarmDlg'); if (d.open) d.close();
   if (route === 'alarms') renderPage(true);
